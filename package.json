@@ -96,7 +96,7 @@
   "dependencies": {
     "anvil-connect-jwt": "^0.1.6",
     "anvil-connect-keys": "^0.1.0",
-    "async": "^1.0.0",
+    "async": "^2.3.0",
     "base64url": "^1.0.4",
     "bcrypt": "~0.8.3",
     "body-parser": "^1.12.3",
