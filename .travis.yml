@@ -9,6 +9,8 @@ node_js:
 env:
   - global:
     - secure: "HkRiiONB4cs7t4+OEOjg6ZHdYeeMa1ZpqlvnRBBGSTnxWPQykd8dB88Upt5WvwRJdRcQZtHXhG63e7Lqynn7yZxZ2N7V2gNmv3APnfqnrQZ66Lr4H5vWoa6LFwRkgp3gTW1YWODZwMz08SnJKosSedISXyfzjFPDwNNuA9OO/Tg="
+services:
+  - redis-server
 
 addons:
   apt:
