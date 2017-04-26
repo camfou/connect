@@ -131,10 +131,6 @@ asn1.js@1.0.3:
   optionalDependencies:
     bn.js "^1.0.0"
 
-asn1@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/asn1/-/asn1-0.2.1.tgz#ecc73f75d31ea3c6ed9d47428db35fecc7b2c6dc"
-
 asn1@0.2.3, asn1@~0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/asn1/-/asn1-0.2.3.tgz#dac8787713c9966849fc8180777ebe9c1ddf3b86"
@@ -213,9 +209,9 @@ bcrypt@~0.8.3:
     bindings "1.2.1"
     nan "2.3.5"
 
-bcryptjs@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/bcryptjs/-/bcryptjs-2.1.0.tgz#5e6076196f6e3e957820aceb004410a7cf367042"
+bcryptjs@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/bcryptjs/-/bcryptjs-2.4.0.tgz#fb7f4a0b133854503fe1b2da3f25db834cf0e678"
 
 bcryptjs@^2.1.0:
   version "2.4.3"
@@ -274,13 +270,6 @@ buildmail@^2.0.0:
     libmime "^1.2.0"
     libqp "^1.1.0"
     needle "^0.10.0"
-
-bunyan@0.22.1:
-  version "0.22.1"
-  resolved "https://registry.yarnpkg.com/bunyan/-/bunyan-0.22.1.tgz#020c383bed625af5c6c8834dd8c4aca0dd0f765c"
-  optionalDependencies:
-    dtrace-provider "0.2.8"
-    mv "0.0.5"
 
 bunyan@^1.8.1, bunyan@^1.8.3:
   version "1.8.10"
@@ -546,11 +535,11 @@ dateformat@1.0.2-1.2.3:
   version "1.0.2-1.2.3"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-1.0.2-1.2.3.tgz#b0220c02de98617433b72851cf47de3df2cdbee9"
 
-debug@2, debug@2.6.4, debug@^2.1.1, debug@^2.1.2, debug@^2.2.0:
-  version "2.6.4"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.4.tgz#7586a9b3c39741c0282ae33445c4e8ac74734fe0"
+debug@2, debug@2.6.3, debug@^2.1.1:
+  version "2.6.3"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.3.tgz#0f7eb8c30965ec08c72accfa0130c8b79984141d"
   dependencies:
-    ms "0.7.3"
+    ms "0.7.2"
 
 debug@2.2.0:
   version "2.2.0"
@@ -558,17 +547,17 @@ debug@2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@2.6.1:
+debug@2.6.1, debug@^2.2.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.1.tgz#79855090ba2c4e3115cc7d8769491d58f0491351"
   dependencies:
     ms "0.7.2"
 
-debug@2.6.3:
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.3.tgz#0f7eb8c30965ec08c72accfa0130c8b79984141d"
+debug@2.6.4, debug@^2.1.2:
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.4.tgz#7586a9b3c39741c0282ae33445c4e8ac74734fe0"
   dependencies:
-    ms "0.7.2"
+    ms "0.7.3"
 
 decamelize@^1.0.0:
   version "1.2.0"
@@ -626,10 +615,6 @@ doctrine@^0.7.1:
 double-ended-queue@^2.1.0-0:
   version "2.1.0-0"
   resolved "https://registry.yarnpkg.com/double-ended-queue/-/double-ended-queue-2.1.0-0.tgz#103d3527fd31528f40188130c841efdd78264e5c"
-
-dtrace-provider@0.2.8:
-  version "0.2.8"
-  resolved "https://registry.yarnpkg.com/dtrace-provider/-/dtrace-provider-0.2.8.tgz#e243f19219aa95fbf0d8f2ffb07f5bd64e94fe20"
 
 dtrace-provider@^0.7.0:
   version "0.7.1"
@@ -924,10 +909,6 @@ express@^4.12.3:
 extend@3.0.0, extend@~3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.0.tgz#5a474353b9f3353ddd8176dfd37b91c83a46f1d4"
-
-extsprintf@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.0.0.tgz#4d58b815ace5bebfc4ebf03cf98b0a7604a99b86"
 
 extsprintf@1.0.2:
   version "1.0.2"
@@ -1514,10 +1495,6 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
 
-json-schema@0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/json-schema/-/json-schema-0.2.2.tgz#50354f19f603917c695f70b85afa77c3b0f23506"
-
 json-schema@0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/json-schema/-/json-schema-0.2.3.tgz#b480c892e59a2f05954ce727bd3f2a4e882f9e13"
@@ -1539,14 +1516,6 @@ jsonify@~0.0.0:
 jsonpointer@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/jsonpointer/-/jsonpointer-4.0.1.tgz#4fd92cb34e0e9db3c89c8622ecf51f9b978c6cb9"
-
-jsprim@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/jsprim/-/jsprim-0.3.0.tgz#cd13466ea2480dbd8396a570d47d31dda476f8b1"
-  dependencies:
-    extsprintf "1.0.0"
-    json-schema "0.2.2"
-    verror "1.3.3"
 
 jsprim@^1.2.2:
   version "1.4.0"
@@ -1597,29 +1566,33 @@ ldap-filter@0.2.2:
   dependencies:
     assert-plus "0.1.5"
 
-ldapauth-fork@~2.3.0:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/ldapauth-fork/-/ldapauth-fork-2.3.3.tgz#c754aa9508a809e9d048d91cac9908c5f335f12f"
+ldapauth-fork@~3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/ldapauth-fork/-/ldapauth-fork-3.0.1.tgz#29641d1c567bad1125abd509e68d95e58f636f3d"
   dependencies:
-    bcryptjs "2.1.0"
-    ldapjs "0.7.1"
-    lru-cache "2.5.0"
+    bcryptjs "2.4.0"
+    ldapjs "~1.0.1"
+    lru-cache "4.0.2"
 
-ldapjs@0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/ldapjs/-/ldapjs-0.7.1.tgz#684798a687640bab1afbd802cf532f30492dfb56"
-  dependencies:
-    asn1 "0.2.1"
-    assert-plus "0.1.5"
-    bunyan "0.22.1"
-    nopt "2.1.1"
-    pooling "0.4.6"
-  optionalDependencies:
-    dtrace-provider "0.2.8"
-
-"ldapjs@github:mcavage/node-ldapjs", ldapjs@mcavage/node-ldapjs:
+ldapjs@mcavage/node-ldapjs:
   version "1.0.1"
   resolved "https://codeload.github.com/mcavage/node-ldapjs/tar.gz/988467911cbbfdbefdf6015eb036489dd684370b"
+  dependencies:
+    asn1 "0.2.3"
+    assert-plus "^1.0.0"
+    backoff "^2.5.0"
+    bunyan "^1.8.3"
+    dashdash "^1.14.0"
+    ldap-filter "0.2.2"
+    once "^1.4.0"
+    vasync "^1.6.4"
+    verror "^1.8.1"
+  optionalDependencies:
+    dtrace-provider "^0.7.0"
+
+ldapjs@~1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/ldapjs/-/ldapjs-1.0.1.tgz#352b812ae74b0a8e96549a4b896060eee1b9a546"
   dependencies:
     asn1 "0.2.3"
     assert-plus "^1.0.0"
@@ -1887,17 +1860,20 @@ longest@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/longest/-/longest-1.0.1.tgz#30a0b2da38f73770e8294a0d22e6625ed77d0097"
 
-lru-cache@2, lru-cache@2.2.x:
+lru-cache@2, lru-cache@^2.5.0:
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-2.7.3.tgz#6d4524e8b955f95d4f5b58851ce21dd72fb4e952"
+
+lru-cache@2.2.x:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-2.2.4.tgz#6c658619becf14031d0d0b594b16042ce4dc063d"
 
-lru-cache@2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-2.5.0.tgz#d82388ae9c960becbea0c73bb9eb79b6c6ce9aeb"
-
-lru-cache@^2.5.0:
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-2.7.3.tgz#6d4524e8b955f95d4f5b58851ce21dd72fb4e952"
+lru-cache@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-4.0.2.tgz#1d17679c069cda5d040991a09dbc2c0db377e55e"
+  dependencies:
+    pseudomap "^1.0.1"
+    yallist "^2.0.0"
 
 lx-valid@^0.5.6:
   version "0.5.6"
@@ -2068,10 +2044,6 @@ mute-stream@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.5.tgz#8fbfabb0a98a253d3184331f9e8deb7372fac6c0"
 
-mv@0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/mv/-/mv-0.0.5.tgz#15eac759479884df1131d6de56bce20b654f5391"
-
 mv@~2:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/mv/-/mv-2.1.1.tgz#ae6ce0d6f6d5e0a4f7d893798d03c1ea9559b6a2"
@@ -2160,12 +2132,6 @@ nopt@1.0.10, nopt@~1.0.10:
   dependencies:
     abbrev "1"
 
-nopt@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/nopt/-/nopt-2.1.1.tgz#91eb7c4b017e7c00adcad1fd6d63944d0fdb75c1"
-  dependencies:
-    abbrev "1"
-
 nopt@3.x:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-3.0.6.tgz#c6465dbf08abcd4db359317f79ac68a646b28ff9"
@@ -2197,10 +2163,6 @@ on-finished@~2.3.0:
 on-headers@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/on-headers/-/on-headers-1.0.1.tgz#928f5d0f470d49342651ea6794b0857c100693f7"
-
-once@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/once/-/once-1.3.0.tgz#151af86bfc1f08c4b9f07d06ab250ffcbeb56581"
 
 once@1.x, once@^1.3.0, once@^1.4.0:
   version "1.4.0"
@@ -2276,11 +2238,11 @@ passport-adauth@^0.1.2:
     adauth "^0.1.2"
     passport-strategy "^1.0.0"
 
-passport-ldapauth@^0.3.0:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/passport-ldapauth/-/passport-ldapauth-0.3.1.tgz#dfa43ddd5293434d6c92d1028e58b142232ae881"
+passport-ldapauth@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/passport-ldapauth/-/passport-ldapauth-1.0.0.tgz#bdfd0d87adfee2179284c0e17891b287131e9e74"
   dependencies:
-    ldapauth-fork "~2.3.0"
+    ldapauth-fork "~3.0.0"
     passport-strategy "1.x.x"
 
 passport-local@~1.0.0:
@@ -2296,9 +2258,9 @@ passport-openid@^0.4.0:
     openid "1.x.x"
     passport-strategy "1.x.x"
 
-passport-saml@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/passport-saml/-/passport-saml-0.13.0.tgz#1e9db802a435b9000a7d54121986b6adb6ef5e04"
+passport-saml@^0.15.0:
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/passport-saml/-/passport-saml-0.15.0.tgz#7d45c07baaf80d8e2cf898367132a5e4c0535cad"
   dependencies:
     passport-strategy "*"
     q "1.1.x"
@@ -2344,17 +2306,6 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
-pooling@0.4.6:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/pooling/-/pooling-0.4.6.tgz#76a317371ea8a363b4858fa4799e60245f30e664"
-  dependencies:
-    assert-plus "0.1.5"
-    bunyan "0.22.1"
-    once "1.3.0"
-    vasync "1.4.0"
-  optionalDependencies:
-    dtrace-provider "0.2.8"
-
 precond@0.2:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/precond/-/precond-0.2.3.tgz#aa9591bcaa24923f1e0f4849d240f47efc1075ac"
@@ -2391,6 +2342,10 @@ proxy-addr@~1.1.3:
   dependencies:
     forwarded "~0.1.0"
     ipaddr.js "1.3.0"
+
+pseudomap@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
 
 punycode@^1.4.1:
   version "1.4.1"
@@ -2933,30 +2888,11 @@ vary@^1, vary@~1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.1.tgz#67535ebb694c1d52257457984665323f587e8d37"
 
-vasync@1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/vasync/-/vasync-1.4.0.tgz#6ea5a63582358868d8743cbdd6ffadc9083b910f"
-  dependencies:
-    jsprim "0.3.0"
-    verror "1.1.0"
-
 vasync@^1.6.4:
   version "1.6.4"
   resolved "https://registry.yarnpkg.com/vasync/-/vasync-1.6.4.tgz#dfe93616ad0e7ae801b332a9d88bfc5cdc8e1d1f"
   dependencies:
     verror "1.6.0"
-
-verror@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/verror/-/verror-1.1.0.tgz#2a4b4eb14a207051e75a6f94ee51315bf173a1b0"
-  dependencies:
-    extsprintf "1.0.0"
-
-verror@1.3.3:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/verror/-/verror-1.3.3.tgz#8a6a4ac3a8c774b6f687fece49bdffd78552e2cd"
-  dependencies:
-    extsprintf "1.0.0"
 
 verror@1.3.6:
   version "1.3.6"
@@ -3084,6 +3020,10 @@ xpath@0.0.5:
 xtend@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.1.tgz#a5c6d532be656e23db820efb943a1f04998d63af"
+
+yallist@^2.0.0:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/yallist/-/yallist-2.1.2.tgz#1c11f9218f076089a47dd512f93c6699a6a81d52"
 
 yargs@~3.10.0:
   version "3.10.0"
