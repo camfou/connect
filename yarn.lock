@@ -2600,7 +2600,7 @@ pug-walk@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/pug-walk/-/pug-walk-1.1.2.tgz#debb24c070a95d5fc2aebf3589261833d2332e3b"
 
-pug@^1.11.0:
+pug@^2.0.0-beta.12:
   version "2.0.0-beta.12"
   resolved "https://registry.yarnpkg.com/pug/-/pug-2.0.0-beta.12.tgz#493037cbfbd97817ce0a4b3190f341cd556874bc"
   dependencies:
