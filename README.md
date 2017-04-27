@@ -5,8 +5,11 @@
 
 [![Build Status](https://travis-ci.org/anvilresearch/connect.svg?branch=master)](https://travis-ci.org/anvilresearch/connect)
 [![Coverage Status](https://coveralls.io/repos/anvilresearch/connect/badge.svg?branch=master&service=github)](https://coveralls.io/github/anvilresearch/connect?branch=master)
-![Dependencies](https://img.shields.io/david/anvilresearch/connect.svg) ![License](https://img.shields.io/github/license/anvilresearch/connect.svg) ![Downloads](https://img.shields.io/npm/dm/anvil-connect.svg)
-![npm](https://img.shields.io/npm/v/anvil-connect.svg)
+[![npm version](https://badge.fury.io/js/ts-express-decorators.svg)](https://badge.fury.io/js/ts-express-decorators)
+[![Dependencies](https://david-dm.org/anvilresearch/connect.svg)](https://david-dm.org/anvilresearch/connect#info=dependencies)
+[![img](https://david-dm.org/anvilresearch/connect/dev-status.svg)](https://david-dm.org/anvilresearch/connect/#info=devDependencies)
+[![img](https://david-dm.org/anvilresearch/connect/peer-status.svg)](https://david-dm.org/anvilresearch/connect/#info=peerDependenciess)
+[![Known Vulnerabilities](https://snyk.io/test/github/anvilresearch/connect/badge.svg)](https://snyk.io/test/github/anvilresearch/connect)
 
 ### We're building a modern authorization server to authenticate your users and protect your APIs.
 
@@ -35,9 +38,9 @@
 
 ## Getting Started
 
-* **[Getting started guide](https://github.com/anvilresearch/connect-docs/tree/master/getting-started.md)**
-* [Documentation](https://github.com/anvilresearch/connect-docs)
-* [References](https://github.com/anvilresearch/connect/wiki/References)
+* **[Getting started guide](https://github.com/romakita/connect-docs/tree/master/getting-started.md)**
+* [Documentation](https://github.com/romakita/connect-docs)
+* [References](https://github.com/romakita/connect/wiki/References)
 
 
 ## Development
@@ -48,12 +51,12 @@ We are a growing community of contributors of all kinds, join us!
 
 Come say hello on Gitter or Slack! We love talking shop with Anvil Connect users :)
 
-[![Gitter](https://badges.gitter.im/anvilresearch/connect.svg)](https://gitter.im/anvilresearch/connect) [![Slack](http://slackin.anvil.io/badge.svg)](http://slackin.anvil.io/)
+[![Gitter](https://badges.gitter.im/romakita/connect.svg)](https://gitter.im/romakita/connect) [![Slack](http://slackin.anvil.io/badge.svg)](http://slackin.anvil.io/)
 [![IRC](https://img.shields.io/badge/Slack-IRC-green.svg)](https://anvilresearch.slack.com/account/gateways)
 
 ### Weekly Community Meetings
 
-Every Thursday at 9AM PDT / 12PM EDT / 4PM GMT we get together to map out the future of the project, talk through specs, review code, and help each other ship. You're welcome to [join in](https://github.com/anvilresearch/connect/wiki/Weekly-Community-Hangouts-and-Meeting-Notes).
+Every Thursday at 9AM PDT / 12PM EDT / 4PM GMT we get together to map out the future of the project, talk through specs, review code, and help each other ship. You're welcome to [join in](https://github.com/romakita/connect/wiki/Weekly-Community-Hangouts-and-Meeting-Notes).
 
 ### Pair Programming
 
