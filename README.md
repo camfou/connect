@@ -1,15 +1,15 @@
 # Anvil Connect
 
-[![Join the chat at https://gitter.im/Romakita/connect](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Romakita/connect?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](http://slackin.anvil.io/badge.svg)](http://slackin.anvil.io/)
+[![Join the chat at https://gitter.im/anvilresearch/connect](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/anvilresearch/connect?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](http://slackin.anvil.io/badge.svg)](http://slackin.anvil.io/)
 [![IRC](https://img.shields.io/badge/Slack-IRC-green.svg)](https://anvilresearch.slack.com/account/gateways)
 
-[![Build Status](https://travis-ci.org/Romakita/connect.svg?branch=master)](https://travis-ci.org/Romakita/connect)
-[![Coverage Status](https://coveralls.io/repos/Romakita/connect/badge.svg?branch=master&service=github)](https://coveralls.io/github/Romakita/connect?branch=master)
+[![Build Status](https://travis-ci.org/anvilresearch/connect.svg?branch=master)](https://travis-ci.org/anvilresearch/connect)
+[![Coverage Status](https://coveralls.io/repos/anvilresearch/connect/badge.svg?branch=master&service=github)](https://coveralls.io/github/anvilresearch/connect?branch=master)
 [![npm version](https://badge.fury.io/js/ts-express-decorators.svg)](https://badge.fury.io/js/ts-express-decorators)
-[![Dependencies](https://david-dm.org/Romakita/connect.svg)](https://david-dm.org/Romakita/connect#info=dependencies)
-[![img](https://david-dm.org/Romakita/connect/dev-status.svg)](https://david-dm.org/Romakita/connect/#info=devDependencies)
-[![img](https://david-dm.org/Romakita/connect/peer-status.svg)](https://david-dm.org/Romakita/connect/#info=peerDependenciess)
-[![Known Vulnerabilities](https://snyk.io/test/github/Romakita/connect/badge.svg)](https://snyk.io/test/github/Romakita/connect)
+[![Dependencies](https://david-dm.org/anvilresearch/connect.svg)](https://david-dm.org/anvilresearch/connect#info=dependencies)
+[![img](https://david-dm.org/anvilresearch/connect/dev-status.svg)](https://david-dm.org/anvilresearch/connect/#info=devDependencies)
+[![img](https://david-dm.org/anvilresearch/connect/peer-status.svg)](https://david-dm.org/anvilresearch/connect/#info=peerDependenciess)
+[![Known Vulnerabilities](https://snyk.io/test/github/anvilresearch/connect/badge.svg)](https://snyk.io/test/github/anvilresearch/connect)
 
 ### We're building a modern authorization server to authenticate your users and protect your APIs.
 
@@ -38,9 +38,9 @@
 
 ## Getting Started
 
-* **[Getting started guide](https://github.com/Romakita/connect-docs/tree/master/getting-started.md)**
-* [Documentation](https://github.com/Romakita/connect-docs)
-* [References](https://github.com/Romakita/connect/wiki/References)
+* **[Getting started guide](https://github.com/romakita/connect-docs/tree/master/getting-started.md)**
+* [Documentation](https://github.com/romakita/connect-docs)
+* [References](https://github.com/romakita/connect/wiki/References)
 
 
 ## Development
@@ -51,12 +51,12 @@ We are a growing community of contributors of all kinds, join us!
 
 Come say hello on Gitter or Slack! We love talking shop with Anvil Connect users :)
 
-[![Gitter](https://badges.gitter.im/Romakita/connect.svg)](https://gitter.im/Romakita/connect) [![Slack](http://slackin.anvil.io/badge.svg)](http://slackin.anvil.io/)
+[![Gitter](https://badges.gitter.im/romakita/connect.svg)](https://gitter.im/romakita/connect) [![Slack](http://slackin.anvil.io/badge.svg)](http://slackin.anvil.io/)
 [![IRC](https://img.shields.io/badge/Slack-IRC-green.svg)](https://anvilresearch.slack.com/account/gateways)
 
 ### Weekly Community Meetings
 
-Every Thursday at 9AM PDT / 12PM EDT / 4PM GMT we get together to map out the future of the project, talk through specs, review code, and help each other ship. You're welcome to [join in](https://github.com/Romakita/connect/wiki/Weekly-Community-Hangouts-and-Meeting-Notes).
+Every Thursday at 9AM PDT / 12PM EDT / 4PM GMT we get together to map out the future of the project, talk through specs, review code, and help each other ship. You're welcome to [join in](https://github.com/romakita/connect/wiki/Weekly-Community-Hangouts-and-Meeting-Notes).
 
 ### Pair Programming
 
