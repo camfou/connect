@@ -99,7 +99,7 @@
     "async": "^2.3.0",
     "base64url": "^2.0.0",
     "bcrypt": "~1.0.2",
-    "body-parser": "^1.17.3",
+    "body-parser": "^1.17.1",
     "connect-flash": "^0.1.1",
     "connect-redis": "^3.2.0",
     "consolidate": "^0.14.5",
