@@ -43,7 +43,7 @@ function sendVerificationEmail (req, res, next) {
         })
 
       // build email link
-      var verifyURL = url.parse(settings.issuer)
+      var verifyURL = new url.URL(settings.issuer)
       verifyURL.pathname = 'email/verify'
       verifyURL.query = params
 

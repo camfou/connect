@@ -55,7 +55,7 @@ function verifyEmail (req, res, next) {
 
       // check that the redirect uri is valid and safe to use
       if (req.client && req.connectParams.redirect_uri) {
-        var continueURL = url.parse(settings.issuer)
+        var continueURL = new url.URL(settings.issuer)
 
         continueURL.pathname = 'signin'
         continueURL.query = {

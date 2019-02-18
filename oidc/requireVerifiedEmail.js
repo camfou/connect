@@ -44,7 +44,7 @@ module.exports = function (options) {
       } else if (!options.force && !req.provider.emailVerification.require) {
         next()
       } else {
-        var resendURL = url.parse(settings.issuer)
+        var resendURL = new url.URL(settings.issuer)
 
         resendURL.pathname = 'email/resend'
         resendURL.query = {

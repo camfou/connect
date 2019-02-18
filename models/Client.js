@@ -67,7 +67,7 @@ var Client = Modinha.define('clients', {
           // Check each redirect URI
           value.forEach(function (uri) {
             try {
-              var parsedURI = url.parse(uri)
+              var parsedURI = new url.URL(uri)
 
               // Native clients must register with http://localhost[:PORT]
               // Here, we check if they are not
@@ -101,7 +101,7 @@ var Client = Modinha.define('clients', {
           // Check each redirect URI
           value.forEach(function (uri) {
             try {
-              var parsedURI = url.parse(uri)
+              var parsedURI = new url.URL(uri)
 
               // Web clients must register with https and NOT with localhost
               // Here, we check if they don't obey this rule
