@@ -26,8 +26,7 @@ Scope   = require path.join(cwd, 'models/Scope')
 
 
 # Redis lib for spying and stubbing
-Redis   = require('ioredis')
-rclient = Redis.prototype
+Redis   = require('redis-mock')
 {client,multi} = {}
 
 
@@ -36,12 +35,8 @@ rclient = Redis.prototype
 describe 'Scope', ->
 
   before ->
-    client = new Redis(12345)
-    multi = mockMulti(rclient)
+    client = Redis.createClient()
     Scope.__client = client
-
-  after ->
-    rclient.multi.restore()
 
   describe 'schema', ->
 

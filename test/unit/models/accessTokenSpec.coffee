@@ -28,18 +28,14 @@ AccessTokenJWT = require path.join(cwd, 'models/AccessTokenJWT')
 
 
 # Redis lib for spying and stubbing
-Redis   = require('ioredis')
-client  = new Redis(12345)
-rclient = Redis.prototype
-multi = mockMulti(rclient)
+Redis   = require('redis-mock')
+client  = Redis.createClient()
 AccessToken.__client = client
+multi = mockMulti(client)
 
 
 describe 'AccessToken', ->
   { err, validation, instance } = {}
-
-  after ->
-    rclient.multi.restore()
 
 
   #before ->
@@ -124,7 +120,7 @@ describe 'AccessToken', ->
 
     describe 'with pre-existing consent', ->
       before (done) ->
-        sinon.stub(rclient, 'hget')
+        sinon.stub(client, 'hget')
           .callsArgWith(2, null, 'uuid1')
 
         AccessToken.exists 'uuid1', 'uuid2', (error, exists) ->
@@ -139,11 +135,11 @@ describe 'AccessToken', ->
         expect(err).to.be.null
 
       after ->
-        rclient.hget.restore()
+        client.hget.restore()
 
     describe 'without pre-existing consent', ->
       before (done) ->
-        sinon.stub(rclient, 'hget')
+        sinon.stub(client, 'hget')
           .callsArgWith(2, null, null)
 
         AccessToken.exists 'uuid1', 'uuid2', (error, exists) ->
@@ -152,7 +148,7 @@ describe 'AccessToken', ->
           done()
 
       after ->
-        rclient.hget.restore()
+        client.hget.restore()
 
       it 'should provide false', ->
         expect(exist).to.be.false
