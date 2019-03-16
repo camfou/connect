@@ -1,15 +1,12 @@
 # Anvil Connect
 
-[![Join the chat at https://gitter.im/anvilresearch/connect](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/anvilresearch/connect?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Slack](http://slackin.anvil.io/badge.svg)](http://slackin.anvil.io/)
-[![IRC](https://img.shields.io/badge/Slack-IRC-green.svg)](https://anvilresearch.slack.com/account/gateways)
-
-[![Build Status](https://travis-ci.org/anvilresearch/connect.svg?branch=master)](https://travis-ci.org/anvilresearch/connect)
-[![Coverage Status](https://coveralls.io/repos/anvilresearch/connect/badge.svg?branch=master&service=github)](https://coveralls.io/github/anvilresearch/connect?branch=master)
+[![Build Status](https://travis-ci.org/camfou/connect.svg?branch=master)](https://travis-ci.org/camfou/connect)
+[![Coverage Status](https://coveralls.io/repos/camfou/connect/badge.svg?branch=master&service=github)](https://coveralls.io/github/camfou/connect?branch=master)
 [![npm version](https://badge.fury.io/js/ts-express-decorators.svg)](https://badge.fury.io/js/ts-express-decorators)
-[![Dependencies](https://david-dm.org/anvilresearch/connect.svg)](https://david-dm.org/anvilresearch/connect#info=dependencies)
-[![img](https://david-dm.org/anvilresearch/connect/dev-status.svg)](https://david-dm.org/anvilresearch/connect/#info=devDependencies)
-[![img](https://david-dm.org/anvilresearch/connect/peer-status.svg)](https://david-dm.org/anvilresearch/connect/#info=peerDependenciess)
-[![Known Vulnerabilities](https://snyk.io/test/github/anvilresearch/connect/badge.svg)](https://snyk.io/test/github/anvilresearch/connect)
+[![Dependencies](https://david-dm.org/camfou/connect.svg)](https://david-dm.org/camfou/connect#info=dependencies)
+[![img](https://david-dm.org/camfou/connect/dev-status.svg)](https://david-dm.org/camfou/connect/#info=devDependencies)
+[![img](https://david-dm.org/camfou/connect/peer-status.svg)](https://david-dm.org/camfou/connect/#info=peerDependenciess)
+[![Known Vulnerabilities](https://snyk.io/test/github/camfou/connect/badge.svg)](https://snyk.io/test/github/camfou/connect)
 
 ### We're building a modern authorization server to authenticate your users and protect your APIs.
 
@@ -47,12 +44,6 @@
 
 We are a growing community of contributors of all kinds, join us!
 
-### Chat on Gitter or Slack
-
-Come say hello on Gitter or Slack! We love talking shop with Anvil Connect users :)
-
-[![Gitter](https://badges.gitter.im/anvilresearch/connect.svg)](https://gitter.im/anvilresearch/connect) [![Slack](http://slackin.anvil.io/badge.svg)](http://slackin.anvil.io/)
-[![IRC](https://img.shields.io/badge/Slack-IRC-green.svg)](https://anvilresearch.slack.com/account/gateways)
 
 ### Weekly Community Meetings
 
