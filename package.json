@@ -98,7 +98,7 @@
     "supertest": "3.4.2"
   },
   "dependencies": {
-    "anvil-connect-jwt": "camfou/connect-jwt#5c9ae0260ab7bc2e55f870a74d55b5effcab48b4",
+    "anvil-connect-jwt": "camfou/connect-jwt#0.2.0",
     "anvil-connect-keys": "0.1.0",
     "async": "2.6.2",
     "base64url": "3.0.1",
