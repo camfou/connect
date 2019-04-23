@@ -18,7 +18,7 @@ module.exports = function (pathname) {
     pathname = [ pathname ]
   }
 
-  var host = url.parse(settings.issuer).host
+  var host = new url.URL(settings.issuer).host
 
   return function enforceReferrer (req, res, next) {
     var referrer = req.get('referrer')
@@ -28,7 +28,7 @@ module.exports = function (pathname) {
       return next(new InvalidRequestError(errorMsg))
     }
 
-    referrer = url.parse(referrer)
+    referrer = new url.URL(referrer)
 
     // If the domains don't match, no bueno; issue an error.
     if (referrer.host !== host) {

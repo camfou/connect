@@ -29,7 +29,7 @@ Role     = require path.join(cwd, 'models/Role')
 
 
 # Redis lib for spying and stubbing
-Redis   = require('ioredis')
+Redis   = require('redis-mock')
 rclient = Redis.prototype
 {client,multi} = {}
 
@@ -37,13 +37,13 @@ rclient = Redis.prototype
 describe 'User', ->
 
   before ->
-    client = new Redis(12345)
-    multi = mockMulti(rclient)
+    client = Redis.createClient()
+    multi = mockMulti(client)
     User.__client = client
     Role.__client = client
 
   after ->
-    rclient.multi.restore()
+    multi.restore()
 
 
   {data,user,users,role,roles,jsonUsers} = {}

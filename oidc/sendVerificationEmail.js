@@ -34,7 +34,7 @@ function sendVerificationEmail (req, res, next) {
         token: token._id
       }
 
-      ;[ 'redirect_uri', 'client_id', 'response_type', 'scope' ]
+      ;[ 'redirect_uri', 'client_id', 'response_type', 'scope', 'nonce' ]
         .forEach(function (key) {
           var value = req.connectParams[key]
           if (value) {
@@ -43,7 +43,7 @@ function sendVerificationEmail (req, res, next) {
         })
 
       // build email link
-      var verifyURL = url.parse(settings.issuer)
+      var verifyURL = new url.URL(settings.issuer)
       verifyURL.pathname = 'email/verify'
       verifyURL.query = params
 

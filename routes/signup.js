@@ -1,5 +1,3 @@
-/* global __dirname:true, process:true */
-
 /**
  * Module dependencies
  */
@@ -29,6 +27,7 @@ module.exports = function (server) {
       res.render('signup', {
         params: qs.stringify(req.query),
         request: req.query,
+        client: req.client,
         providers: settings.providers
       })
     }
@@ -41,14 +40,17 @@ module.exports = function (server) {
   function createUser (req, res, next) {
     User.insert(req.body, { private: true }, function (err, user) {
       if (err) {
+        delete req.body.password
         res.render('signup', {
           params: qs.stringify(req.body),
           request: req.body,
+          client: req.client,
           providers: settings.providers,
           error: err.message
         })
       } else {
         authenticator.dispatch('password', req, res, next, function (err, user, info) {
+          delete req.body.password
           if (err) { return next(err) }
           if (!user) {
           } else {

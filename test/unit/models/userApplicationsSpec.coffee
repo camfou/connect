@@ -27,8 +27,7 @@ Client = require path.join(cwd, 'models/Client')
 
 
 # Redis lib for spying and stubbing
-Redis   = require('ioredis')
-rclient = Redis.prototype
+Redis   = require('redis-mock')
 {client,multi} = {}
 
 
@@ -37,12 +36,12 @@ rclient = Redis.prototype
 describe 'User Applications', ->
 
   before ->
-    client = new Redis(12345)
-    multi = mockMulti(rclient)
+    client = Redis.createClient()
+    multi = mockMulti(client)
     Client.__client = client
 
   after ->
-    rclient.multi.restore()
+    client.multi.restore()
 
   {err,res,clients} = {}
 
@@ -72,8 +71,8 @@ describe 'User Applications', ->
   before (done) ->
     user = new User
     sinon.stub(User.prototype, 'authorizedScope').callsArgWith(0, null, scopes)
-    sinon.stub(rclient, 'hmget').callsArgWith(2, null, jsonClients)
-    sinon.stub(rclient, 'zrevrange').callsArgWith(3, null, visited)
+    sinon.stub(client, 'hmget').callsArgWith(2, null, jsonClients)
+    sinon.stub(client, 'zrevrange').callsArgWith(3, null, visited)
     userApplications user, (error, results) ->
       err = error
       res = results
@@ -81,8 +80,8 @@ describe 'User Applications', ->
 
   after ->
     User.prototype.authorizedScope.restore()
-    rclient.hmget.restore()
-    rclient.zrevrange.restore()
+    client.hmget.restore()
+    client.zrevrange.restore()
 
   it 'should include client id', ->
     res.forEach (client) ->

@@ -29,8 +29,7 @@ base64url = require('base64url')
 
 
 # Redis lib for spying and stubbing
-Redis   = require('ioredis')
-rclient = Redis.prototype
+Redis   = require('redis-mock')
 {client,multi} = {}
 
 
@@ -39,12 +38,12 @@ rclient = Redis.prototype
 describe 'Client', ->
 
   before ->
-    client = new Redis(12345)
-    multi = mockMulti(rclient)
+    client = Redis.createClient()
+    multi = mockMulti(client)
     Client.__client = client
 
   after ->
-    rclient.multi.restore()
+    multi.restore()
 
   {data,client,clients,role,roles,jsonClients} = {}
   {err,validation,instance,instances,update,deleted,original,ids,info,env} = {}
@@ -850,7 +849,7 @@ describe 'Client', ->
       before (done) ->
         req =
           headers:
-            authorization: 'Basic ' + new Buffer('WRONG').toString('base64')
+            authorization: 'Basic ' + Buffer.from('WRONG').toString('base64')
 
         callback = sinon.spy (error, instance) ->
           err = error
@@ -879,7 +878,7 @@ describe 'Client', ->
       before (done) ->
         req =
           headers:
-            authorization: 'WRONG ' + new Buffer('id:secret').toString('base64')
+            authorization: 'WRONG ' + Buffer.from('id:secret').toString('base64')
 
         callback = sinon.spy (error, instance) ->
           err = error
@@ -908,7 +907,7 @@ describe 'Client', ->
       before (done) ->
         req =
           headers:
-            authorization: 'Basic ' + new Buffer(':WRONG').toString('base64')
+            authorization: 'Basic ' + Buffer.from(':WRONG').toString('base64')
 
         callback = sinon.spy (error, instance) ->
           err = error
@@ -939,7 +938,7 @@ describe 'Client', ->
 
         req =
           headers:
-            authorization: 'Basic ' + new Buffer('id:secret').toString('base64')
+            authorization: 'Basic ' + Buffer.from('id:secret').toString('base64')
 
         callback = sinon.spy (error, instance) ->
           err = error
@@ -973,7 +972,7 @@ describe 'Client', ->
 
         req =
           headers:
-            authorization: 'Basic ' + new Buffer('id:WRONG').toString('base64')
+            authorization: 'Basic ' + Buffer.from('id:WRONG').toString('base64')
 
         callback = sinon.spy (error, instance) ->
           err = error
@@ -1010,7 +1009,7 @@ describe 'Client', ->
 
         req =
           headers:
-            authorization: 'Basic ' + new Buffer('id:secret').toString('base64')
+            authorization: 'Basic ' + Buffer.from('id:secret').toString('base64')
 
         callback = sinon.spy (error, instance) ->
           err = error

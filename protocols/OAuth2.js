@@ -91,7 +91,7 @@ function authenticate (req, options) {
       })
     })
 
-  // Initiate the OAuth 2.0 Authorization Code Flow
+    // Initiate the OAuth 2.0 Authorization Code Flow
   } else {
     strategy.authorizationRequest(req, options)
   }
@@ -125,36 +125,33 @@ function authorizationRequest (req, options) {
   var provider = this.provider
   var endpoints = this.endpoints
   var config = this.client
-  var url = URL.parse(endpoints.authorize.url)
+  var url = new URL.URL(endpoints.authorize.url)
   var responseType = 'code'
   var clientId = config.client_id
   var redirectUri = provider.redirect_uri
   var state = options.state
 
   // required authorization parameters
-  url.query = {
-    response_type: responseType,
-    client_id: clientId,
-    redirect_uri: redirectUri
-  }
+  url.searchParams.set('response_type', responseType)
+  url.searchParams.set('client_id', clientId)
+  url.searchParams.set('redirect_uri', redirectUri)
 
   // merge default and configured scopes
   if (provider.scope || config.scope) {
     var s1 = provider.scope || []
     var s2 = config.scope || []
     var sp = provider.separator || ' '
-
-    url.query.scope = s1.concat(s2).join(sp)
+    url.searchParams.set('scope', s1.concat(s2).join(sp))
   }
 
   if (state) {
-    url.query.state = state
+    url.searchParams.set('state', state)
   }
 
   // Redirect to the provider. This method is
   // added at runtime by passport and not explicitly
   // defined here.
-  this.redirect(URL.format(url))
+  this.redirect(url.href)
 }
 
 OAuth2Strategy.prototype.authorizationRequest = authorizationRequest

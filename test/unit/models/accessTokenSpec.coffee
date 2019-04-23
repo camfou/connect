@@ -1,19 +1,17 @@
 # Test dependencies
-cwd         = process.cwd()
-path        = require 'path'
+cwd = process.cwd()
+path = require 'path'
 
 
 # Test dependencies
-cwd       = process.cwd()
-path      = require 'path'
-faker     = require 'faker'
-chai      = require 'chai'
-sinon     = require 'sinon'
+cwd = process.cwd()
+path = require 'path'
+faker = require 'faker'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
 mockMulti = require '../lib/multi'
-expect    = chai.expect
-
-
+expect = chai.expect
 
 
 # Configure Chai and Sinon
@@ -21,32 +19,23 @@ chai.use sinonChai
 chai.should()
 
 
-
-
 # Code under test
-settings       = require path.join(cwd, 'boot/settings')
-Modinha        = require 'modinha'
-AccessToken    = require path.join(cwd, 'models/AccessToken')
+settings = require path.join(cwd, 'boot/settings')
+Modinha = require 'modinha'
+AccessToken = require path.join(cwd, 'models/AccessToken')
 AccessTokenJWT = require path.join(cwd, 'models/AccessTokenJWT')
-{nowSeconds}   = require '../../../lib/time-utils'
-
-
+{ nowSeconds }   = require '../../../lib/time-utils'
 
 
 # Redis lib for spying and stubbing
-Redis   = require('ioredis')
-client  = new Redis(12345)
-rclient = Redis.prototype
-multi   = mockMulti(rclient)
+Redis   = require('redis-mock')
+client  = Redis.createClient()
 AccessToken.__client = client
+multi = mockMulti(client)
 
 
 describe 'AccessToken', ->
-
-  {err,validation,instance} = {}
-
-  after ->
-    rclient.multi.restore()
+  { err, validation, instance } = {}
 
 
   #before ->
@@ -69,7 +58,6 @@ describe 'AccessToken', ->
 
 
   describe 'schema', ->
-
     beforeEach ->
       instance = new AccessToken
       validation = instance.validate()
@@ -92,6 +80,7 @@ describe 'AccessToken', ->
     it 'should enumerate token types', ->
       AccessToken.schema.tt.enum.should.contain 'Bearer'
       AccessToken.schema.tt.enum.should.contain 'mac'
+
 
     it 'should default token type to "Bearer"', ->
       instance.tt.should.equal 'Bearer'
@@ -126,16 +115,12 @@ describe 'AccessToken', ->
       AccessToken.schema.modified.default.should.equal Modinha.defaults.timestamp
 
 
-
-
   describe 'exists', ->
-
-    {err,exist} = {}
+    { err, exist } = {}
 
     describe 'with pre-existing consent', ->
-
       before (done) ->
-        sinon.stub(rclient, 'hget')
+        sinon.stub(client, 'hget')
           .callsArgWith(2, null, 'uuid1')
 
         AccessToken.exists 'uuid1', 'uuid2', (error, exists) ->
@@ -150,11 +135,11 @@ describe 'AccessToken', ->
         expect(err).to.be.null
 
       after ->
-        rclient.hget.restore()
+        client.hget.restore()
 
     describe 'without pre-existing consent', ->
       before (done) ->
-        sinon.stub(rclient, 'hget')
+        sinon.stub(client, 'hget')
           .callsArgWith(2, null, null)
 
         AccessToken.exists 'uuid1', 'uuid2', (error, exists) ->
@@ -163,7 +148,7 @@ describe 'AccessToken', ->
           done()
 
       after ->
-        rclient.hget.restore()
+        client.hget.restore()
 
       it 'should provide false', ->
         expect(exist).to.be.false
@@ -176,19 +161,17 @@ describe 'AccessToken', ->
 
 
   describe 'exchange', ->
-
-    {res, instance} = {}
+    { res, instance } = {}
 
     describe 'with invalid request', ->
-
       before (done) ->
         sinon.stub(AccessToken, 'insert').callsArgWith(1, new Error)
         req =
           code:
-            user_id:    'uuid1'
-            client_id:   false    # this will cause a validation error
-            max_age:     600
-            scope:      'openid profile'
+            user_id: 'uuid1'
+            client_id: false    # this will cause a validation error
+            max_age: 600
+            scope: 'openid profile'
         AccessToken.exchange req, (error, response) ->
           err = error
           res = response
@@ -205,16 +188,15 @@ describe 'AccessToken', ->
 
 
     describe 'with valid request', ->
-
       before (done) ->
         instance = new AccessToken
         sinon.stub(AccessToken, 'insert').callsArgWith(1, null, instance)
         req =
           code:
-            user_id:    'uuid1'
-            client_id:  'uuid2'    # this will cause a validation error
-            max_age:     600
-            scope:      'openid profile'
+            user_id: 'uuid1'
+            client_id: 'uuid2'    # this will cause a validation error
+            max_age: 600
+            scope: 'openid profile'
 
         AccessToken.exchange req, (error, result) ->
           err = error
@@ -239,36 +221,58 @@ describe 'AccessToken', ->
         instance.ei.should.equal AccessToken.schema.ei.default
 
 
-
-
   describe 'issue', ->
-
-    {res} = {}
+    { res } = {}
 
     describe 'with invalid request', ->
+      describe 'with insert exception', ->
+        before (done) ->
+          sinon.stub(AccessToken, 'insert').callsArgWith(1, new Error)
+          req =
+            user: {}
+            client: {}
+          AccessToken.issue req, (error, response) ->
+            err = error
+            res = response
+            done()
 
-      before (done) ->
-        sinon.stub(AccessToken, 'insert').callsArgWith(1, new Error)
-        req =
-          user: {}
-          client: {}
-        AccessToken.issue req, (error, response) ->
-          err = error
-          res = response
-          done()
+        after ->
+          AccessToken.insert.restore()
 
-      after ->
-        AccessToken.insert.restore()
+        it 'should provide an error', ->
+          expect(err).to.be.an('Error')
 
-      it 'should provide an error', ->
-        expect(err).to.be.an('Error')
+        it 'should not provide a value', ->
+          expect(res).to.equal undefined
 
-      it 'should not provide a value', ->
-        expect(res).to.equal undefined
+      describe 'with toJWT exception', ->
+        before (done) ->
+          instance = new AccessToken
+            iss: settings.issuer
+            uid: 'uuid1'
+            cid: 'uuid2'
+            scope: 'openid profile'
+          sinon.stub(AccessToken, 'insert').callsArgWith(1, null, instance)
+          sinon.stub(AccessToken.prototype, 'toJWT').throws(new Error)
+          req =
+            user: {}
+            client: {}
+          AccessToken.issue req, (error, response) ->
+            err = error
+            res = response
+            done()
 
+        after ->
+          AccessToken.insert.restore()
+          AccessToken.prototype.toJWT.restore()
+
+        it 'should provide an error', ->
+          expect(err).to.be.an('Error')
+
+        it 'should not provide a value', ->
+          expect(res).to.equal undefined
 
     describe 'with valid request', ->
-
       before (done) ->
         instance = new AccessToken
           iss: settings.issuer
@@ -277,7 +281,7 @@ describe 'AccessToken', ->
           scope: 'openid profile'
         sinon.stub(AccessToken, 'insert').callsArgWith(1, null, instance)
         req =
-          user:   { _id: 'uuid1' }
+          user: { _id: 'uuid1' }
           client: { _id: 'uuid2' }
         AccessToken.issue req, (error, response) ->
           err = error
@@ -306,7 +310,6 @@ describe 'AccessToken', ->
 
 
     describe 'with max_age parameter', ->
-
       before (done) ->
         instance = new AccessToken
           iss: settings.issuer
@@ -315,7 +318,7 @@ describe 'AccessToken', ->
           scope: 'openid profile'
         sinon.stub(AccessToken, 'insert').callsArgWith(1, null, instance)
         req =
-          user:   { _id: 'uuid1' }
+          user: { _id: 'uuid1' }
           client: { _id: 'uuid2', default_max_age: 7777 }
           connectParams: { max_age: '1000' }
         AccessToken.issue req, (error, response) ->
@@ -333,7 +336,6 @@ describe 'AccessToken', ->
 
 
     describe 'with client default_max_age property', ->
-
       before (done) ->
         instance = new AccessToken
           iss: settings.issuer
@@ -342,7 +344,7 @@ describe 'AccessToken', ->
           scope: 'openid profile'
         sinon.stub(AccessToken, 'insert').callsArgWith(1, null, instance)
         req =
-          user:   { _id: 'uuid1' }
+          user: { _id: 'uuid1' }
           client: { _id: 'uuid2', default_max_age: 7777 }
         AccessToken.issue req, (error, response) ->
           err = error
@@ -358,12 +360,8 @@ describe 'AccessToken', ->
         })
 
 
-
-
   describe 'refresh', ->
-
     describe 'with unknown refresh token', ->
-
       before (done) ->
         sinon.stub(AccessToken, 'getByRt').callsArgWith(1, null, null)
         AccessToken.refresh 'r3fr3sh', 'uuid', (error, result) ->
@@ -382,7 +380,6 @@ describe 'AccessToken', ->
 
 
     describe 'with mismatching client id', ->
-
       before (done) ->
         sinon.stub(AccessToken, 'getByRt').callsArgWith(1, null, { cid: 'uuid' })
         AccessToken.refresh 'r3fr3sh', 'wrong', (error, result) ->
@@ -401,16 +398,15 @@ describe 'AccessToken', ->
 
 
     describe 'with valid token', ->
-
       before (done) ->
         sinon.stub(multi, 'exec').callsArgWith 0, null, []
         sinon.stub(AccessToken, 'delete').callsArgWith(1, null)
         sinon.stub(AccessToken, 'getByRt').callsArgWith(1, null, {
-          at:     't0k3n'
-          uid:    'uuid1'
-          cid:    'uuid2'
-          ei:      600
-          scope:  'openid profile'
+          at: 't0k3n'
+          uid: 'uuid1'
+          cid: 'uuid2'
+          ei: 600
+          scope: 'openid profile'
         })
         sinon.spy(AccessToken, 'insert')
         AccessToken.refresh 'r3fr3sh', 'uuid2', (error, result) ->
@@ -445,11 +441,8 @@ describe 'AccessToken', ->
         })
 
 
-
-
   describe 'toJWT', ->
-
-    {token,issued,decoded} = {}
+    { token, issued, decoded } = {}
 
     describe 'with missing secret', ->
 
@@ -458,13 +451,12 @@ describe 'AccessToken', ->
     describe 'with invalid payload', ->
 
     describe 'with valid payload and secret', ->
-
       before ->
         token = new AccessToken
-          iss:     settings.issuer
-          uid:    'uid'
-          cid:    'cid'
-          scope:  'openid'
+          iss: settings.issuer
+          uid: 'uid'
+          cid: 'cid'
+          scope: 'openid'
         issued = token.toJWT(settings.keys.sig.prv)
         decoded = AccessTokenJWT.decode(issued, settings.keys.sig.pub)
 
@@ -484,11 +476,8 @@ describe 'AccessToken', ->
         )
 
 
-
-
   describe 'revoke', ->
-
-    {deleted} = {}
+    { deleted } = {}
 
     beforeEach (done) ->
       token = new AccessToken
@@ -512,19 +501,15 @@ describe 'AccessToken', ->
       deleted.should.be.true
 
 
-
-
   describe 'verify', ->
-
-    {claims} = {}
+    { claims } = {}
     describe 'with undecodable JWT', ->
-
       before (done) ->
         token = 'bad.jwt'
         options =
           key: settings.keys.sig.pub
         AccessToken.verify token, options, (error, data) ->
-          err    = error
+          err = error
           claims = data
           done()
 
@@ -536,7 +521,6 @@ describe 'AccessToken', ->
 
 
     describe 'with decodable JWT and mismatching issuer', ->
-
       before (done) ->
         token = (new AccessTokenJWT({
           at: 'r4nd0m',
@@ -549,7 +533,7 @@ describe 'AccessToken', ->
           iss: settings.issuer
           key: settings.keys.sig.pub
         AccessToken.verify token, options, (error, data) ->
-          err    = error
+          err = error
           claims = data
           done()
 
@@ -564,7 +548,6 @@ describe 'AccessToken', ->
 
 
     describe 'with decodable JWT that has expired', ->
-
       before (done) ->
         token = (new AccessTokenJWT({
           at: 'r4nd0m',
@@ -578,7 +561,7 @@ describe 'AccessToken', ->
           iss: settings.issuer
           key: settings.keys.sig.pub
         AccessToken.verify token, options, (error, data) ->
-          err    = error
+          err = error
           claims = data
           done()
 
@@ -593,7 +576,6 @@ describe 'AccessToken', ->
 
 
     describe 'with decodable JWT that has insufficient scope', ->
-
       before (done) ->
         token = (new AccessTokenJWT({
           at: 'r4nd0m',
@@ -607,7 +589,7 @@ describe 'AccessToken', ->
           key: settings.keys.sig.pub
           scope: 'other'
         AccessToken.verify token, options, (error, data) ->
-          err    = error
+          err = error
           claims = data
           done()
 
@@ -622,7 +604,6 @@ describe 'AccessToken', ->
 
 
     describe 'with random string and unknown token', ->
-
       before (done) ->
         sinon.stub(AccessToken, 'get').callsArgWith(1, null, null)
         token = 'r4nd0m'
@@ -630,7 +611,7 @@ describe 'AccessToken', ->
           iss: settings.issuer
           key: settings.keys.sig.pub
         AccessToken.verify token, options, (error, data) ->
-          err    = error
+          err = error
           claims = data
           done()
 
@@ -648,7 +629,6 @@ describe 'AccessToken', ->
 
 
     describe 'with random string and mismatching issuer', ->
-
       before (done) ->
         sinon.stub(AccessToken, 'get').callsArgWith(1, null, {
           iss: 'MISMATCH'
@@ -658,7 +638,7 @@ describe 'AccessToken', ->
           iss: settings.issuer
           key: settings.keys.sig.pub
         AccessToken.verify token, options, (error, data) ->
-          err    = error
+          err = error
           claims = data
           done()
 
@@ -676,19 +656,18 @@ describe 'AccessToken', ->
 
 
     describe 'with random string and expired token', ->
-
       before (done) ->
         sinon.stub(AccessToken, 'get').callsArgWith(1, null, {
-          iss:      settings.issuer
-          ei:       -10000
-          created:  nowSeconds()
+          iss: settings.issuer
+          ei: -10000
+          created: nowSeconds()
         })
         token = 'r4nd0m'
         options =
           iss: settings.issuer
           key: settings.keys.sig.pub
         AccessToken.verify token, options, (error, data) ->
-          err    = error
+          err = error
           claims = data
           done()
 
@@ -706,13 +685,12 @@ describe 'AccessToken', ->
 
 
     describe 'with random string and insufficient scope', ->
-
       before (done) ->
         sinon.stub(AccessToken, 'get').callsArgWith(1, null, {
-          iss:      settings.issuer
-          ei:       10000
-          scope:    'openid'
-          created:  nowSeconds()
+          iss: settings.issuer
+          ei: 10000
+          scope: 'openid'
+          created: nowSeconds()
         })
         token = 'r4nd0m'
         options =
@@ -720,7 +698,7 @@ describe 'AccessToken', ->
           key: settings.keys.sig.pub
           scope: 'other'
         AccessToken.verify token, options, (error, data) ->
-          err    = error
+          err = error
           claims = data
           done()
 
@@ -738,16 +716,15 @@ describe 'AccessToken', ->
 
 
     describe 'valid token', ->
-
       before (done) ->
         instance =
-          at:       'r4nd0m'
-          iss:      settings.issuer
-          uid:      'uuid1'
-          cid:      'uuid2'
-          ei:       10
-          scope:    'openid'
-          created:  nowSeconds()
+          at: 'r4nd0m'
+          iss: settings.issuer
+          uid: 'uuid1'
+          cid: 'uuid2'
+          ei: 10
+          scope: 'openid'
+          created: nowSeconds()
 
         sinon.stub(AccessToken, 'get').callsArgWith(1, null, instance)
         token = 'r4nd0m'
@@ -755,7 +732,7 @@ describe 'AccessToken', ->
           iss: settings.issuer
           key: settings.keys.sig.pub
         AccessToken.verify token, options, (error, data) ->
-          err    = error
+          err = error
           claims = data
           done()
 

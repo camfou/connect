@@ -103,7 +103,7 @@ module.exports = function (server) {
         }, function (err, token) {
           if (err) { return next(err) }
 
-          var resetPasswordURL = url.parse(settings.issuer)
+          var resetPasswordURL = new url.URL(settings.issuer)
           resetPasswordURL.pathname = 'resetPassword'
           resetPasswordURL.query = { token: token._id }
 
@@ -160,7 +160,7 @@ module.exports = function (server) {
         OneTimeToken.revoke(req.passwordResetToken._id, function (err) {
           if (err) { return next(err) }
 
-          var recoveryURL = url.parse(settings.issuer)
+          var recoveryURL = new url.URL(settings.issuer)
           recoveryURL.pathname = 'recovery'
 
           mailer.sendMail('passwordChanged', {

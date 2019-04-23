@@ -87,7 +87,7 @@ function encodeOAuthData (data) {
   if (!data || data === '') {
     return ''
 
-  // non-empty data
+    // non-empty data
   } else {
     return encodeURIComponent(data)
       .replace(/!/g, '%21')
@@ -147,7 +147,7 @@ OAuthStrategy.nonce = nonce
  */
 
 function signatureBaseStringURI (uri) {
-  var url = URL.parse(uri, true)
+  var url = new URL.URL(uri)
   var protocol = url.protocol
   var hostname = url.hostname
   var pathname = url.pathname
@@ -228,8 +228,8 @@ OAuthStrategy.normalizeParameters = normalizeParameters
 
 function signatureBaseString (method, url, parameters) {
   return method.toUpperCase() + '&' +
-  encodeOAuthData(signatureBaseStringURI(url)) + '&' +
-  encodeOAuthData(parameters)
+    encodeOAuthData(signatureBaseStringURI(url)) + '&' +
+    encodeOAuthData(parameters)
 }
 
 OAuthStrategy.signatureBaseString = signatureBaseString
@@ -512,7 +512,7 @@ function authenticate (req, options) {
       })
     })
 
-  // Initiate the authorization flow
+    // Initiate the authorization flow
   } else {
     strategy.temporaryCredentials(function (err, response) {
       if (err || (!response && response.oauth_token)) {
