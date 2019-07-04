@@ -68,7 +68,9 @@
     "test-integration": "NODE_ENV=test mocha test/integration",
     "test-integration-watch": "NODE_ENV=test mocha test/integration --watch",
     "test-all": "mocha test/unit && mocha test/integration",
-    "coverage": "NODE_ENV=test istanbul cover _mocha -- test/"
+    "coverage": "NODE_ENV=test istanbul cover _mocha -- test/",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "main": "server.js",
   "license": "MIT",
@@ -131,6 +133,8 @@
     "qs": "6.6.0",
     "revalidator": "^0.3.1",
     "semver": "5.6.0",
-    "superagent": "^3.5.2"
-  }
+    "superagent": "^3.5.2",
+    "snyk": "^1.189.0"
+  },
+  "snyk": true
 }
