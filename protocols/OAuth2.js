@@ -7,7 +7,7 @@
 var pkg = require('../package.json')
 var agent = 'Anvil Connect/' + pkg.version
 var qs = require('qs')
-var URL = require('url')
+var { URL } = require('url')
 var util = require('util')
 var Strategy = require('passport-strategy')
 var request = require('superagent')
@@ -125,7 +125,7 @@ function authorizationRequest (req, options) {
   var provider = this.provider
   var endpoints = this.endpoints
   var config = this.client
-  var url = new URL.URL(endpoints.authorize.url)
+  var url = new URL(endpoints.authorize.url)
   var responseType = 'code'
   var clientId = config.client_id
   var redirectUri = provider.redirect_uri
@@ -141,6 +141,7 @@ function authorizationRequest (req, options) {
     var s1 = provider.scope || []
     var s2 = config.scope || []
     var sp = provider.separator || ' '
+
     url.searchParams.set('scope', s1.concat(s2).join(sp))
   }
 
@@ -151,7 +152,7 @@ function authorizationRequest (req, options) {
   // Redirect to the provider. This method is
   // added at runtime by passport and not explicitly
   // defined here.
-  this.redirect(url.href)
+  this.redirect(url.toString())
 }
 
 OAuth2Strategy.prototype.authorizationRequest = authorizationRequest

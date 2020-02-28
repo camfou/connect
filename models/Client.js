@@ -11,7 +11,7 @@ var Document = require('camfou-modinha-redis')
 var User = require('./User')
 var AuthorizationError = require('../errors/AuthorizationError')
 var base64url = require('base64url')
-var url = require('url')
+var { URL } = require('url')
 var jsonwebtoken = require('jsonwebtoken')
 
 /**
@@ -69,7 +69,7 @@ var Client = Modinha.define('clients', {
           // Check each redirect URI
           value.forEach(function (uri) {
             try {
-              var parsedURI = new url.URL(uri)
+              var parsedURI = new URL(uri)
 
               // Native clients must register with http://localhost[:PORT]
               // Here, we check if they are not
@@ -103,7 +103,7 @@ var Client = Modinha.define('clients', {
           // Check each redirect URI
           value.forEach(function (uri) {
             try {
-              var parsedURI = new url.URL(uri)
+              var parsedURI = new URL(uri)
 
               // Web clients must register with https and NOT with localhost
               // Here, we check if they don't obey this rule
@@ -939,7 +939,7 @@ var authenticators = {
    * HTTP Basic Authentication w/client_id and client_secret
    */
 
-  'client_secret_basic': function (req, callback) {
+  client_secret_basic: function (req, callback) {
     var authorization = req.headers.authorization.split(' ')
     var scheme = authorization[0]
     var credentials = Buffer.from(authorization[1], 'base64')
@@ -1004,7 +1004,7 @@ var authenticators = {
    * HTTP POST body authentication
    */
 
-  'client_secret_post': function (req, callback) {
+  client_secret_post: function (req, callback) {
     var params = req.body
     var clientId = params.client_id
     var clientSecret = params.client_secret
@@ -1043,7 +1043,7 @@ var authenticators = {
     })
   },
 
-  'client_secret_jwt': function (req, callback) {
+  client_secret_jwt: function (req, callback) {
     // peek at the JWT body to get the sub
     var jwt = req.body.client_assertion
     var payloadB64u = jwt.split('.')[1]

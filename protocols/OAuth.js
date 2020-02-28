@@ -4,7 +4,7 @@
 
 var pkg = require('../package.json')
 var qs = require('qs')
-var URL = require('url')
+var { URL } = require('url')
 var util = require('util')
 var crypto = require('crypto')
 var request = require('superagent')
@@ -147,7 +147,7 @@ OAuthStrategy.nonce = nonce
  */
 
 function signatureBaseStringURI (uri) {
-  var url = new URL.URL(uri)
+  var url = new URL(uri)
   var protocol = url.protocol
   var hostname = url.hostname
   var pathname = url.pathname
@@ -392,7 +392,7 @@ function tokenCredentials (authorization, secret, done) {
     var response = qs.parse(res.text)
 
     if (res.statusCode !== 200) {
-      return done(new Error("Couldn't obtain token credentials"))
+      return done(new Error('Couldn\'t obtain token credentials'))
     }
 
     done(null, response)
@@ -483,21 +483,21 @@ function authenticate (req, options) {
 
   // Handle the authorization response
   if (req.query && req.query.oauth_token) {
-    if (!req.session['oauth']) {
+    if (!req.session.oauth) {
       strategy.error(
         new Error('Failed to find request token in session')
       )
     }
 
     var authorization = req.query
-    var secret = req.session['oauth'].oauth_token_secret
+    var secret = req.session.oauth.oauth_token_secret
 
     // request token credentials
     strategy.tokenCredentials(authorization, secret, function (err, credentials) {
       if (err) { return strategy.error(err) }
 
       // clean up session
-      delete req.session['oauth']
+      delete req.session.oauth
 
       // request user info
       strategy.userInfo(credentials, function (err, profile) {
@@ -522,9 +522,9 @@ function authenticate (req, options) {
       }
 
       // Store response in session
-      if (!req.session['oauth']) { req.session['oauth'] = {} }
-      req.session['oauth'].oauth_token = response.oauth_token
-      req.session['oauth'].oauth_token_secret = response.oauth_token_secret
+      if (!req.session.oauth) { req.session.oauth = {} }
+      req.session.oauth.oauth_token = response.oauth_token
+      req.session.oauth.oauth_token_secret = response.oauth_token_secret
 
       // Redirect to OAuth server
       strategy.resourceOwnerAuthorization(response.oauth_token)
