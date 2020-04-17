@@ -1,64 +1,55 @@
 # Test dependencies
-cwd       = process.cwd()
-path      = require 'path'
-faker     = require 'faker'
-chai      = require 'chai'
-sinon     = require 'sinon'
+cwd = process.cwd()
+path = require 'path'
+faker = require 'faker'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
 mockMulti = require '../lib/multi'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+jsonwebtoken = require 'jsonwebtoken'
 
 # Configure Chai and Sinon
 chai.use sinonChai
 chai.should()
 
 
-
-
 # Code under test
-Modinha   = require 'modinha'
-Client    = require path.join(cwd, 'models/Client')
-Role      = require path.join(cwd, 'models/Role')
-settings  = require path.join(cwd, 'boot/settings')
+Modinha = require 'modinha'
+Client = require path.join(cwd, 'models/Client')
+Role = require path.join(cwd, 'models/Role')
+settings = require path.join(cwd, 'boot/settings')
 base64url = require('base64url')
 
 
-
-
 # Redis lib for spying and stubbing
-Redis   = require('redis-mock')
-{client,multi} = {}
-
-
+Redis = require('redis-mock')
+{ redisClient, multi } = {}
 
 
 describe 'Client', ->
-
   before ->
-    client = Redis.createClient()
-    multi = mockMulti(client)
-    Client.__client = client
+    redisClient = Redis.createClient()
+    multi = mockMulti(redisClient)
+    Client.__client = redisClient
 
   after ->
     multi.restore()
 
-  {data,client,clients,role,roles,jsonClients} = {}
-  {err,validation,instance,instances,update,deleted,original,ids,info,env} = {}
+  { data, client, clients, role, jsonClients } = {}
+  { err, validation, instances, ids, env } = {}
 
 
   before ->
 
-    # Mock data
+# Mock data
     data = []
 
     for i in [0..9]
       data.push
-        name:     "#{faker.name.firstName()} #{faker.name.lastName()}"
-        email:    faker.internet.email()
-        hash:     'private'
+        name: "#{faker.name.firstName()} #{faker.name.lastName()}"
+        email: faker.internet.email()
+        hash: 'private'
         password: 'secret1337'
 
     clients = Client.initialize(data, { private: true })
@@ -69,7 +60,6 @@ describe 'Client', ->
 
 
   describe 'schema', ->
-
     beforeEach ->
       client = new Client
       validation = client.validate()
@@ -254,14 +244,10 @@ describe 'Client', ->
       Client.schema.scopes.default.should.eql []
 
 
-
-
   describe 'validation', ->
-
-    {withJWKs,withJWKsURI,withJWKsAndJWKsURI} = {}
+    { withJWKs, withJWKsURI, withJWKsAndJWKsURI } = {}
 
     describe 'with either jwks or jwks_uri set', ->
-
       before ->
         withJWKs = Client.initialize(
           jwks: '1234567890'
@@ -277,7 +263,6 @@ describe 'Client', ->
         expect(withJWKs.errors.jwks_uri).to.be.undefined
 
     describe 'with both jwks and jwks_uri set', ->
-
       before ->
         withJWKsAndJWKsURI = Client.initialize(
           jwks: '1234567890'
@@ -291,11 +276,8 @@ describe 'Client', ->
         expect(withJWKsAndJWKsURI.errors.jwks_uri).to.be.an 'object'
 
     describe 'redirect_uris', ->
-
       describe 'with native application_type', ->
-
         describe 'and http scheme with localhost', ->
-
           before ->
             validation = Client.initialize(
               application_type: 'native'
@@ -309,7 +291,6 @@ describe 'Client', ->
             expect(validation.errors.redirect_uris).to.be.undefined
 
         describe 'and custom scheme with localhost', ->
-
           before ->
             validation = Client.initialize(
               application_type: 'native'
@@ -323,7 +304,6 @@ describe 'Client', ->
             expect(validation.errors.redirect_uris).to.be.undefined
 
         describe 'and custom scheme with custom host', ->
-
           before ->
             validation = Client.initialize(
               application_type: 'native'
@@ -337,7 +317,6 @@ describe 'Client', ->
             expect(validation.errors.redirect_uris).to.be.undefined
 
         describe 'and https scheme with localhost', ->
-
           before ->
             validation = Client.initialize(
               application_type: 'native'
@@ -351,7 +330,6 @@ describe 'Client', ->
             expect(validation.errors.redirect_uris).to.be.an 'object'
 
         describe 'and http scheme with custom host', ->
-
           before ->
             validation = Client.initialize(
               application_type: 'native'
@@ -365,9 +343,7 @@ describe 'Client', ->
             expect(validation.errors.redirect_uris).to.be.an 'object'
 
       describe 'with web application_type and implicit grant_type', ->
-
         describe 'in development', ->
-
           before ->
             env = process.env.NODE_ENV
             process.env.NODE_ENV = 'development'
@@ -376,7 +352,6 @@ describe 'Client', ->
             process.env.NODE_ENV = env
 
           describe 'and https scheme with custom host', ->
-
             before ->
               validation = Client.initialize(
                 application_type: 'web'
@@ -391,7 +366,6 @@ describe 'Client', ->
               expect(validation.errors.redirect_uris).to.be.undefined
 
           describe 'and https scheme with localhost', ->
-
             before ->
               validation = Client.initialize(
                 application_type: 'web'
@@ -406,7 +380,6 @@ describe 'Client', ->
               expect(validation.errors.redirect_uris).to.be.undefined
 
           describe 'and http scheme with custom host', ->
-
             before ->
               validation = Client.initialize(
                 application_type: 'web'
@@ -421,7 +394,6 @@ describe 'Client', ->
               expect(validation.errors.redirect_uris).to.be.undefined
 
           describe 'and http scheme with localhost', ->
-
             before ->
               validation = Client.initialize(
                 application_type: 'web'
@@ -436,7 +408,6 @@ describe 'Client', ->
               expect(validation.errors.redirect_uris).to.be.undefined
 
         describe 'in production', ->
-
           before ->
             env = process.env.NODE_ENV
             process.env.NODE_ENV = 'production'
@@ -445,7 +416,6 @@ describe 'Client', ->
             process.env.NODE_ENV = env
 
           describe 'and https scheme with custom host', ->
-
             before ->
               validation = Client.initialize(
                 application_type: 'web'
@@ -460,7 +430,6 @@ describe 'Client', ->
               expect(validation.errors.redirect_uris).to.be.undefined
 
           describe 'and https scheme with localhost', ->
-
             before ->
               validation = Client.initialize(
                 application_type: 'web'
@@ -475,7 +444,6 @@ describe 'Client', ->
               expect(validation.errors.redirect_uris).to.be.an 'object'
 
           describe 'and http scheme with custom host', ->
-
             before ->
               validation = Client.initialize(
                 application_type: 'web'
@@ -490,7 +458,6 @@ describe 'Client', ->
               expect(validation.errors.redirect_uris).to.be.an 'object'
 
           describe 'and http scheme with localhost', ->
-
             before ->
               validation = Client.initialize(
                 application_type: 'web'
@@ -505,144 +472,130 @@ describe 'Client', ->
               expect(validation.errors.redirect_uris).to.be.an 'object'
 
     describe 'response_types', ->
-
       describe 'with invalid response_type', ->
-
         before ->
-              validation = Client.initialize(
-                response_types: [
-                  'code',
-                  'id_token code',
-                  'invalid_response_type'
-                ]
-                grant_types: [
-                  'authorization_code',
-                  'implicit'
-                ]
-              ).validate()
+          validation = Client.initialize(
+            response_types: [
+              'code',
+              'id_token code',
+              'invalid_response_type'
+            ]
+            grant_types: [
+              'authorization_code',
+              'implicit'
+            ]
+          ).validate()
 
         it 'should provide an error', ->
           expect(validation.errors.response_types).to.be.an 'object'
 
       describe 'with a value containing "none" and another response_type', ->
-
         before ->
-              validation = Client.initialize(
-                response_types: [
-                  'code',
-                  'token none'
-                ],
-                grant_types: [
-                  'authorization_code'
-                ]
-              ).validate()
+          validation = Client.initialize(
+            response_types: [
+              'code',
+              'token none'
+            ],
+            grant_types: [
+              'authorization_code'
+            ]
+          ).validate()
 
         it 'should provide an error', ->
           expect(validation.errors.response_types).to.be.an 'object'
 
       describe 'with code response_type but no authorization_code grant_type', ->
-
         before ->
-              validation = Client.initialize(
-                response_types: [
-                  'code'
-                ]
-                grant_types: [
-                  'implicit'
-                ]
-              ).validate()
+          validation = Client.initialize(
+            response_types: [
+              'code'
+            ]
+            grant_types: [
+              'implicit'
+            ]
+          ).validate()
 
         it 'should provide an error', ->
           expect(validation.errors.response_types).to.be.an 'object'
 
       describe 'with id_token response_type but no implicit grant_type', ->
-
         before ->
-              validation = Client.initialize(
-                response_types: [
-                  'id_token'
-                ]
-              ).validate()
+          validation = Client.initialize(
+            response_types: [
+              'id_token'
+            ]
+          ).validate()
 
         it 'should provide an error', ->
           expect(validation.errors.response_types).to.be.an 'object'
 
       describe 'with token response_type but no implicit grant_type', ->
-
         before ->
-              validation = Client.initialize(
-                response_types: [
-                  'token'
-                ]
-              ).validate()
+          validation = Client.initialize(
+            response_types: [
+              'token'
+            ]
+          ).validate()
 
         it 'should provide an error', ->
           expect(validation.errors.response_types).to.be.an 'object'
 
       describe 'with code response_type and authorization_code grant_type', ->
-
         before ->
-              validation = Client.initialize(
-                response_types: [
-                  'code'
-                ]
-                grant_types: [
-                  'authorization_code'
-                ]
-              ).validate()
+          validation = Client.initialize(
+            response_types: [
+              'code'
+            ]
+            grant_types: [
+              'authorization_code'
+            ]
+          ).validate()
 
         it 'should not provide an error', ->
           expect(validation.errors.response_types).to.be.undefined
 
       describe 'with id_token response_type and implicit grant_type', ->
-
         before ->
-              validation = Client.initialize(
-                response_types: [
-                  'id_token'
-                ]
-                grant_types: [
-                  'implicit'
-                ]
-              ).validate()
+          validation = Client.initialize(
+            response_types: [
+              'id_token'
+            ]
+            grant_types: [
+              'implicit'
+            ]
+          ).validate()
 
         it 'should not provide an error', ->
           expect(validation.errors.response_types).to.be.undefined
 
       describe 'with token response_type and implicit grant_type', ->
-
         before ->
-              validation = Client.initialize(
-                response_types: [
-                  'token'
-                ]
-                grant_types: [
-                  'implicit'
-                ]
-              ).validate()
+          validation = Client.initialize(
+            response_types: [
+              'token'
+            ]
+            grant_types: [
+              'implicit'
+            ]
+          ).validate()
 
         it 'should not provide an error', ->
           expect(validation.errors.response_types).to.be.undefined
 
       describe 'with none response_type on its own', ->
-
         before ->
-              validation = Client.initialize(
-                response_types: [
-                  'none'
-                ]
-              ).validate()
+          validation = Client.initialize(
+            response_types: [
+              'none'
+            ]
+          ).validate()
 
         it 'should not provide an error', ->
           expect(validation.errors.response_types).to.be.undefined
 
 
-
-
   describe 'initialization', ->
-
     describe 'redirect_uris', ->
-
       before ->
         client = new Client
           redirect_uris: [
@@ -661,22 +614,17 @@ describe 'Client', ->
         client.redirect_uris[2].should.equal 'https://example.com'
 
 
-
-
-
-
   describe 'configuration', ->
-
-    {client,configuration,token} = {}
+    { client, configuration, token } = {}
 
     before ->
       client = new Client
-        client_name:  faker.company.companyName()
-        logo_uri:                    faker.image.imageUrl()
-        contacts:                   [faker.internet.email()]
+        client_name: faker.company.companyName()
+        logo_uri: faker.image.imageUrl()
+        contacts: [faker.internet.email()]
         token_endpoint_auth_method: 'client_secret_basic'
-        redirect_uris:              [faker.internet.domainName()]
-      token = faker.random.number({ min: 1, max: 10})
+        redirect_uris: [faker.internet.domainName()]
+      token = faker.random.number({ min: 1, max: 10 })
       configuration = client.configuration settings, token
 
     it 'should return a "registration" mapping of a client', ->
@@ -693,14 +641,10 @@ describe 'Client', ->
       configuration.client_id_issued_at.should.equal client.created
 
 
-
-
   describe 'authenticate', ->
-
-    {err,client,req,callback} = {}
+    { err, client, req, callback } = {}
 
     describe 'with POST credentials and additional method', ->
-
       before (done) ->
         req =
           headers:
@@ -728,9 +672,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
     describe 'with JWT credentials and additional method', ->
-
       before (done) ->
         req =
           headers:
@@ -758,10 +700,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with invalid client assertion type', ->
-
       before (done) ->
         req =
           body:
@@ -787,10 +726,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with missing client assertion', ->
-
       before (done) ->
         req =
           body:
@@ -816,10 +752,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with missing client credentials', ->
-
       before (done) ->
         req = {}
         callback = sinon.spy (error, instance) ->
@@ -842,10 +775,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with HTTP Basic and malformed credentials', ->
-
       before (done) ->
         req =
           headers:
@@ -871,10 +801,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with HTTP Basic and invalid scheme', ->
-
       before (done) ->
         req =
           headers:
@@ -900,10 +827,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with HTTP Basic and missing credentials', ->
-
       before (done) ->
         req =
           headers:
@@ -929,10 +853,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with HTTP Basic and unknown client', ->
-
       before (done) ->
         sinon.stub(Client, 'get').callsArgWith(1, null, null)
 
@@ -963,10 +884,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with HTTP Basic and mismatching client secret', ->
-
       before (done) ->
         sinon.stub(Client, 'get').callsArgWith(1, null, { client_secret: 'secret' })
 
@@ -997,10 +915,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with HTTP Basic and valid credentials', ->
-
       before (done) ->
         sinon.stub(Client, 'get').callsArgWith(1, null, {
           _id: 'id',
@@ -1028,10 +943,7 @@ describe 'Client', ->
         client._id.should.equal 'id'
 
 
-
-
     describe 'with POST body and missing credentials', ->
-
       before (done) ->
         req =
           body:
@@ -1058,10 +970,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with POST body and unknown client', ->
-
       before (done) ->
         sinon.stub(Client, 'get').callsArgWith(1, null, null)
 
@@ -1093,10 +1002,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with POST body and mismatching client secret', ->
-
       before (done) ->
         sinon.stub(Client, 'get').callsArgWith(1, null, { client_secret: 'secret' })
 
@@ -1128,10 +1034,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
-    describe 'with client secret JWT and missing client id', ->
-
+    describe 'with client secret JWT and missing client id in token', ->
       before (done) ->
         req =
           body:
@@ -1158,10 +1061,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with client secret JWT and unknown client identifier', ->
-
       before (done) ->
         sinon.stub(Client, 'get').callsArgWith(1, null, null)
         req =
@@ -1192,10 +1092,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with client secret JWT and missing client secret', ->
-
       before (done) ->
         sinon.stub(Client, 'get').callsArgWith(1, null, {})
 
@@ -1227,15 +1124,12 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-
-
     describe 'with client secret JWT and unverifiable token', ->
-
       before (done) ->
         sinon.stub(Client, 'get').callsArgWith(1, null, {
           client_secret: 'secret'
         })
-
+        sinon.stub(jsonwebtoken, 'verify').returns(null)
         req =
           body:
             client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
@@ -1250,6 +1144,7 @@ describe 'Client', ->
 
       after ->
         Client.get.restore()
+        jsonwebtoken.verify.restore()
 
       it 'should provide an error', ->
         err.error.should.equal 'unauthorized_client'
@@ -1263,8 +1158,206 @@ describe 'Client', ->
       it 'should not provide a client', ->
         expect(client).to.be.undefined
 
+    describe 'with verifiable token', ->
+      before ->
+        sinon.stub(Client, 'get')
+        sinon.stub(jsonwebtoken, 'verify')
+        sinon.stub(Client.__client, 'sismember')
+        sinon.stub(Client.__client, 'sadd')
 
+      after ->
+        Client.get.restore()
+        jsonwebtoken.verify.restore()
+        Client.__client.sismember.restore()
+        Client.__client.sadd.restore()
 
+      afterEach ->
+        Client.get.reset()
+        jsonwebtoken.verify.reset()
+        Client.__client.sismember.reset()
+        Client.__client.sadd.reset()
+
+      it 'should return error if token validation fail', ->
+        returnedClient = {
+          client_secret: 'secret'
+        }
+        Client.get.callsArgWith(1, null, returnedClient)
+        jsonwebtoken.verify.throws(new Error())
+        req =
+          body:
+            client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+            client_assertion: 'header.' + base64url('{"sub":"id"}') + '.signature'
+
+        callback = sinon.spy (error, instance) ->
+          err = error
+          client = instance
+
+        Client.authenticate req, callback
+
+        expect(client).to.be.undefined
+        err.error.should.equal 'unauthorized_client'
+        err.error_description.should.equal 'Invalid client JWT'
+        err.statusCode.should.equal 400
+
+      it 'should return error if token.sub is not the client_id', ->
+        existingClient = {
+          client_secret: 'secret',
+          _id: '123456'
+        }
+        Client.get.callsArgWith(1, null, existingClient)
+        jsonwebtoken.verify.returns({ sub: 'id' })
+        req =
+          body:
+            client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+            client_assertion: 'header.' + base64url('{"sub":"id"}') + '.signature'
+
+        callback = sinon.spy (error, instance) ->
+          err = error
+          client = instance
+
+        Client.authenticate req, callback
+
+        expect(client).to.be.undefined
+        err.error.should.equal 'unauthorized_client'
+        err.error_description.should.equal 'Invalid JWT subject'
+        err.statusCode.should.equal 400
+
+      it 'should return error if token.iss is not the client_id', ->
+        existingClient = {
+          client_secret: 'secret',
+          _id: '123456'
+        }
+        Client.get.callsArgWith(1, null, existingClient)
+        jsonwebtoken.verify.returns({ sub: existingClient._id, iss: 'id' })
+        req =
+          body:
+            client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+            client_assertion: 'header.' + base64url('{"sub":"id"}') + '.signature'
+
+        callback = sinon.spy (error, instance) ->
+          err = error
+          client = instance
+
+        Client.authenticate req, callback
+
+        expect(client).to.be.undefined
+        err.error.should.equal 'unauthorized_client'
+        err.error_description.should.equal 'Invalid JWT issuer'
+        err.statusCode.should.equal 400
+
+      it 'should return error if token.aud is not the token endpoint', ->
+        existingClient = {
+          client_secret: 'secret',
+          _id: '123456'
+        }
+        Client.get.callsArgWith(1, null, existingClient)
+        jsonwebtoken.verify.returns({
+          sub: existingClient._id,
+          iss: existingClient._id,
+          aud: 'aud'
+        })
+        req =
+          body:
+            client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+            client_assertion: 'header.' + base64url('{"sub":"id"}') + '.signature'
+
+        callback = sinon.spy (error, instance) ->
+          err = error
+          client = instance
+
+        Client.authenticate req, callback
+
+        expect(client).to.be.undefined
+        err.error.should.equal 'unauthorized_client'
+        err.error_description.should.equal 'Invalid JWT audience'
+        err.statusCode.should.equal 400
+
+      it 'should return error if token.jti is not provided', ->
+        existingClient = {
+          client_secret: 'secret',
+          _id: '123456'
+        }
+        Client.get.callsArgWith(1, null, existingClient)
+        jsonwebtoken.verify.returns({
+          sub: existingClient._id,
+          iss: existingClient._id,
+          aud: settings.issuer + '/token'
+        })
+        req =
+          body:
+            client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+            client_assertion: 'header.' + base64url('{"sub":"id"}') + '.signature'
+
+        callback = sinon.spy (error, instance) ->
+          err = error
+          client = instance
+
+        Client.authenticate req, callback
+
+        expect(client).to.be.undefined
+        err.error.should.equal 'unauthorized_client'
+        err.error_description.should.equal 'Invalid JWT id'
+        err.statusCode.should.equal 400
+
+      it 'should return error if token.jti is already consumed', () ->
+        existingClient = {
+          client_secret: 'secret',
+          _id: '123456'
+        }
+        Client.get.callsArgWith(1, null, existingClient)
+        jsonwebtoken.verify.returns({
+          sub: existingClient._id,
+          iss: existingClient._id,
+          aud: settings.issuer + '/token',
+          jti: 'id'
+        })
+        Client.__client.sismember.callsArgWith(2, null, 1)
+        req =
+          body:
+            client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+            client_assertion: 'header.' + base64url('{"sub":"id"}') + '.signature'
+
+        callback = sinon.spy (error, instance) ->
+          err = error
+          client = instance
+
+        Client.authenticate req, callback
+
+        expect(client).to.be.undefined
+        err.error.should.equal 'unauthorized_client'
+        err.error_description.should.equal 'Invalid JWT id'
+        err.statusCode.should.equal 400
+
+      it 'should return the client and token in callback if token is complete', ->
+        existingClient = {
+          client_secret: 'secret',
+          _id: '123456'
+        }
+        Client.get.callsArgWith(1, null, existingClient)
+        token = {
+          sub: existingClient._id,
+          iss: existingClient._id,
+          aud: settings.issuer + '/token',
+          jti: 'id'
+        }
+        jsonwebtoken.verify.returns(token)
+        Client.__client.sismember.callsArgWith(2, null, 0)
+        Client.__client.sadd.callsArgWith(2, null)
+        req =
+          body:
+            client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+            client_assertion: 'header.' + base64url('{"sub":"id"}') + '.signature'
+
+        callback = sinon.spy (error, instance) ->
+          err = error
+          client = instance
+
+        Client.authenticate req, callback
+        expect(err).to.be.null
+        client.should.equal existingClient
+        jsonwebtoken.verify.should.be.calledOnce.and.calledWithExactly(req.body.client_assertion, existingClient.client_secret)
+        Client.__client.sismember.should.be.calledOnce.and.calledWithExactly('clients:123456:jtis', token.jti, sinon.match.func)
+        Client.__client.sadd.should.be.calledOnce.and.calledWithExactly('clients:123456:jtis', token.jti, sinon.match.func)
 
     describe 'with private key JWT', ->
 
@@ -1272,10 +1365,7 @@ describe 'Client', ->
     describe 'with "none"', ->
 
 
-
-
   describe 'add roles', ->
-
     before (done) ->
       client = clients[0]
       role = new Role
@@ -1295,9 +1385,7 @@ describe 'Client', ->
       multi.zadd.should.have.been.calledWith "roles:#{role._id}:clients", client.created, client._id
 
 
-
   describe 'remove roles', ->
-
     before (done) ->
       client = clients[1]
       role = new Role
@@ -1317,9 +1405,7 @@ describe 'Client', ->
       multi.zrem.should.have.been.calledWith "roles:#{role._id}:clients", client._id
 
 
-
   describe 'list by roles', ->
-
     before (done) ->
       role = new Role name: 'authority'
       sinon.stub(Client, 'list').callsArgWith 1, null, []
@@ -1334,10 +1420,7 @@ describe 'Client', ->
       )
 
 
-
-
   describe 'list authorized by user', ->
-
     before (done) ->
       sinon.stub(Client, 'list').callsArgWith 1, null, []
       Client.listAuthorizedByUser 'uuid', (error, results) ->
