@@ -1,14 +1,13 @@
 # Test dependencies
-cwd       = process.cwd()
-path      = require 'path'
-faker     = require 'faker'
-chai      = require 'chai'
-sinon     = require 'sinon'
+cwd = process.cwd()
+path = require 'path'
+faker = require 'faker'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
 mockMulti = require '../lib/multi'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 # Configure Chai and Sinon
@@ -16,25 +15,28 @@ chai.use sinonChai
 chai.should()
 
 
-
-
 # Code under test
-userApplications = require path.join(cwd, 'models/UserApplications')
-User = require path.join(cwd, 'models/User')
-Client = require path.join(cwd, 'models/Client')
-
-
-
+User = proxyquire(path.join(cwd, 'models/User'), {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+Client = proxyquire(path.join(cwd, 'models/Client'), {
+  '../boot/redis': {
+    getClient: () => {}
+  },
+  './User': User
+})
+userApplications = proxyquire(path.join(cwd, 'models/UserApplications'), {
+  './Client': Client
+})
 
 # Redis lib for spying and stubbing
-Redis   = require('redis-mock')
-{client,multi} = {}
-
-
+Redis = require('redis-mock')
+{ client, multi } = {}
 
 
 describe 'User Applications', ->
-
   before ->
     client = Redis.createClient()
     multi = mockMulti(client)
@@ -43,7 +45,7 @@ describe 'User Applications', ->
   after ->
     client.multi.restore()
 
-  {err,res,clients} = {}
+  { err, res, clients } = {}
 
   # Mock data
   data = []

@@ -1,26 +1,18 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
 
 
 chai.use sinonChai
 chai.should()
 
 
-
-
-{session} = require '../../../oidc'
-
-
+session = require '../../../oidc/session'
 
 
 describe 'Session', ->
-
-
-  {req,res} = {}
+  { req, res } = {}
 
 
   before ->
@@ -29,7 +21,7 @@ describe 'Session', ->
         opbs: '0pb5'
     res =
       cookie: sinon.spy()
-      set:    sinon.spy()
+      set: sinon.spy()
       render: sinon.spy()
     session(req, res)
 

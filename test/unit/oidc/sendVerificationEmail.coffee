@@ -1,27 +1,30 @@
 chai      = require 'chai'
 sinon     = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 chai.use sinonChai
 chai.should()
 
 
-
 mailer = require '../../../boot/mailer'
 fakeMailer =
   sendMail: (tmpl, loc, opts, cb) ->
     cb()
-{sendVerificationEmail} = require '../../../oidc'
-OneTimeToken = require '../../../models/OneTimeToken'
 
+OneTimeToken = proxyquire('../../../models/OneTimeToken', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+sendVerificationEmail = proxyquire('../../../oidc/sendVerificationEmail', {
+  '../models/OneTimeToken': OneTimeToken
+})
 
 
 describe 'Send Verification Email', ->
-
   before ->
     sinon.stub(mailer, 'getMailer').returns(fakeMailer)
 

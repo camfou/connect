@@ -1,34 +1,26 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
 
 
 chai.use sinonChai
 chai.should()
 
 
-
-
 ClientToken = require '../../../models/ClientToken'
-verifyClientToken = require('../../../oidc').verifyClientToken
-
-
+verifyClientToken = require('../../../oidc/verifyClientToken')
 
 
 describe 'Verify Client Token', ->
-
-
-  {req,res,next,err} = {}
+  { req, res, next, err } = {}
 
 
   describe 'with missing bearer token', ->
-
     before (done) ->
-      req  = headers: {}
-      res  = {}
+      req =
+        headers: {}
+      res = {}
       next = sinon.spy()
 
       verifyClientToken req, res, (error) ->
@@ -51,10 +43,7 @@ describe 'Verify Client Token', ->
       err.statusCode.should.equal 403
 
 
-
-
   describe 'with valid token', ->
-
     token = null
 
     before (done) ->
@@ -64,8 +53,9 @@ describe 'Verify Client Token', ->
 
       sinon.stub(ClientToken, 'decode').returns token
 
-      req  = headers: { authorization: 'Bearer valid.signed.jwt' }
-      res  = {}
+      req =
+        headers: { authorization: 'Bearer valid.signed.jwt' }
+      res = {}
       next = sinon.spy (error) ->
         err = error
         done()
@@ -82,13 +72,11 @@ describe 'Verify Client Token', ->
       next.should.have.been.called
 
 
-
-
   describe 'with invalid token', ->
-
     before (done) ->
-      req  = headers: { authorization: 'Bearer invalid' }
-      res  = {}
+      req =
+        headers: { authorization: 'Bearer invalid' }
+      res = {}
       next = sinon.spy()
 
       verifyClientToken req, res, (error) ->

@@ -1,32 +1,36 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 chai.use sinonChai
 chai.should()
 
 
-
 IDToken = require '../../../models/IDToken'
-AccessToken = require '../../../models/AccessToken'
-AuthorizationCode  = require '../../../models/AuthorizationCode'
-authorize = require('../../../oidc').authorize
-
-
+AccessToken = proxyquire('../../../models/AccessToken', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+AuthorizationCode = proxyquire('../../../models/AuthorizationCode', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+authorize = proxyquire('../../../oidc/authorize', {
+  '../models/AccessToken': AccessToken,
+  '../models/AuthorizationCode': AuthorizationCode
+})
 
 
 describe 'Authorize', ->
-
-
-  {req,res,next,err} = {}
+  { req, res, next, err } = {}
 
 
   describe 'with consent and "code" response type', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
         code: '1234'
@@ -39,10 +43,10 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'code'
-          redirect_uri:   'https://host/callback'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'code'
+          redirect_uri: 'https://host/callback'
+          state: 'r4nd0m'
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -76,7 +80,6 @@ describe 'Authorize', ->
       res.redirect.should.not.have.been.calledWith sinon.match('session_state=')
 
   describe 'with consent,  "code" response type and "form_post" response_mode', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
         code: '1234'
@@ -89,11 +92,11 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'code'
-          response_mode:  'form_post'
-          redirect_uri:   'https://host/callback'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'code'
+          response_mode: 'form_post'
+          redirect_uri: 'https://host/callback'
+          state: 'r4nd0m'
       res =
         set: sinon.spy()
         render: sinon.spy()
@@ -129,7 +132,6 @@ describe 'Authorize', ->
 
 
   describe 'with consent and "code" response type and "max_age" param', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
         code: '1234'
@@ -142,11 +144,11 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'code'
-          redirect_uri:   'https://host/callback'
-          state:          'r4nd0m'
-          max_age:        1000
+          authorize: 'true'
+          response_type: 'code'
+          redirect_uri: 'https://host/callback'
+          state: 'r4nd0m'
+          max_age: 1000
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -163,10 +165,7 @@ describe 'Authorize', ->
       })
 
 
-
-
   describe 'with consent and "code" response type and client "default_max_age"', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
         code: '1234'
@@ -180,10 +179,10 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'code'
-          redirect_uri:   'https://host/callback'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'code'
+          redirect_uri: 'https://host/callback'
+          state: 'r4nd0m'
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -200,10 +199,7 @@ describe 'Authorize', ->
       })
 
 
-
-
   describe 'with consent and "code token" response type', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
         code: '1234'
@@ -218,11 +214,11 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'code token'
-          redirect_uri:   'https://host/callback'
-          scope:          'openid profile'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'code token'
+          redirect_uri: 'https://host/callback'
+          scope: 'openid profile'
+          state: 'r4nd0m'
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -264,10 +260,7 @@ describe 'Authorize', ->
       res.redirect.should.have.been.calledWith sinon.match('session_state=')
 
 
-
-
   describe 'with consent and "code id_token" response type', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
         code: '1234'
@@ -282,10 +275,10 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'code id_token'
-          redirect_uri:   'https://host/callback'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'code id_token'
+          redirect_uri: 'https://host/callback'
+          state: 'r4nd0m'
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -331,9 +324,7 @@ describe 'Authorize', ->
       )
 
 
-
   describe 'with consent and "id_token token" response type', ->
-
     before (done) ->
       response = AccessToken.initialize().project('issue')
       sinon.stub(AccessToken, 'issue').callsArgWith(1, null, response)
@@ -347,11 +338,11 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'id_token token'
-          redirect_uri:   'https://host/callback'
-          nonce:          'n0nc3'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'id_token token'
+          redirect_uri: 'https://host/callback'
+          nonce: 'n0nc3'
+          state: 'r4nd0m'
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -395,9 +386,7 @@ describe 'Authorize', ->
       )
 
 
-
   describe 'with consent and "code id_token token" response type', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
         code: '1234'
@@ -414,11 +403,11 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'code id_token token'
-          redirect_uri:   'https://host/callback'
-          scope:          'openid profile'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'code id_token token'
+          redirect_uri: 'https://host/callback'
+          scope: 'openid profile'
+          state: 'r4nd0m'
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -467,7 +456,6 @@ describe 'Authorize', ->
 
 
   describe 'with consent and "none" response type', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
         code: '1234'
@@ -480,10 +468,10 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'none'
-          redirect_uri:   'https://host/callback'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'none'
+          redirect_uri: 'https://host/callback'
+          state: 'r4nd0m'
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -512,9 +500,7 @@ describe 'Authorize', ->
       res.redirect.should.not.have.been.calledWith sinon.match('session_state=')
 
 
-
   describe 'with consent and response mode query', ->
-
     before (done) ->
       response = AccessToken.initialize().project('issue')
       sinon.stub(AccessToken, 'issue').callsArgWith(1, null, response)
@@ -526,12 +512,12 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'id_token token'
-          response_mode:  'query'
-          redirect_uri:   'https://host/callback'
-          nonce:          'n0nc3'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'id_token token'
+          response_mode: 'query'
+          redirect_uri: 'https://host/callback'
+          nonce: 'n0nc3'
+          state: 'r4nd0m'
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -563,12 +549,12 @@ describe 'Authorize', ->
         user:
           _id: 'uuid2'
         connectParams:
-          authorize:      'true'
-          response_type:  'id_token token'
-          response_mode:  'form_post'
-          redirect_uri:   'https://host/callback'
-          nonce:          'n0nc3'
-          state:          'r4nd0m'
+          authorize: 'true'
+          response_type: 'id_token token'
+          response_mode: 'form_post'
+          redirect_uri: 'https://host/callback'
+          nonce: 'n0nc3'
+          state: 'r4nd0m'
       res =
         set: sinon.spy()
         render: sinon.spy()
@@ -599,19 +585,17 @@ describe 'Authorize', ->
 
 
   describe 'without consent', ->
-
     before (done) ->
-
       req =
         client:
           _id: 'uuid1'
         user:
           _id: 'uuid2'
         connectParams:
-          response_type:  'id_token token'
-          redirect_uri:   'https://host/callback'
-          nonce:          'n0nc3'
-          state:          'r4nd0m'
+          response_type: 'id_token token'
+          redirect_uri: 'https://host/callback'
+          nonce: 'n0nc3'
+          state: 'r4nd0m'
       res =
         redirect: sinon.spy()
       next = sinon.spy()

@@ -1,31 +1,26 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 chai.use sinonChai
 chai.should()
 
 
-
-
-User              = require '../../../models/User'
-getUserInfo       = require('../../../oidc').getUserInfo
-
-
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+getUserInfo = proxyquire('../../../oidc/getUserInfo', {
+  '../models/User': User
+})
 
 
 describe 'UserInfo', ->
-
-
-
-
-  {req,res,next,err,json} = {}
-
-
+  { req, res, next, err, json } = {}
 
 
   user = new User
@@ -91,19 +86,18 @@ describe 'UserInfo', ->
           user: ['phone_number', 'phone_number_verified']
 
 
-
-
   describe 'with a valid token', ->
-
     before (done) ->
       sinon.stub(User, 'get').callsArgWith(1, null, user)
       json = sinon.spy()
 
       req =
-        claims: sub: 'uuid'
-        scopes: [ scopes.openid, scopes.profile ]
+        claims:
+          sub: 'uuid'
+        scopes: [scopes.openid, scopes.profile]
 
-      res = status: sinon.spy -> { json: json }
+      res =
+        status: sinon.spy -> { json: json }
       next = sinon.spy()
 
       getUserInfo req, res, next

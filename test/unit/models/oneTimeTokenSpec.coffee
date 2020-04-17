@@ -1,48 +1,43 @@
 # Test dependencies
-cwd       = process.cwd()
-path      = require 'path'
-chai      = require 'chai'
-sinon     = require 'sinon'
+cwd = process.cwd()
+path = require 'path'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
+proxyquire = require('proxyquire').noCallThru()
 mockMulti = require '../lib/multi'
-expect    = chai.expect
+expect = chai.expect
 
-
-
+redisMock = require 'redis-mock'
 
 # Configure Chai and Sinon
 chai.use sinonChai
 chai.should()
 
-
-
+redisMockClient = redisMock.createClient()
 
 # Code under test
-OneTimeToken = require path.join(cwd, 'models/OneTimeToken')
-
-
+OneTimeToken = proxyquire(path.join(cwd, 'models/OneTimeToken'), {
+  '../boot/redis': {
+    getClient: () => redisMockClient
+  }
+})
 
 
 # Redis lib for spying and stubbing
-Redis   = require('ioredis')
-rclient = Redis.prototype
-{client,multi} = {}
-
-
+{ client, multi } = {}
 
 
 describe 'OneTimeToken', ->
-
   before ->
-    client = new Redis(12345)
-    multi = mockMulti(rclient)
+    client = redisMockClient
+    multi = mockMulti(redisMockClient)
 
   after ->
-    rclient.multi.restore()
+    redisMockClient.multi.restore()
 
   describe 'constructor', ->
-
-    {options,token} = {}
+    { options, token } = {}
 
     beforeEach ->
       options =
@@ -74,14 +69,11 @@ describe 'OneTimeToken', ->
       token.sub.should.equal options.sub
 
 
-
-
   describe 'peek', ->
-
-    {rawToken, rawExpiredToken} = {}
+    { rawToken, rawExpiredToken } = {}
 
     before ->
-      sinon.stub(rclient, 'get').callsFake((key, callback) ->
+      sinon.stub(redisMockClient, 'get').callsFake((key, callback) ->
         key = key.split(':')[1]
         if (key == 'valid')
           callback null, JSON.stringify(rawToken)
@@ -93,7 +85,7 @@ describe 'OneTimeToken', ->
           callback null, null)
 
     after ->
-      rclient.get.restore()
+      redisMockClient.get.restore()
 
     beforeEach ->
       rawToken =
@@ -108,11 +100,10 @@ describe 'OneTimeToken', ->
         sub: 'pho'
 
     describe 'with unknown token', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       before (done) ->
-        OneTimeToken.peek 'unknown', (error,result) ->
+        OneTimeToken.peek 'unknown', (error, result) ->
           err = error
           token = result
           done()
@@ -124,11 +115,10 @@ describe 'OneTimeToken', ->
         expect(token).to.be.null
 
     describe 'with expired token', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       before (done) ->
-        OneTimeToken.peek 'expired', (error,result) ->
+        OneTimeToken.peek 'expired', (error, result) ->
           err = error
           token = result
           done()
@@ -140,11 +130,10 @@ describe 'OneTimeToken', ->
         expect(token).to.be.null
 
     describe 'with malformed result', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       before (done) ->
-        OneTimeToken.peek 'malformed', (error,result) ->
+        OneTimeToken.peek 'malformed', (error, result) ->
           err = error
           token = result
           done()
@@ -156,11 +145,10 @@ describe 'OneTimeToken', ->
         expect(token).to.be.undefined
 
     describe 'with valid token', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       before (done) ->
-        OneTimeToken.peek 'valid', (error,result) ->
+        OneTimeToken.peek 'valid', (error, result) ->
           err = error
           token = result
           done()
@@ -176,33 +164,27 @@ describe 'OneTimeToken', ->
         token.use.should.equal rawToken.use
 
 
-
-
   describe 'revoke', ->
-
-    {err} = {}
+    { err } = {}
 
     before (done) ->
-      sinon.stub(rclient, 'del').callsArgWith 1, null
+      sinon.stub(redisMockClient, 'del').callsArgWith 1, null
       OneTimeToken.revoke 'id', (error) ->
         err = error
         done()
 
     after ->
-      rclient.del.restore()
+      redisMockClient.del.restore()
 
     it 'should provide a falsy error', ->
       expect(err).to.not.be.ok
 
     it 'should delete the token', ->
-      rclient.del.should.have.been.called
-
-
+      redisMockClient.del.should.have.been.called
 
 
   describe 'consume', ->
-
-    {err,token} = {}
+    { err, token } = {}
 
     rawToken =
       _id: 'valid'
@@ -215,7 +197,7 @@ describe 'OneTimeToken', ->
         .callsArgWith 1, null, new OneTimeToken rawToken
       sinon.stub(OneTimeToken, 'revoke')
         .callsArgWith 1, null
-      OneTimeToken.consume 'valid', (error,result) ->
+      OneTimeToken.consume 'valid', (error, result) ->
         err = error
         token = result
         done()
@@ -238,11 +220,8 @@ describe 'OneTimeToken', ->
       OneTimeToken.revoke.should.have.been.calledWith token._id
 
 
-
-
   describe 'issue', ->
-
-    {err,token} = {}
+    { err, token } = {}
 
     rawToken =
       exp: Math.round(Date.now() / 1000) + 3600
@@ -265,8 +244,7 @@ describe 'OneTimeToken', ->
       multi.exec.restore()
 
     describe 'with raw token data', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       beforeEach (done) ->
         OneTimeToken.issue rawToken, (error, result) ->
@@ -291,8 +269,7 @@ describe 'OneTimeToken', ->
         token.sub.should.equal rawToken.sub
 
     describe 'with OneTimeToken instance', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       beforeEach (done) ->
         OneTimeToken.issue otToken, (error, result) ->
@@ -316,8 +293,7 @@ describe 'OneTimeToken', ->
         token.should.eql otToken
 
     describe 'without expiration date', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       beforeEach (done) ->
         OneTimeToken.issue noexpToken, (error, result) ->

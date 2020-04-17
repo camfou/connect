@@ -1,27 +1,20 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 chai.use sinonChai
 chai.should()
+Redis = require('redis-mock')
 
-
-
-
-oidc          = require '../../../oidc'
-sessionEvents = oidc.sessionEvents
-
-
-
+checkSession = sinon.stub()
+sessionEvents = proxyquire('../../../oidc/sessionEvents', {
+  './checkSession': checkSession
+})
 
 describe 'Session Events', ->
-
-
-  {req,res} = {}
+  { req, res } = {}
 
 
   before ->
@@ -29,10 +22,10 @@ describe 'Session Events', ->
       socket:
         setTimeout: sinon.spy()
       session:
-        opbs:     '0pb5'
+        opbs: '0pb5'
     res =
-      writeHead:  sinon.spy()
-      write:      sinon.spy()
+      writeHead: sinon.spy()
+      write: sinon.spy()
     sessionEvents(req, res)
 
   it 'should set the socket timeout', ->
@@ -58,6 +51,6 @@ describe 'Session Events', ->
   it 'should write retry value to the response', ->
     res.write.should.have.been.calledWith sinon.match('retry:')
 
-  #it 'should check the session', ->
-  #  oidc.checkSession.should.have.been.calledWith req, res
+#it 'should check the session', ->
+#  oidc.checkSession.should.have.been.calledWith req, res
 

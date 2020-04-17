@@ -1,36 +1,45 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 chai.use sinonChai
 chai.should()
 
 
-
 settings = require '../../../boot/settings'
-authenticator = require '../../../lib/authenticator'
-Client = require '../../../models/Client'
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+authenticator = proxyquire('../../../lib/authenticator', {
+  '../boot/redis': {
+    getClient: () => {}
+  },
+  '../models/User': User
+})
 IDToken = require '../../../models/IDToken'
 InvalidTokenError = require '../../../errors/InvalidTokenError'
-{signout} = require('../../../oidc')
 
+Client = proxyquire('../../../models/Client', {
+  '../boot/redis': {
+    getClient: () => {}
+  },
+  './User': User
+})
+signout = proxyquire('../../../oidc/signout', {
+  '../models/Client': Client,
+  '../lib/authenticator': authenticator
+})
 
 describe 'Signout', ->
-
-
-  {opbs,req,res,next} = {}
+  { opbs, req, res, next } = {}
 
 
   describe 'with uri and hint,', ->
-
-
     describe 'valid token', ->
-
-
       validIDToken = new IDToken({
         iss: 'https://anvil.io',
         sub: 'user-uuid',
@@ -40,7 +49,6 @@ describe 'Signout', ->
 
 
       describe 'and client get error', ->
-
         before (done) ->
           sinon.stub(Client, 'get').callsArgWith(1, new Error())
           opbs = 'b3f0r3'
@@ -65,15 +73,14 @@ describe 'Signout', ->
           Client.get.restore()
 
         it 'should provide an error', ->
-          # Next two lines are the proposed replacement test
+# Next two lines are the proposed replacement test
           errArg = next.firstCall.args[0]
           expect(errArg).to.be.instanceof(Error)
-          # Next one line was the original test.
-          # next.should.have.been.calledWith new Error()
+      # Next one line was the original test.
+      # next.should.have.been.calledWith new Error()
 
 
       describe 'and unknown client', ->
-
         before (done) ->
           sinon.stub(Client, 'get').callsArgWith 1, null, null
           opbs = 'b3f0r3'
@@ -108,7 +115,6 @@ describe 'Signout', ->
 
 
       describe 'and unknown uri', ->
-
         before ->
           sinon.spy authenticator, 'logout'
           client = new Client
@@ -146,7 +152,6 @@ describe 'Signout', ->
           res.sendStatus.should.have.been.calledWith 204
 
       describe 'and valid uri', ->
-
         before ->
           sinon.spy authenticator, 'logout'
           client = new Client
@@ -186,11 +191,10 @@ describe 'Signout', ->
           res.send.should.not.have.been.calledWith 204
 
         it 'should redirect with state param', ->
-          res.redirect.should.have.been.calledWith 303, req.query.post_logout_redirect_uri + '?state='+req.query.state
+          res.redirect.should.have.been.calledWith 303, req.query.post_logout_redirect_uri + '?state=' + req.query.state
 
 
     describe 'with invalid token', ->
-
       invalidIDToken = 'WRONG'
 
       before (done) ->
@@ -217,18 +221,17 @@ describe 'Signout', ->
         res.redirect.should.not.have.been.called
 
       it 'should provide an error', ->
-        # Next two lines are the proposed replacement test
+# Next two lines are the proposed replacement test
         errArg = next.firstCall.args[0]
         expect(errArg).to.be.instanceof(Error)
-        # Next one line was the original test.
-        # next.should.have.been.calledWith new Error()
+      # Next one line was the original test.
+      # next.should.have.been.calledWith new Error()
 
       it 'should respond', ->
         res.sendStatus.should.not.have.been.called
 
 
   describe 'with uri only', ->
-
     before ->
       sinon.spy authenticator, 'logout'
       opbs = 'b3f0r3'
@@ -262,7 +265,6 @@ describe 'Signout', ->
 
 
   describe 'without uri', ->
-
     before ->
       sinon.spy authenticator, 'logout'
       opbs = 'b3f0r3'

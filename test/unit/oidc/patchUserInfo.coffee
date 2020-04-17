@@ -1,25 +1,23 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 chai.use sinonChai
 chai.should()
 
 
-
-
-User          = require '../../../models/User'
-patchUserInfo = require('../../../oidc').patchUserInfo
-
-
-
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+patchUserInfo = proxyquire('../../../oidc/patchUserInfo', {
+  '../models/User': User
+})
 
 describe 'Update UserInfo', ->
-
   user = new User
     _id: 'uuid'
     name: 'name'
@@ -80,11 +78,8 @@ describe 'Update UserInfo', ->
         user: ['phone_number', 'phone_number_verified']
 
 
-
-
   describe 'with unknown user', ->
-
-    {req,res,next,err,status,json} = {}
+    { req, res, next, err, status, json } = {}
 
     before (done) ->
       json = sinon.spy()
@@ -93,10 +88,13 @@ describe 'Update UserInfo', ->
         .callsArgWith(3, null, null)
 
       req =
-        claims: sub: 'uuid'
+        claims:
+          sub: 'uuid'
         scopes: [scopes.profile, scopes.phone]
-        body: givenName: 'changeme'
-      res = status: status
+        body:
+          givenName: 'changeme'
+      res =
+        status: status
       next = sinon.spy (error) ->
         err = error
         done()
@@ -118,11 +116,8 @@ describe 'Update UserInfo', ->
       })
 
 
-
-
   describe 'with invalid data', ->
-
-    {req,res,next,err,status,json} = {}
+    { req, res, next, err, status, json } = {}
 
     before (done) ->
       json = sinon.spy()
@@ -131,10 +126,13 @@ describe 'Update UserInfo', ->
         .callsArgWith(3, new Error('Validation error'))
 
       req =
-        claims: sub: 'uuid'
+        claims:
+          sub: 'uuid'
         scopes: [scopes.profile, scopes.phone]
-        body: givenName: 13 # should cause validation err
-      res = status: status
+        body:
+          givenName: 13 # should cause validation err
+      res =
+        status: status
       next = sinon.spy (error) ->
         err = error
         done()
@@ -154,11 +152,8 @@ describe 'Update UserInfo', ->
       next.should.have.been.calledWith err
 
 
-
-
   describe 'with valid data', ->
-
-    {req,res,next,err,status,json} = {}
+    { req, res, next, err, status, json } = {}
 
     before (done) ->
       json = sinon.spy()
@@ -167,10 +162,13 @@ describe 'Update UserInfo', ->
         .callsArgWith(3, null, user)
 
       req =
-        claims: sub: 'uuid'
+        claims:
+          sub: 'uuid'
         scopes: [scopes.profile, scopes.phone]
-        body: givenName: 13 # should cause validation err
-      res = status: status
+        body:
+          givenName: 13 # should cause validation err
+      res =
+        status: status
       next = sinon.spy()
 
       patchUserInfo req, res, next

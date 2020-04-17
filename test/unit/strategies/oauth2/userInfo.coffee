@@ -1,13 +1,12 @@
 # Test dependencies
-_         = require 'lodash'
-nock      = require 'nock'
-chai      = require 'chai'
-sinon     = require 'sinon'
+_ = require 'lodash'
+nock = require 'nock'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-util      = require 'util'
-
-
+expect = chai.expect
+util = require 'util'
+proxyquire = require('proxyquire').noCallThru()
 
 
 # Assertions
@@ -15,10 +14,15 @@ chai.use sinonChai
 chai.should()
 
 
-
-
 # Code under test
-OAuth2Strategy = require '../../../../protocols/OAuth2'
+User = proxyquire('../../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+OAuth2Strategy = proxyquire('../../../../protocols/OAuth2', {
+  '../models/User': User
+})
 providers = require '../../../../providers'
 
 
@@ -30,26 +34,22 @@ providers = require '../../../../providers'
 #      use `nock`, to mock the HTTP service in question.
 
 describe 'OAuth2Strategy userInfo', ->
-
-
-  {err,res,req,provider,client,strategy,headers,token} = {}
+  { err, res, req, provider, client, strategy, headers, token } = {}
 
 
   describe 'with a missing token argument', ->
 
 
-
-
   describe 'with defaults', ->
-
     before (done) ->
       provider = _.clone providers.oauth2test, true
-      client   = client_id: 'uuid', client_secret: 'h4sh'
+      client =
+        client_id: 'uuid', client_secret: 'h4sh'
       verifier = () ->
       strategy = new OAuth2Strategy provider, client, verifier
-      scope    = nock(provider.url)
-                   .get('/user')
-                   .reply(200, { uid: 1234, name: 'Dude' })
+      scope = nock(provider.url)
+        .get('/user')
+        .reply(200, { uid: 1234, name: 'Dude' })
       req = strategy.userInfo 'r4nd0m', -> done()
       return
 
@@ -66,19 +66,17 @@ describe 'OAuth2Strategy userInfo', ->
       req.req._headers['user-agent'].should.contain 'Anvil Connect/'
 
 
-
-
   describe 'with custom HTTP method', ->
-
     before (done) ->
       provider = _.clone providers.oauth2test, true
       provider.endpoints.user.method = 'PATCH'
-      client   = client_id: 'uuid', client_secret: 'h4sh'
+      client =
+        client_id: 'uuid', client_secret: 'h4sh'
       verifier = () ->
       strategy = new OAuth2Strategy provider, client, verifier
-      scope    = nock(provider.url)
-                   .patch('/user')
-                   .reply(200, { uid: '1234', fullname: 'Dude' })
+      scope = nock(provider.url)
+        .patch('/user')
+        .reply(200, { uid: '1234', fullname: 'Dude' })
       req = strategy.userInfo 'r4nd0m', -> done()
       return
 
@@ -86,21 +84,19 @@ describe 'OAuth2Strategy userInfo', ->
       req.method.should.equal 'PATCH'
 
 
-
-
   describe 'with authorization header (bearer token)', ->
-
     before (done) ->
       provider = _.clone providers.oauth2test, true
       provider.endpoints.user.auth =
         header: 'Authorization'
         scheme: 'Bearer'
-      client   = client_id: 'uuid', client_secret: 'h4sh'
+      client =
+        client_id: 'uuid', client_secret: 'h4sh'
       verifier = () ->
       strategy = new OAuth2Strategy provider, client, verifier
-      scope    = nock(provider.url)
-                   .get('/user')
-                   .reply(200, { name: 'Dude' })
+      scope = nock(provider.url)
+        .get('/user')
+        .reply(200, { name: 'Dude' })
       req = strategy.userInfo 'r4nd0m', -> done()
       headers = req.req._headers
 
@@ -114,22 +110,20 @@ describe 'OAuth2Strategy userInfo', ->
       expect(headers.authorization).to.contain 'r4nd0m'
 
 
-
-
   describe 'with authorization header (custom)', ->
-
     before (done) ->
       auth =
         header: 'X-Custom-Header'
         scheme: 'OAuth'
       provider = _.clone providers.oauth2test, true
       provider.endpoints.user.auth = auth
-      client   = client_id: 'uuid', client_secret: 'h4sh'
+      client =
+        client_id: 'uuid', client_secret: 'h4sh'
       verifier = () ->
       strategy = new OAuth2Strategy provider, client, verifier
-      scope    = nock(provider.url)
-                   .get('/user')
-                   .reply(200, { fullname: 'Dude' })
+      scope = nock(provider.url)
+        .get('/user')
+        .reply(200, { fullname: 'Dude' })
       req = strategy.userInfo 'r4nd0m', -> done()
       headers = req.req._headers
 
@@ -143,21 +137,20 @@ describe 'OAuth2Strategy userInfo', ->
       expect(headers['x-custom-header']).to.contain 'r4nd0m'
 
 
-
   describe 'with access token (querystring)', ->
-
     before (done) ->
       auth =
         query: 'oauth_token'
       token = 'r4nd0m'
       provider = _.clone providers.oauth2test, true
       provider.endpoints.user.auth = auth
-      client   = client_id: 'uuid', client_secret: 'h4sh'
+      client =
+        client_id: 'uuid', client_secret: 'h4sh'
       verifier = () ->
       strategy = new OAuth2Strategy provider, client, verifier
-      scope    = nock(provider.url)
-                   .get('/user?' + auth.query + '=' + token)
-                   .reply(200, { fullname: 'Dude' })
+      scope = nock(provider.url)
+        .get('/user?' + auth.query + '=' + token)
+        .reply(200, { fullname: 'Dude' })
       req = strategy.userInfo token, () -> done()
       return
 
@@ -165,19 +158,18 @@ describe 'OAuth2Strategy userInfo', ->
       req.req.path.should.contain 'oauth_token=r4nd0m'
 
 
-
-
   describe 'with custom params', ->
-
     before (done) ->
       provider = _.clone providers.oauth2test, true
-      provider.endpoints.user.params = foo: 'bar'
-      client   = client_id: 'uuid', client_secret: 'h4sh'
+      provider.endpoints.user.params =
+        foo: 'bar'
+      client =
+        client_id: 'uuid', client_secret: 'h4sh'
       verifier = () ->
       strategy = new OAuth2Strategy provider, client, verifier
-      scope    = nock(provider.url)
-                   .get('/user?foo=bar')
-                   .reply(200, { fullname: 'Dude' })
+      scope = nock(provider.url)
+        .get('/user?foo=bar')
+        .reply(200, { fullname: 'Dude' })
       req = strategy.userInfo token, -> done()
       return
 
@@ -185,16 +177,15 @@ describe 'OAuth2Strategy userInfo', ->
       req.req.path.should.contain 'foo=bar'
 
 
-
-
   describe 'with error response', ->
-
     before (done) ->
       provider = _.clone providers.oauth2test, true
       # Specifically setting the method, was getting holdover from other tests.
       provider.endpoints.user.method = 'get'
-      provider.endpoints.user.auth = query: 'entropy'
-      client = client_id: 'uuid', client_secret: 'h4sh'
+      provider.endpoints.user.auth =
+        query: 'entropy'
+      client =
+        client_id: 'uuid', client_secret: 'h4sh'
       verifier = () ->
       strategy = new OAuth2Strategy provider, client, verifier
 
@@ -215,14 +206,13 @@ describe 'OAuth2Strategy userInfo', ->
       expect(res).to.be.undefined
 
 
-
-
   describe 'with user profile', ->
-
     before (done) ->
       provider = _.clone providers.oauth2test, true
-      provider.endpoints.user.auth = query: 'entr0py'
-      client = client_id: 'uuid', client_secret: 'h4sh'
+      provider.endpoints.user.auth =
+        query: 'entr0py'
+      client =
+        client_id: 'uuid', client_secret: 'h4sh'
       verifier = () ->
       strategy = new OAuth2Strategy provider, client, verifier
 

@@ -1,13 +1,12 @@
 # Test dependencies
-cwd         = process.cwd()
-fs          = require 'fs'
-path        = require 'path'
-chai        = require 'chai'
-sinon       = require 'sinon'
-sinonChai   = require 'sinon-chai'
-expect      = chai.expect
-
-
+cwd = process.cwd()
+fs = require 'fs'
+path = require 'path'
+chai = require 'chai'
+sinon = require 'sinon'
+sinonChai = require 'sinon-chai'
+proxyquire = require('proxyquire').noCallThru()
+expect = chai.expect
 
 
 # Configure Chai and Sinon
@@ -15,22 +14,21 @@ chai.use sinonChai
 chai.should()
 
 
-
-
 # Code under test
-setup       = require path.join(cwd, 'boot/setup')
-User        = require path.join(cwd, 'models/User')
-
-
+User = proxyquire(path.join(cwd, 'models/User'), {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+setup = proxyquire(path.join(cwd, 'boot/setup'), {
+  '../models/User': User
+})
 
 
 describe 'Setup', ->
-
   describe 'out-of-box detector', ->
-
     describe 'with no authority users', ->
-
-      {err,result} = {}
+      { err, result } = {}
 
       before (done) ->
         sinon.stub(User, 'list').callsArgWith(1, null, [])
@@ -50,8 +48,7 @@ describe 'Setup', ->
 
 
     describe 'with an authority user', ->
-
-      {err,result} = {}
+      { err, result } = {}
 
       before (done) ->
         sinon.stub(User, 'list').callsArgWith(1, null, [
@@ -72,13 +69,11 @@ describe 'Setup', ->
         expect(result).to.equal false
 
   describe 'token reader/writer', ->
-
     describe 'with existing token file', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       before (done) ->
-        sinon.stub(fs, 'readFileSync').callsFake( ->
+        sinon.stub(fs, 'readFileSync').callsFake(->
           toString: ->
             '0123456789abcdef')
         sinon.stub fs, 'writeFileSync'
@@ -102,11 +97,10 @@ describe 'Setup', ->
         fs.writeFileSync.should.not.have.been.called
 
     describe 'with no token file', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       before (done) ->
-        sinon.stub(fs, 'readFileSync').callsFake( ->
+        sinon.stub(fs, 'readFileSync').callsFake(->
           throw new Error())
         sinon.stub fs, 'writeFileSync'
 
@@ -129,11 +123,10 @@ describe 'Setup', ->
         fs.writeFileSync.should.have.been.called
 
     describe 'with blank token file', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       before (done) ->
-        sinon.stub(fs, 'readFileSync').callsFake( ->
+        sinon.stub(fs, 'readFileSync').callsFake(->
           toString: ->
             '')
         sinon.stub fs, 'writeFileSync'
@@ -157,11 +150,10 @@ describe 'Setup', ->
         fs.writeFileSync.should.have.been.called
 
     describe 'with whitespace-filled token file', ->
-
-      {err,token} = {}
+      { err, token } = {}
 
       before (done) ->
-        sinon.stub(fs, 'readFileSync').callsFake( ->
+        sinon.stub(fs, 'readFileSync').callsFake(->
           toString: ->
             '        ')
         sinon.stub fs, 'writeFileSync'

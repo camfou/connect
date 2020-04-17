@@ -5,10 +5,10 @@ faker = require 'faker'
 chai = require 'chai'
 sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
+proxyquire = require('proxyquire').noCallThru()
 mockMulti = require '../lib/multi'
 expect = chai.expect
 jsonwebtoken = require 'jsonwebtoken'
-
 # Configure Chai and Sinon
 chai.use sinonChai
 chai.should()
@@ -16,8 +16,22 @@ chai.should()
 
 # Code under test
 Modinha = require 'modinha'
-Client = require path.join(cwd, 'models/Client')
-Role = require path.join(cwd, 'models/Role')
+User = proxyquire(path.join(cwd, 'models/User'), {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+Role = proxyquire(path.join(cwd, 'models/Role'), {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+Client = proxyquire(path.join(cwd, 'models/Client'), {
+  '../boot/redis': {
+    getClient: () => {}
+  },
+  './User': User
+})
 settings = require path.join(cwd, 'boot/settings')
 base64url = require('base64url')
 
@@ -25,7 +39,6 @@ base64url = require('base64url')
 # Redis lib for spying and stubbing
 Redis = require('redis-mock')
 { redisClient, multi } = {}
-
 
 describe 'Client', ->
   before ->
@@ -36,8 +49,8 @@ describe 'Client', ->
   after ->
     multi.restore()
 
-  { data, client, clients, role, jsonClients } = {}
-  { err, validation, instances, ids, env } = {}
+  { data, client, clients, role,  jsonClients } = {}
+  { err, validation,  instances,  ids,  env } = {}
 
 
   before ->
@@ -1034,7 +1047,7 @@ describe 'Client', ->
         expect(client).to.be.undefined
 
 
-    describe 'with client secret JWT and missing client id in token', ->
+    describe 'with client secret JWT and missing client idin token', ->
       before (done) ->
         req =
           body:

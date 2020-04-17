@@ -6,18 +6,11 @@ chai.use sinonChai
 chai.should()
 
 
-
-
-{requireSignin} = require '../../../oidc'
-
-
+requireSignin = require '../../../oidc/requireSignin'
 
 
 describe 'Require Signin', ->
-
-
-
-  {req,res,err} = {}
+  { req, res, err } = {}
 
   beforeEach ->
     req = (params, authenticated) ->
@@ -25,14 +18,12 @@ describe 'Require Signin', ->
       user: if authenticated then {} else undefined
       client: {}
       session: {}
-    res = redirect: sinon.spy()
+    res =
+      redirect: sinon.spy()
     err = null
 
 
-
-
   describe 'with authenticated user and no prompt', ->
-
     beforeEach (done) ->
       params = response_type: 'id_token token'
       requireSignin req(params, true), res, (error) ->
@@ -46,9 +37,7 @@ describe 'Require Signin', ->
       expect(err).to.be.undefined
 
 
-
   describe 'with unauthenticated user', ->
-
     beforeEach ->
       params = response_type: 'id_token token'
       requireSignin req(params, false), res
@@ -57,10 +46,7 @@ describe 'Require Signin', ->
       res.redirect.should.have.been.calledWith sinon.match '/signin?'
 
 
-
-
   describe 'with authenticated user and "login" prompt', ->
-
     beforeEach ->
       params = prompt: 'login', response_type: 'id_token token'
       requireSignin req(params, true), res
@@ -69,10 +55,7 @@ describe 'Require Signin', ->
       res.redirect.should.have.been.calledWith sinon.match '/signin?prompt=login'
 
 
-
-
   describe 'with unauthenticated user and "none" prompt', ->
-
     beforeEach ->
       params = prompt: 'none', response_type: 'id_token token'
       requireSignin req(params, false), res
@@ -81,10 +64,7 @@ describe 'Require Signin', ->
       res.redirect.should.have.been.calledWith sinon.match "#error=login_required"
 
 
-
-
   describe 'with authenticated user and "none" prompt', ->
-
     beforeEach (done) ->
       params = prompt: 'none', response_type: 'id_token token'
       requireSignin req(params, true), res, (error) ->

@@ -12,7 +12,7 @@ chai.should()
 
 
 
-{enforceReferrer} = require '../../../oidc'
+enforceReferrer = require '../../../oidc/enforceReferrer'
 
 InvalidRequestError = require '../../../errors/InvalidRequestError'
 
@@ -32,7 +32,7 @@ describe 'Enforce Referrer', ->
     issuer = settings.issuer
     settings.issuer = 'https://connect.example.com'
     enforceReferrer = enforceReferrer pathname
-    
+
 
   after ->
     settings.issuer = issuer

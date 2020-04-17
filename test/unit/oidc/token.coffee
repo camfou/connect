@@ -1,36 +1,38 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 chai.use sinonChai
 chai.should()
 
 
+settings = require '../../../boot/settings'
+ClientToken = require '../../../models/ClientToken'
+IDToken = require '../../../models/IDToken'
 
-settings          = require '../../../boot/settings'
-AccessToken       = require '../../../models/AccessToken'
-ClientToken       = require '../../../models/ClientToken'
-IDToken           = require '../../../models/IDToken'
-AuthorizationCode = require '../../../models/AuthorizationCode'
-token             = require('../../../oidc').token
-
-
-
+AuthorizationCode = proxyquire('../../../models/AuthorizationCode', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+AccessToken = proxyquire('../../../models/AccessToken', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+token = proxyquire('../../../oidc/token', {
+  '../models/AccessToken': AccessToken
+})
 
 describe 'Token response', ->
-
-
-  {req,res,next,err} = {}
-
+  { req, res, next, err } = {}
 
 
   describe 'authorization code grant with no nonce', ->
-
-    {at} = {}
+    { at } = {}
 
     before (done) ->
       at = AccessToken.initialize()
@@ -96,8 +98,7 @@ describe 'Token response', ->
 
 
   describe 'authorization code grant with optional nonce', ->
-
-    {at} = {}
+    { at } = {}
 
     before (done) ->
       at = AccessToken.initialize()
@@ -133,14 +134,11 @@ describe 'Token response', ->
       jwt.payload.nonce.should.equal 'noncf7'
 
 
-
-
   describe 'refresh grant', ->
-
-    {at} = {}
+    { at } = {}
 
     before (done) ->
-      at = AccessToken.initialize({cid:'uuid2',uid: 'uuid1'})
+      at = AccessToken.initialize({ cid: 'uuid2', uid: 'uuid1' })
       sinon.stub(AccessToken, 'refresh').callsArgWith(2, null, at)
       sinon.spy(IDToken.prototype, 'initializePayload')
 
@@ -196,9 +194,7 @@ describe 'Token response', ->
       )
 
 
-
   describe 'client credentials grant', ->
-
     before (done) ->
       sinon.spy(ClientToken, 'issue')
 

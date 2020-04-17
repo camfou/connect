@@ -1,35 +1,34 @@
 # Test dependencies
-_         = require 'lodash'
-chai      = require 'chai'
-sinon     = require 'sinon'
+_ = require 'lodash'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 # Assertions
 chai.use sinonChai
 chai.should()
 
 
-
-
 # Code under test
-OAuthStrategy = require '../../../../protocols/OAuth'
 providers = require '../../../../providers'
-
-
-
+User = proxyquire('../../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+OAuthStrategy = proxyquire('../../../../protocols/OAuth', {
+  '../models/User': User
+})
 
 describe 'OAuthStrategy resourceOwnerAuthorization', ->
-
-  {token,provider,strategy} = {}
+  { token, provider, strategy } = {}
 
   beforeEach ->
     token = 't0k3n'
     provider = _.clone providers.oauthtest, true
-    client   = {}
+    client = {}
     verifier = () ->
     strategy = new OAuthStrategy provider, client, verifier
     strategy.redirect = sinon.spy()

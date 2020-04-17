@@ -1,31 +1,29 @@
-nock      = require 'nock'
-chai      = require 'chai'
-sinon     = require 'sinon'
+nock = require 'nock'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 chai.use sinonChai
 chai.should()
 
 
-
-User     = require '../../../models/User'
-{revoke} = require '../../../oidc'
-
-
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+revoke = proxyquire('../../../oidc/revoke', {
+  '../models/User': User
+})
 
 
 describe 'Revoke third party access token', ->
-
-
-  {req,res,next,err} = {}
+  { req, res, next, err } = {}
 
 
   describe 'with unknown provider', ->
-
     before ->
       req =
         params:
@@ -42,11 +40,7 @@ describe 'Revoke third party access token', ->
       })
 
 
-
-
-
   describe 'with undefined revoke endpoint', ->
-
     before ->
       req =
         params:
@@ -63,10 +57,7 @@ describe 'Revoke third party access token', ->
       })
 
 
-
-
   describe 'with unknown user', ->
-
     before ->
       sinon.stub(User, 'get').callsArgWith(1, null, null)
       req =
@@ -89,10 +80,7 @@ describe 'Revoke third party access token', ->
       })
 
 
-
-
   describe 'with no provider for this user', ->
-
     before ->
       sinon.stub(User, 'get').callsArgWith(1, null, { providers: {} })
       req =
@@ -115,10 +103,7 @@ describe 'Revoke third party access token', ->
       })
 
 
-
-
   describe 'with error response from provider', ->
-
     before ->
       sinon.stub(User, 'get').callsArgWith(1, null, {
         providers:
@@ -136,8 +121,8 @@ describe 'Revoke third party access token', ->
       next = sinon.spy()
 
       scope = nock('https://accounts.google.com')
-                .get('/o/oauth2/revoke')
-                .reply(400, 'meh')
+        .get('/o/oauth2/revoke')
+        .reply(400, 'meh')
 
       revoke req, res, next
 
@@ -151,9 +136,7 @@ describe 'Revoke third party access token', ->
     it 'should respond ...'
 
 
-
   describe 'with ok response from provider', ->
-
     before ->
       sinon.stub(User, 'get').callsArgWith(1, null, {
         providers:
@@ -171,8 +154,8 @@ describe 'Revoke third party access token', ->
       next = sinon.spy()
 
       scope = nock('https://accounts.google.com')
-                .get('/o/oauth2/revoke')
-                .reply(200, 'meh')
+        .get('/o/oauth2/revoke')
+        .reply(200, 'meh')
 
       revoke req, res, next
 

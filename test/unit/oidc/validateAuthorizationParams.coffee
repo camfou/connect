@@ -3,12 +3,8 @@ chai.should()
 expect = chai.expect
 
 
-
-
-{validateAuthorizationParams} = require '../../../oidc'
+validateAuthorizationParams = require '../../../oidc/validateAuthorizationParams'
 settings = require '../../../boot/settings'
-
-
 
 
 req = (params) -> connectParams: params, cookies: { 'connect.sid': 'secret' }
@@ -16,14 +12,9 @@ res = {}
 err = null
 
 
-
-
 describe 'Validate Authorization Parameters', ->
-
   describe 'all requests', ->
-
     describe 'with missing response_type', ->
-
       before (done) ->
         params = { redirect_uri: 'https://redirect.uri' }
         validateAuthorizationParams req(params), res, (error) ->
@@ -46,10 +37,7 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
     describe 'with only whitespace for a response_type', ->
-
       before (done) ->
         params =
           redirect_uri: 'https://redirect.uri'
@@ -74,10 +62,7 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
     describe 'with invalid response_type', ->
-
       before (done) ->
         params =
           redirect_uri: 'https://redirect.uri'
@@ -103,10 +88,7 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
     describe 'with unsupported response_type', ->
-
       supportedResponseTypes = settings.response_types_supported
 
       before (done) ->
@@ -143,10 +125,7 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
     describe 'with unregistered response_type', ->
-
       supportedResponseTypes = settings.response_types_supported
 
       before (done) ->
@@ -161,8 +140,8 @@ describe 'Validate Authorization Parameters', ->
             redirect_uri: 'https://redirect.uri/cb'
             response_type: 'code'
           client:
-            response_types: [ 'code id_token' ]
-        res  = {}
+            response_types: ['code id_token']
+        res = {}
 
         validateAuthorizationParams request, res, (error) ->
           err = error
@@ -187,10 +166,7 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
     describe 'with duplicated response_type', ->
-
       supportedResponseTypes = settings.response_types_supported
 
       before (done) ->
@@ -205,8 +181,8 @@ describe 'Validate Authorization Parameters', ->
             redirect_uri: 'https://redirect.uri/cb'
             response_type: 'token code token'
           client:
-            response_types: [ 'code id_token token' ]
-        res  = {}
+            response_types: ['code id_token token']
+        res = {}
 
         validateAuthorizationParams request, res, (error) ->
           err = error
@@ -231,11 +207,7 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
-
     describe 'with extraneous response_type', ->
-
       before (done) ->
         params =
           redirect_uri: 'https://redirect.uri'
@@ -263,10 +235,7 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
     describe 'with supported and rearranged response_type', ->
-
       supportedResponseTypes = settings.response_types_supported
 
       before (done) ->
@@ -283,7 +252,7 @@ describe 'Validate Authorization Parameters', ->
             scope: 'openid'
             nonce: 'nonce'
           client:
-            response_types: [ 'code id_token token' ]
+            response_types: ['code id_token token']
 
         validateAuthorizationParams request, res, (error) ->
           err = error
@@ -296,10 +265,7 @@ describe 'Validate Authorization Parameters', ->
         expect(err).to.not.be.ok
 
 
-
-
     describe 'with unsupported response_mode', ->
-
       before (done) ->
         params =
           redirect_uri: 'https://redirect.uri'
@@ -326,10 +292,7 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
     describe 'with missing scope', ->
-
       before (done) ->
         params =
           redirect_uri: 'https://redirect.uri'
@@ -356,10 +319,7 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
     describe 'with missing "openid" scope', ->
-
       before (done) ->
         params =
           redirect_uri: 'https://redirect.uri'
@@ -387,12 +347,8 @@ describe 'Validate Authorization Parameters', ->
         err.statusCode.should.equal 302
 
 
-
-
   describe 'for implicit flow requests', ->
-
     describe 'with missing nonce', ->
-
       supportedResponseTypes = settings.response_types_supported
 
       before (done) ->
@@ -409,7 +365,7 @@ describe 'Validate Authorization Parameters', ->
             client_id: 'uuid'
             scope: 'openid'
           client:
-            response_types: [ 'token id_token' ]
+            response_types: ['token id_token']
 
         validateAuthorizationParams request, res, (error) ->
           err = error

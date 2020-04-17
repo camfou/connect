@@ -1,8 +1,8 @@
 chai      = require 'chai'
 sinon     = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 
@@ -10,10 +10,8 @@ chai.use sinonChai
 chai.should()
 
 
-
-
-{determineProvider} = require '../../../oidc'
-settings            = require '../../../boot/settings'
+determineProvider = require '../../../oidc/determineProvider'
+settings = require '../../../boot/settings'
 providers           = require '../../../providers'
 
 

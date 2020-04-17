@@ -12,6 +12,7 @@ sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
 mockMulti = require '../lib/multi'
 expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 # Configure Chai and Sinon
@@ -22,14 +23,18 @@ chai.should()
 # Code under test
 settings = require path.join(cwd, 'boot/settings')
 Modinha = require 'modinha'
-AccessToken = require path.join(cwd, 'models/AccessToken')
 AccessTokenJWT = require path.join(cwd, 'models/AccessTokenJWT')
+AccessToken = proxyquire(path.join(cwd, 'models/AccessToken'), {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
 { nowSeconds }   = require '../../../lib/time-utils'
 
 
 # Redis lib for spying and stubbing
-Redis   = require('redis-mock')
-client  = Redis.createClient()
+Redis = require('redis-mock')
+client = Redis.createClient()
 AccessToken.__client = client
 multi = mockMulti(client)
 

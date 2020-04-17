@@ -1,30 +1,35 @@
 chai      = require 'chai'
 sinon     = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 chai.use sinonChai
 chai.should()
 
 
-
-User    = require '../../../models/User'
-Scope   = require '../../../models/Scope'
-{determineUserScope} = require '../../../oidc'
-
-
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+Scope = proxyquire('../../../models/Scope', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+determineUserScope = proxyquire('../../../oidc/determineUserScope', {
+  '../models/Scope': Scope
+})
 
 
 describe 'Determine User Scope', ->
-
-  {req,res,next,err} = {}
-  {scope,scopes} = {}
+  { req, res, next, err } = {}
+  { scope, scopes } = {}
 
   before (done) ->
-    scope  = 'openid profile developer'
+    scope = 'openid profile developer'
     scopes = [
       new Scope name: 'openid'
       new Scope name: 'profile'

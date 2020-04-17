@@ -1,30 +1,32 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 chai.use sinonChai
 chai.should()
 
 
-
-
-Client = require '../../../models/Client'
-{verifyClient} = require '../../../oidc'
-
-
-
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+Client = proxyquire('../../../models/Client', {
+  '../boot/redis': {
+    getClient: () => {}
+  },
+  './User': User
+})
+verifyClient = proxyquire('../../../oidc/verifyClient', {
+  '../models/Client': Client
+})
 
 describe 'Verify Client', ->
-
-
-  {req,res,next,err} = {}
+  { req, res, next, err } = {}
 
   describe 'with missing redirect_uri', ->
-
     before (done) ->
       req = { connectParams: {} }
       verifyClient req, res, (error) ->
@@ -44,10 +46,7 @@ describe 'Verify Client', ->
       err.statusCode.should.equal 400
 
 
-
-
   describe 'with missing client_id', ->
-
     before (done) ->
       req =
         connectParams:
@@ -70,17 +69,14 @@ describe 'Verify Client', ->
       err.statusCode.should.equal 403
 
 
-
-
   describe 'with unknown client id', ->
-
     before (done) ->
       sinon.stub(Client, 'get').callsArgWith(2, null, null)
       req =
         connectParams:
           redirect_uri: 'https://redirect.uri'
           client_id: 'unknown'
-      res  = {}
+      res = {}
       next = sinon.spy()
 
       verifyClient req, res, (error) ->
@@ -103,10 +99,7 @@ describe 'Verify Client', ->
       err.statusCode.should.equal 401
 
 
-
-
   describe 'with mismatching redirect uri', ->
-
     before (done) ->
       client = { redirect_uris: [] }
       sinon.stub(Client, 'get').callsArgWith(2, null, client)
@@ -114,7 +107,7 @@ describe 'Verify Client', ->
         connectParams:
           redirect_uri: 'https://mismatching.uri/cb'
           client_id: 'id'
-      res  = {}
+      res = {}
       next = sinon.spy()
 
       verifyClient req, res, (error) ->

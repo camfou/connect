@@ -1,33 +1,29 @@
-
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 chai.use sinonChai
 chai.should()
 
 
-
-
-AuthorizationCode = require '../../../models/AuthorizationCode'
-{verifyAuthorizationCode} = require '../../../oidc'
-
-{nowSeconds} = require '../../../lib/time-utils'
-
+AuthorizationCode = proxyquire('../../../models/AuthorizationCode', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+verifyAuthorizationCode = proxyquire('../../../oidc/verifyAuthorizationCode', {
+  '../models/AuthorizationCode': AuthorizationCode
+})
+{ nowSeconds } = require '../../../lib/time-utils'
 
 
 describe 'Verify Authorization Code', ->
-
-
-  {req,res,next,err} = {}
+  { req, res, next, err } = {}
 
 
   describe 'with unknown authorization code', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'getByCode').callsArgWith(1, null, null)
 
@@ -59,10 +55,7 @@ describe 'Verify Authorization Code', ->
       err.statusCode.should.equal 400
 
 
-
-
   describe 'with previously used authorization code', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'getByCode').callsArgWith(1, null, {
         used: true
@@ -96,10 +89,7 @@ describe 'Verify Authorization Code', ->
       err.statusCode.should.equal 400
 
 
-
-
   describe 'with expired authorization code', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'getByCode').callsArgWith(1, null, {
         expires_at: nowSeconds(-1)
@@ -133,10 +123,7 @@ describe 'Verify Authorization Code', ->
       err.statusCode.should.equal 400
 
 
-
-
   describe 'with mismatching redirect uri', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'getByCode').callsArgWith(1, null, {
         expires_at: nowSeconds(1)
@@ -171,10 +158,7 @@ describe 'Verify Authorization Code', ->
       err.statusCode.should.equal 400
 
 
-
-
   describe 'with mismatching client id', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'getByCode').callsArgWith(1, null, {
         expires_at: nowSeconds(1)
@@ -212,10 +196,7 @@ describe 'Verify Authorization Code', ->
       err.statusCode.should.equal 400
 
 
-
-
   describe 'with valid request', ->
-
     before (done) ->
       sinon.stub(AuthorizationCode, 'getByCode').callsArgWith(1, null, {
         expires_at: nowSeconds(1)

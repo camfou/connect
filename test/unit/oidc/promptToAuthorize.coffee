@@ -1,26 +1,26 @@
 chai      = require 'chai'
 sinon     = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 chai.use sinonChai
 chai.should()
 
 
-
-AccessToken = require '../../../models/AccessToken'
-{promptToAuthorize} = require '../../../oidc'
-
-
+AccessToken = proxyquire('../../../models/AccessToken', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+promptToAuthorize = proxyquire('../../../oidc/promptToAuthorize', {
+  '../models/AccessToken': AccessToken
+})
 
 
 describe 'Prompt to Authorize', ->
-
-
-  {req,res,next,err} = {}
+  { req, res, next, err } = {}
 
 
   describe 'with third party client', ->

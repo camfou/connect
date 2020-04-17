@@ -12,7 +12,7 @@ chai.should()
 
 
 
-{error} = require '../../../oidc'
+error = require '../../../oidc/error'
 
 
 

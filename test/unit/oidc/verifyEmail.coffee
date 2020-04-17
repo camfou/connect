@@ -1,33 +1,37 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
 
 
 chai.use sinonChai
 chai.should()
+proxyquire = require('proxyquire').noCallThru()
 
-
-
-
-{verifyEmail} = require '../../../oidc'
-OneTimeToken  = require '../../../models/OneTimeToken'
-User          = require '../../../models/User'
-
-
-
+OneTimeToken = proxyquire('../../../models/OneTimeToken', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+verifyEmail = proxyquire('../../../oidc/verifyEmail', {
+  '../models/User': User,
+  '../models/OneTimeToken': OneTimeToken
+})
 
 describe 'Verify Email', ->
-
-  {req,res,next} = {}
+  { req, res, next } = {}
 
   describe 'with missing token', ->
-
     before ->
-      req = query: {}
-      res = render: sinon.spy()
+      req =
+        query: {}
+      res =
+        render: sinon.spy()
       next = sinon.spy()
 
       verifyEmail req, res, next
@@ -35,17 +39,17 @@ describe 'Verify Email', ->
     it 'should render an error', ->
       res.render.should.have.been
         .calledWith 'verifyEmail', sinon.match({
-          error: sinon.match.string
-        })
+        error: sinon.match.string
+      })
 
 
   describe 'with invalid or expired token', ->
-
     before ->
       req =
         query:
           token: 'invalid'
-      res = render: sinon.spy()
+      res =
+        render: sinon.spy()
       next = sinon.spy()
 
       sinon.stub(OneTimeToken, 'consume').callsArgWith(1, null, null)
@@ -58,12 +62,11 @@ describe 'Verify Email', ->
     it 'should render an error', ->
       res.render.should.have.been
         .calledWith 'verifyEmail', sinon.match({
-          error: sinon.match.string
-        })
+        error: sinon.match.string
+      })
 
 
   describe 'with wrong token type', ->
-
     before ->
       token = new OneTimeToken
         _id: 'misused'
@@ -74,7 +77,8 @@ describe 'Verify Email', ->
       req =
         query:
           token: 'misused'
-      res = render: sinon.spy()
+      res =
+        render: sinon.spy()
       next = sinon.spy()
 
       sinon.stub(OneTimeToken, 'consume').callsArgWith(1, null, token)
@@ -87,12 +91,11 @@ describe 'Verify Email', ->
     it 'should render an error', ->
       res.render.should.have.been
         .calledWith 'verifyEmail', sinon.match({
-          error: sinon.match.string
-        })
+        error: sinon.match.string
+      })
 
 
   describe 'with unknown user', ->
-
     before ->
       token = new OneTimeToken
         _id: 'misused'
@@ -103,7 +106,8 @@ describe 'Verify Email', ->
       req =
         query:
           token: 'valid'
-      res = render: sinon.spy()
+      res =
+        render: sinon.spy()
       next = sinon.spy()
 
       sinon.stub(OneTimeToken, 'consume').callsArgWith(1, null, token)
@@ -118,12 +122,11 @@ describe 'Verify Email', ->
     it 'should render an error', ->
       res.render.should.have.been
         .calledWith 'verifyEmail', sinon.match({
-          error: sinon.match.string
-        })
+        error: sinon.match.string
+      })
 
 
   describe 'with valid token', ->
-
     before ->
       user = new User
       token = new OneTimeToken
@@ -135,7 +138,8 @@ describe 'Verify Email', ->
       req =
         query:
           token: 'valid'
-      res = render: sinon.spy()
+      res =
+        render: sinon.spy()
       next = sinon.spy()
 
       sinon.stub(OneTimeToken, 'consume').callsArgWith(1, null, token)
@@ -154,9 +158,7 @@ describe 'Verify Email', ->
       )
 
 
-
   describe 'with valid token and client redirect', ->
-
     before ->
       user = new User
       token = new OneTimeToken
@@ -170,12 +172,13 @@ describe 'Verify Email', ->
           token: 'valid'
         client: {}
         connectParams:
-          redirect_uri:  'https://example.com/callback'
-          client_id:     'client-uuid'
+          redirect_uri: 'https://example.com/callback'
+          client_id: 'client-uuid'
           response_type: 'id_token token'
-          scope:         'openid profile'
+          scope: 'openid profile'
 
-      res = render: sinon.spy()
+      res =
+        render: sinon.spy()
       next = sinon.spy()
 
       sinon.stub(OneTimeToken, 'consume').callsArgWith(1, null, token)
@@ -190,17 +193,17 @@ describe 'Verify Email', ->
     it 'should render a response with url', ->
       res.render.should.have.been
         .calledWith 'verifyEmail', sinon.match({
-          signin: {
-            url: sinon.match.string
-          }
-        })
+        signin: {
+          url: sinon.match.string
+        }
+      })
 
     it 'should render a response with client', ->
       res.render.should.have.been
         .calledWith 'verifyEmail', sinon.match({
-          signin: {
-            url: sinon.match.string
-          }
-        })
+        signin: {
+          url: sinon.match.string
+        }
+      })
 
 

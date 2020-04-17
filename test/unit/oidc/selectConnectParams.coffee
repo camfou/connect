@@ -12,7 +12,7 @@ chai.should()
 
 
 
-{selectConnectParams} = require '../../../oidc'
+selectConnectParams = require '../../../oidc/selectConnectParams'
 
 
 

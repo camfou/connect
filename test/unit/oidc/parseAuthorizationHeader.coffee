@@ -8,7 +8,7 @@ chai.should()
 
 
 
-{parseAuthorizationHeader} = require '../../../oidc'
+parseAuthorizationHeader = require '../../../oidc/parseAuthorizationHeader'
 
 
 

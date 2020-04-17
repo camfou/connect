@@ -1,29 +1,29 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 chai.use sinonChai
 chai.should()
 
 
+settings = require '../../../boot/settings'
+AccessToken = proxyquire('../../../models/AccessToken', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+verifyClientReg = proxyquire('../../../oidc/verifyClientRegistration', {
+  '../models/AccessToken': AccessToken
+})
 
-
-settings        = require '../../../boot/settings'
-AccessToken     = require '../../../models/AccessToken'
-verifyClientReg = require('../../../oidc').verifyClientRegistration
-clientRegType   = settings.client_registration
+clientRegType = settings.client_registration
 trustedRegScope = settings.trusted_registration_scope
-regScope        = settings.registration_scope
-
-
+regScope = settings.registration_scope
 
 
 describe 'Verify Scoped Client Registration', ->
-
   before ->
     settings.client_registration = 'scoped'
     settings.trusted_registration_scope = 'realm'
@@ -35,11 +35,10 @@ describe 'Verify Scoped Client Registration', ->
     settings.registration_scope = 'developer'
 
 
-  {req,res,next,err} = {}
+  { req, res, next, err } = {}
 
 
   describe 'with missing bearer token', ->
-
     before (done) ->
       req = { headers: {}, body: {} }
       res = {}
@@ -64,11 +63,7 @@ describe 'Verify Scoped Client Registration', ->
       err.statusCode.should.equal 400
 
 
-
-
-
   describe 'with insufficient trusted scope', ->
-
     before (done) ->
       req =
         bearer: 'valid.jwt'
@@ -98,10 +93,7 @@ describe 'Verify Scoped Client Registration', ->
       err.statusCode.should.equal 403
 
 
-
-
   describe 'with insufficient scope', ->
-
     before (done) ->
       req =
         bearer: 'valid.jwt'
@@ -133,10 +125,7 @@ describe 'Verify Scoped Client Registration', ->
       err.statusCode.should.equal 403
 
 
-
-
   describe 'with sufficient trusted scope', ->
-
     before (done) ->
       req =
         bearer: 'valid.jwt'
@@ -159,10 +148,7 @@ describe 'Verify Scoped Client Registration', ->
       next.should.have.been.called
 
 
-
-
   describe 'with sufficient scope', ->
-
     before (done) ->
       req =
         bearer: 'valid.jwt'

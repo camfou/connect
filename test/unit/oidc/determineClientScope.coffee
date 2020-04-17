@@ -1,34 +1,43 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 chai.use sinonChai
 chai.should()
 
 
-
-Client  = require '../../../models/Client'
-Scope   = require '../../../models/Scope'
-{determineClientScope} = require '../../../oidc'
-
-
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+Client = proxyquire('../../../models/Client', {
+  '../boot/redis': {
+    getClient: () => {}
+  },
+  './User': User
+})
+Scope = proxyquire('../../../models/Scope', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+determineClientScope = proxyquire('../../../oidc/determineClientScope', {
+  '../models/Scope': Scope
+})
 
 
 describe 'Determine Client Scope', ->
-
-
-  {req,res,next,err} = {}
-  {scope,scopes} = {}
+  { req, res, next, err } = {}
+  { scope, scopes } = {}
 
 
   describe 'with "client_credentials" grant type', ->
-
     before (done) ->
-      scope  = 'a b c'
+      scope = 'a b c'
       scopes = [
         new Scope name: 'a'
         new Scope name: 'b'
@@ -39,7 +48,7 @@ describe 'Determine Client Scope', ->
       req =
         connectParams:
           grant_type: 'client_credentials'
-          scope:      'a b c'
+          scope: 'a b c'
         client: new Client
       res = {}
       next = sinon.spy (error) ->
@@ -65,16 +74,13 @@ describe 'Determine Client Scope', ->
       next.should.have.been.called
 
 
-
-
   describe 'with other grant type', ->
-
     before (done) ->
       sinon.stub(Scope, 'determine').callsArgWith(2, null, scope, scopes)
 
       req =
         connectParams:
-          scope:      'a b c'
+          scope: 'a b c'
         client: new Client
       res = {}
       next = sinon.spy (error) ->

@@ -1,29 +1,28 @@
 chai      = require 'chai'
 sinon     = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 chai.use sinonChai
 chai.should()
 
 
-
-
-{requireVerifiedEmail} = require '../../../oidc'
-Role = require '../../../models/Role'
-
-
+Role = proxyquire('../../../models/Role', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+requireVerifiedEmail = proxyquire('../../../oidc/requireVerifiedEmail', {
+  '../models/Role': Role
+})
 
 
 describe 'Require verified email', ->
-
-  {req,res,next} = {}
+  { req, res, next } = {}
 
   describe 'with email already verified', ->
-
     before (done) ->
       req =
         user:

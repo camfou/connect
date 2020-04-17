@@ -6,7 +6,8 @@ chai      = require 'chai'
 sinon     = require 'sinon'
 sinonChai = require 'sinon-chai'
 mockMulti = require '../lib/multi'
-expect    = chai.expect
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 
@@ -20,8 +21,11 @@ chai.should()
 
 # Code under test
 Modinha = require 'modinha'
-Scope   = require path.join(cwd, 'models/Scope')
-
+Scope = proxyquire(path.join(cwd, 'models/Scope'), {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
 
 
 

@@ -1,36 +1,36 @@
 # Test dependencies
-nock      = require 'nock'
-chai      = require 'chai'
-sinon     = require 'sinon'
+nock = require 'nock'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 # Assertions
 chai.use sinonChai
 chai.should()
 
 
-
-
 # Code under test
-Strategy      = require('passport-strategy')
-OAuthStrategy = require '../../../protocols/OAuth'
-provider      = require('../../../providers').oauthtest
+Strategy = require('passport-strategy')
+provider = require('../../../providers').oauthtest
 
-
-
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+OAuthStrategy = proxyquire('../../../protocols/OAuth', {
+  '../models/User': User
+})
 
 describe 'OAuth Strategy', ->
-
-  {err,req} = {}
+  { err, req } = {}
 
   config =
-    client_id:      'id',
-    client_secret:  'secret'
-    scope:          ['c']
+    client_id: 'id',
+    client_secret: 'secret'
+    scope: ['c']
 
   verify = () ->
 
@@ -38,15 +38,11 @@ describe 'OAuth Strategy', ->
 
 
   describe 'instance', ->
-
     it 'should inherit from Strategy', ->
       expect(strategy).to.be.instanceof Strategy
 
 
-
-
   describe 'constructor', ->
-
     it 'should set provider', ->
       strategy.provider.should.equal provider
 
@@ -63,12 +59,9 @@ describe 'OAuth Strategy', ->
       strategy.verify.should.equal verify
 
 
-
-
   # SUPPORTING FUNCTIONS
   describe 'authorizationHeaderParams', ->
-
-    {encoded} = {}
+    { encoded } = {}
 
     before ->
       data = a: 'b', c: 'd', e: 'f/g h>i'
@@ -81,28 +74,19 @@ describe 'OAuth Strategy', ->
       encoded.should.contain 'e="f%2Fg%20h%3Ei"'
 
 
-
-
   describe 'requestURIQuery', ->
-
-
 
 
   describe 'formEncodedBody', ->
 
 
-
-
   describe 'encodeOAuthData', ->
-
     describe 'with null value', ->
-
       it 'should return an empty string', ->
         OAuthStrategy.encodeOAuthData().should.equal ''
         OAuthStrategy.encodeOAuthData(null).should.equal ''
 
     describe 'with non-empty string', ->
-
       it 'should escape !', ->
         OAuthStrategy.encodeOAuthData('!2!4').should.equal '%212%214'
 
@@ -119,18 +103,12 @@ describe 'OAuth Strategy', ->
         OAuthStrategy.encodeOAuthData('*2*4').should.equal '%2A2%2A4'
 
 
-
-
   describe 'timestamp', ->
-
     it 'should return a positive integer', ->
       OAuthStrategy.timestamp().should.be.greaterThan 0
 
 
-
-
   describe 'nonce', ->
-
     it 'should generate a random string of a given size', ->
       p = OAuthStrategy.nonce(10)
       q = OAuthStrategy.nonce(10)
@@ -138,10 +116,7 @@ describe 'OAuth Strategy', ->
       p.length.should.equal 10
 
 
-
-
   describe 'signatureBaseStringURI', ->
-
     it 'should include the lowercase http scheme', ->
       uri = 'HTTP://example.com/path'
       OAuthStrategy
@@ -179,13 +154,10 @@ describe 'OAuth Strategy', ->
         .should.contain ':4443'
 
 
-
-
   describe 'signatureBaseString', ->
-
     it 'should contain the uppercase HTTP method', ->
       method = 'post'
-      uri    = 'http://example.com/path'
+      uri = 'http://example.com/path'
       params = '../...'
       OAuthStrategy
         .signatureBaseString('post', uri, params)
@@ -193,16 +165,14 @@ describe 'OAuth Strategy', ->
 
     it 'should contain the encoded uri', ->
       method = 'post'
-      uri    = 'https://example.com/path'
+      uri = 'https://example.com/path'
       params = ''
       OAuthStrategy
         .signatureBaseString(method, uri, params)
         .should.contain '&https%3A%2F%2Fexample.com%2Fpath&'
 
 
-
   describe 'normalizeParameters', ->
-
     it 'should do stuff (TEST OBVIOUSLY NEEDS LOVE)', ->
       data =
         b5: '=%3D'
@@ -221,12 +191,8 @@ describe 'OAuth Strategy', ->
         .should.equal 'a2=r%20b&a3=2%20q&b5=%3D%253D&c%40=&c2=&oauth_consumer_key=9djdj82h48djs9d2&oauth_nonce=7d8f3e4a&oauth_signature_method=HMAC-SHA1&oauth_timestamp=137131201&oauth_token=kkk9d7dh3k39sjv7'
 
 
-
-
   describe 'sign', ->
-
     describe 'with PLAINTEXT method', ->
-
       it 'should return the key', ->
         OAuthStrategy.sign('PLAINTEXT', '', 'SECRET').should.equal 'SECRET&'
 
@@ -236,7 +202,6 @@ describe 'OAuth Strategy', ->
     describe 'with HMAC-SHA1', ->
 
     describe 'with unknown method', ->
-
 
 
     describe 'authenticate', ->

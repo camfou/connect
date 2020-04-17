@@ -1,31 +1,29 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 chai.use sinonChai
 chai.should()
 
 
-
-
-User = require('../../../models/User')
-{authenticateUser} = require('../../../oidc')
-
-
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+authenticateUser = proxyquire('../../../oidc/authenticateUser', {
+  '../models/User': User
+})
 
 
 describe 'Authenticate User', ->
-
-
-  {req,res,next,err,user} = {}
+  { req, res, next, err, user } = {}
 
 
   describe 'with valid access token and valid user', ->
-
     before (done) ->
       user = new User
       sinon.stub(User, 'get').callsArgWith(1, null, user)
@@ -53,10 +51,7 @@ describe 'Authenticate User', ->
       next.should.have.been.called
 
 
-
-
   describe 'with valid access token and unknown user', ->
-
     before (done) ->
       user = null
       sinon.stub(User, 'get').callsArgWith(1, null, null)
@@ -83,10 +78,7 @@ describe 'Authenticate User', ->
       expect(req.user).to.be.undefined
 
 
-
-
   describe 'with authenticated session', ->
-
     before ->
       req =
         user: {}
@@ -102,10 +94,7 @@ describe 'Authenticate User', ->
       next.should.have.been.called
 
 
-
-
   describe 'with unauthenticated session', ->
-
     before ->
       req = {}
       res = {}

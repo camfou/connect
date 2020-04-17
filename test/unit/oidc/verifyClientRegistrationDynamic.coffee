@@ -1,29 +1,27 @@
-chai      = require 'chai'
-sinon     = require 'sinon'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 chai.use sinonChai
 chai.should()
 
 
-
-
-settings        = require '../../../boot/settings'
-AccessToken     = require '../../../models/AccessToken'
-verifyClientReg = require('../../../oidc').verifyClientRegistration
-
-
+settings = require '../../../boot/settings'
+AccessToken = proxyquire('../../../models/AccessToken', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+verifyClientReg = proxyquire('../../../oidc/verifyClientRegistration', {
+  '../models/AccessToken': AccessToken
+})
 
 
 describe 'Verify Dynamic Client Registration', ->
-
-
-  {req,res,next,err} = {}
-  {client_registration,trusted_registration_scope} = {}
+  { req, res, next, err } = {}
+  { client_registration, trusted_registration_scope } = {}
 
 
   before ->
@@ -39,7 +37,6 @@ describe 'Verify Dynamic Client Registration', ->
 
 
   describe 'without bearer token', ->
-
     before (done) ->
       req = { headers: {}, body: {} }
       res = {}
@@ -56,10 +53,7 @@ describe 'Verify Dynamic Client Registration', ->
       next.should.have.been.called
 
 
-
-
   describe 'with insufficient trusted scope', ->
-
     before (done) ->
       req =
         bearer: 'valid.jwt'
@@ -89,10 +83,7 @@ describe 'Verify Dynamic Client Registration', ->
       err.statusCode.should.equal 403
 
 
-
-
   describe 'with sufficient trusted scope', ->
-
     before (done) ->
       req =
         bearer: 'valid.jwt'
@@ -115,13 +106,9 @@ describe 'Verify Dynamic Client Registration', ->
       next.should.have.been.called
 
 
-
-
   describe 'with valid token', ->
-
     before (done) ->
-
-     req =
+      req =
         bearer: 'valid.jwt'
         body: {}
 

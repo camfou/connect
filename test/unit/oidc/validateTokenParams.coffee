@@ -2,11 +2,7 @@ chai = require 'chai'
 chai.should()
 
 
-
-
-{validateTokenParams} = require '../../../oidc'
-
-
+validateTokenParams = require '../../../oidc/validateTokenParams'
 
 
 req = (params) -> body: params
@@ -14,14 +10,9 @@ res = {}
 err = null
 
 
-
-
 describe 'Validate Token Parameters', ->
-
   describe 'all requests', ->
-
     describe 'with missing grant_type', ->
-
       before (done) ->
         params = {}
         validateTokenParams req(params), res, (error) ->
@@ -41,10 +32,7 @@ describe 'Validate Token Parameters', ->
         err.statusCode.should.equal 400
 
 
-
-
     describe 'with unsupported grant_type', ->
-
       before (done) ->
         params = { grant_type: 'unsupported' }
         validateTokenParams req(params), res, (error) ->
@@ -64,12 +52,8 @@ describe 'Validate Token Parameters', ->
         err.statusCode.should.equal 400
 
 
-
-
   describe 'authorization code grant', ->
-
     describe 'with missing authorization code', ->
-
       before (done) ->
         params = { grant_type: 'authorization_code' }
         validateTokenParams req(params), res, (error) ->
@@ -89,10 +73,7 @@ describe 'Validate Token Parameters', ->
         err.statusCode.should.equal 400
 
 
-
-
     describe 'with missing redirect_uri', ->
-
       before (done) ->
         params = { grant_type: 'authorization_code', code: 'bogus' }
         validateTokenParams req(params), res, (error) ->
@@ -112,12 +93,8 @@ describe 'Validate Token Parameters', ->
         err.statusCode.should.equal 400
 
 
-
-
   describe 'refresh token grant', ->
-
     describe 'with missing refresh token', ->
-
       before (done) ->
         params = { grant_type: 'refresh_token' }
         validateTokenParams req(params), res, (error) ->

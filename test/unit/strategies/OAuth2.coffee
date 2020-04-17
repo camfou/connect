@@ -1,11 +1,10 @@
 # Test dependencies
-nock      = require 'nock'
-chai      = require 'chai'
-sinon     = require 'sinon'
+nock = require 'nock'
+chai = require 'chai'
+sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 # Assertions
@@ -13,46 +12,48 @@ chai.use sinonChai
 chai.should()
 
 
-
-
 # Code under test
 Strategy = require('passport-strategy')
-OAuth2Strategy = require '../../../protocols/OAuth2'
-
+User = proxyquire('../../../models/User', {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+OAuth2Strategy = proxyquire('../../../protocols/OAuth2', {
+  '../models/User': User
+})
 
 
 describe 'OAuth2 Strategy', ->
-
-
-  {err, res, credentials} = {}
+  { err, res, credentials } = {}
 
   provider =
-    id:           'id'
-    name:         'Name'
-    protocol:     'OAuth 2.0'
-    url:          'https://domain.tld'
+    id: 'id'
+    name: 'Name'
+    protocol: 'OAuth 2.0'
+    url: 'https://domain.tld'
     redirect_uri: 'https://local.tld/callback'
-    scope:        ['a', 'b']
+    scope: ['a', 'b']
     separator: ' '
     endpoints:
       authorize:
-        url:      'https://domain.tld/authorize'
-        method:   'POST'
+        url: 'https://domain.tld/authorize'
+        method: 'POST'
       token:
-        url:      'https://domain.tld/token'
-        method:   'POST'
-        auth:     'client_secret_basic'
+        url: 'https://domain.tld/token'
+        method: 'POST'
+        auth: 'client_secret_basic'
       user:
-        url:      'https://domain.tld/userinfo'
-        method:   'GET'
-        auth:     'bearer_token'
+        url: 'https://domain.tld/userinfo'
+        method: 'GET'
+        auth: 'bearer_token'
     mapping:
       name: 'name'
 
   config =
-    client_id:      'id',
-    client_secret:  'secret'
-    scope:          ['c']
+    client_id: 'id',
+    client_secret: 'secret'
+    scope: ['c']
 
   verify = (req, res, profile) ->
 
@@ -60,13 +61,11 @@ describe 'OAuth2 Strategy', ->
 
 
   describe 'instance', ->
-
     it 'should inherit from Strategy', ->
       expect(strategy).to.be.instanceof Strategy
 
 
   describe 'constructor', ->
-
     it 'should set provider', ->
       strategy.provider.should.equal provider
 
@@ -83,11 +82,8 @@ describe 'OAuth2 Strategy', ->
       strategy.verify.should.equal verify
 
 
-
   describe 'authenticate', ->
-
     describe 'with new authorization request', ->
-
       req = query: { query: {} }
       options = state: 'st4t3'
 
@@ -103,7 +99,6 @@ describe 'OAuth2 Strategy', ->
 
 
     describe 'with access denied response', ->
-
       req = query: { error: 'access_denied', error_description: 'nope' }
       options = state: 'st4t3'
 
@@ -115,7 +110,6 @@ describe 'OAuth2 Strategy', ->
         strategy.fail.should.have.been.calledWith 'Access denied', 403
 
     describe 'with authorization error response', ->
-
       req = query: { error: 'invalid', error_description: 'Invalid' }
       options = state: 'st4t3'
 
@@ -130,7 +124,6 @@ describe 'OAuth2 Strategy', ->
 
 
     describe 'with authorization code grant error response', ->
-
       req = query: { code: 'c0d3' }
       options = state: 'st4t3'
       error = {}
@@ -148,10 +141,10 @@ describe 'OAuth2 Strategy', ->
 
 
     describe 'with userinfo error response', ->
-
       req = query: { code: 'c0d3' }
       options = state: 'st4t3'
-      res = access_token: 't0k3n'
+      res =
+        access_token: 't0k3n'
       error = {}
 
       before ->
@@ -171,15 +164,11 @@ describe 'OAuth2 Strategy', ->
     describe 'with successful authorization', ->
 
 
-
-
   describe 'base64credentials', ->
-
     before ->
       credentials = strategy.base64credentials()
 
     it 'should include the client_id', ->
-
       Buffer.from(credentials, 'base64')
         .toString().should.contain config.client_id
 
@@ -192,12 +181,8 @@ describe 'OAuth2 Strategy', ->
         .toString().should.contain ':'
 
 
-
-
   describe 'authorizationRequest', ->
-
     describe 'with valid configuration', ->
-
       req = query: { query: {} }
       options = state: 'st4t3'
 

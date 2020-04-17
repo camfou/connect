@@ -7,9 +7,8 @@ sinon     = require 'sinon'
 sinonChai = require 'sinon-chai'
 mockMulti = require '../lib/multi'
 qs        = require 'qs'
-expect    = chai.expect
-
-
+expect = chai.expect
+proxyquire = require('proxyquire').noCallThru()
 
 
 # Configure Chai and Sinon
@@ -17,21 +16,25 @@ chai.use sinonChai
 chai.should()
 
 
-
-
 # Code under test
-Modinha  = require 'modinha'
-User     = require path.join(cwd, 'models/User')
+Modinha = require 'modinha'
+Role = proxyquire(path.join(cwd, 'models/Role'), {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
+User = proxyquire(path.join(cwd, 'models/User'), {
+  '../boot/redis': {
+    getClient: () => {}
+  }
+})
 settings = require path.join(cwd, 'boot/settings')
-Role     = require path.join(cwd, 'models/Role')
-
-
 
 
 # Redis lib for spying and stubbing
-Redis   = require('redis-mock')
+Redis = require('redis-mock')
 rclient = Redis.prototype
-{client,multi} = {}
+{ client, multi } = {}
 
 
 describe 'User', ->
