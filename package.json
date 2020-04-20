@@ -116,6 +116,7 @@
     "hogan.js": "^3.0.2",
     "html-to-text": "4.0.0",
     "ioredis": "4.9.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "4.17.11",
     "mellt": "~1.0.0",
     "modinha": "^0.1.0",

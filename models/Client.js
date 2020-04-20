@@ -4,13 +4,15 @@
  * Module dependencies
  */
 
-var client = require('../boot/redis').getClient()
+var redisClient = require('../boot/redis').getClient()
+var settings = require('../boot/settings')
 var Modinha = require('modinha')
 var Document = require('modinha-redis')
 var User = require('./User')
 var AuthorizationError = require('../errors/AuthorizationError')
 var base64url = require('base64url')
 var url = require('url')
+var jsonwebtoken = require('jsonwebtoken')
 
 /**
  * Client model
@@ -92,7 +94,7 @@ var Client = Modinha.define('clients', {
             }
           })
 
-        // Web clients with implicit grant type (not enforced in development)
+          // Web clients with implicit grant type (not enforced in development)
         } else if (
           !inDevelopment &&
           Array.isArray(instance.grant_types) &&
@@ -552,7 +554,7 @@ var Client = Modinha.define('clients', {
       'client_secret_post',
       'client_secret_jwt',
       'private_key_jwt'
-    // 'none'
+      // 'none'
     ],
     default: 'client_secret_basic'
   },
@@ -761,7 +763,7 @@ var Client = Modinha.define('clients', {
  */
 
 Client.extend(Document)
-Client.__client = client
+Client.__client = redisClient
 
 /**
  * Client intersections
@@ -774,16 +776,16 @@ Client.intersects('roles')
  */
 
 Client.prototype.authorizedScope = function (callback) {
-  var client = Client.__client
+  var redisClient = Client.__client
 
-  client.zrange('clients:' + this._id + ':roles', 0, -1, function (err, roles) {
+  redisClient.zrange('clients:' + this._id + ':roles', 0, -1, function (err, roles) {
     if (err) { return callback(err) }
 
     if (!roles || roles.length === 0) {
       return callback(null, [])
     }
 
-    var multi = client.multi()
+    var multi = redisClient.multi()
 
     roles.forEach(function (role) {
       multi.zrange('roles:' + role + ':scopes', 0, -1)
@@ -846,9 +848,7 @@ Client.mappings.registration = {
 
 Client.prototype.configuration = function (settings, token) {
   var configuration = this.project('registration')
-  var registrationClientUri = settings.issuer + '/register/' + this._id
-
-  configuration.registration_client_uri = registrationClientUri
+  configuration.registration_client_uri = settings.issuer + '/register/' + this._id
 
   if (token) {
     configuration.registration_access_token = token
@@ -1075,8 +1075,12 @@ var authenticators = {
           statusCode: 400
         }))
       }
-
-      var token // = ClientSecretToken.decode(jwt, client.client_secret)
+      var token
+      try {
+        token = jsonwebtoken.verify(jwt, client.client_secret)
+      } catch (e) {
+        token = e
+      }
 
       if (!token || token instanceof Error) {
         return callback(new AuthorizationError({
@@ -1086,9 +1090,51 @@ var authenticators = {
         }))
       }
 
-      // TODO: validate the payload
+      if (token.sub !== client._id) {
+        return callback(new AuthorizationError({
+          error: 'unauthorized_client',
+          error_description: 'Invalid JWT subject',
+          statusCode: 400
+        }))
+      }
 
-      callback(null, client, token)
+      if (token.iss !== client._id) {
+        return callback(new AuthorizationError({
+          error: 'unauthorized_client',
+          error_description: 'Invalid JWT issuer',
+          statusCode: 400
+        }))
+      }
+
+      if (token.aud !== settings.issuer + '/token') {
+        return callback(new AuthorizationError({
+          error: 'unauthorized_client',
+          error_description: 'Invalid JWT audience',
+          statusCode: 400
+        }))
+      }
+
+      if (!token.jti) {
+        return callback(new AuthorizationError({
+          error: 'unauthorized_client',
+          error_description: 'Invalid JWT id',
+          statusCode: 400
+        }))
+      }
+      const CLIENT_JTI_STORE_KEY = 'clients:' + client._id + ':jtis'
+      Client.__client.sismember(CLIENT_JTI_STORE_KEY, token.jti, function (err, jtiExists) {
+        if (err || jtiExists) {
+          return callback(new AuthorizationError({
+            error: 'unauthorized_client',
+            error_description: 'Invalid JWT id',
+            statusCode: 400
+          }))
+        }
+        Client.__client.sadd(CLIENT_JTI_STORE_KEY, token.jti, function (err) {
+          if (err) callback(err)
+          return callback(null, client, token)
+        })
+      })
     })
   }
 
