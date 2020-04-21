@@ -1,5 +1,6 @@
 config
 coverage
+.nyc_output
 hooks
 extensions
 keys
