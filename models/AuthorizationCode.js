@@ -3,7 +3,7 @@
  */
 
 var client = require('../boot/redis').getClient()
-var Modinha = require('modinha')
+var Modinha = require('camfou-modinha')
 var Document = require('camfou-modinha-redis')
 var nowSeconds = require('../lib/time-utils').nowSeconds
 
@@ -66,9 +66,7 @@ var AuthorizationCode = Modinha.define('authorizationcodes', {
  */
 
 function expires () {
-  var secs = nowSeconds(600)
-
-  return secs
+  return nowSeconds(600)
 }
 
 /**

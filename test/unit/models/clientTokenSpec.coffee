@@ -18,7 +18,7 @@ chai.should()
 
 # Code under test
 ClientToken = require path.join cwd, 'models/ClientToken'
-JWT = require 'anvil-connect-jwt'
+JWT = require 'camfou-connect-jwt'
 base64url = require 'base64url'
 settings = require path.join cwd, 'boot/settings'
 

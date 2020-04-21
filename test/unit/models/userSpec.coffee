@@ -17,7 +17,7 @@ chai.should()
 
 
 # Code under test
-Modinha = require 'modinha'
+Modinha = require 'camfou-modinha'
 Role = proxyquire(path.join(cwd, 'models/Role'), {
   '../boot/redis': {
     getClient: () => {}
@@ -38,7 +38,6 @@ rclient = Redis.prototype
 
 
 describe 'User', ->
-
   before ->
     client = Redis.createClient()
     multi = mockMulti(client)
@@ -49,19 +48,19 @@ describe 'User', ->
     multi.restore()
 
 
-  {data,user,users,role,roles,jsonUsers} = {}
-  {err,validation,instance,instances,update,deleted,original,ids} = {}
-  {stat,info,options,userInfo} = {}
+  { data, user, users, role, jsonUsers } = {}
+  { err, validation, instance, ids } = {}
+  { info, userInfo } = {}
 
 
   before ->
 
-    # Mock data
+# Mock data
     data = []
 
     for i in [0..9]
       data.push
-        name:     "#{faker.name.firstName()} #{faker.name.lastName()}"
+        name: "#{faker.name.firstName()} #{faker.name.lastName()}"
         email:    faker.internet.email()
         hash:     'private'
         password: 'secret1337'

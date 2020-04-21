@@ -20,7 +20,7 @@ chai.should()
 
 
 # Code under test
-Modinha = require 'modinha'
+Modinha = require 'camfou-modinha'
 Scope = proxyquire(path.join(cwd, 'models/Scope'), {
   '../boot/redis': {
     getClient: () => {}
@@ -74,7 +74,6 @@ describe 'Scope', ->
         authorizedScope: sinon.stub().callsArgWith(0, null, subScopes)
 
       Scope.determine reqScopes, subject, (error, result, results) ->
-        err = error
         scp = result
         scps = results
         done()

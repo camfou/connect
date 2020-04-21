@@ -3,7 +3,7 @@
  */
 
 var client = require('../boot/redis').getClient()
-var Modinha = require('modinha')
+var Modinha = require('camfou-modinha')
 var Document = require('camfou-modinha-redis')
 
 /**

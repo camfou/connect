@@ -7,7 +7,7 @@ var settings = require('../boot/settings')
 var providers = require('../providers')
 var bcrypt = require('bcryptjs')
 var CheckPassword = require('mellt').CheckPassword
-var Modinha = require('modinha')
+var Modinha = require('camfou-modinha')
 var Document = require('camfou-modinha-redis')
 var PasswordRequiredError = require('../errors/PasswordRequiredError')
 var InsecurePasswordError = require('../errors/InsecurePasswordError')
@@ -194,10 +194,7 @@ User.prototype.verifyPassword = function (password, callback) {
 
 User.verifyPasswordStrength = function (password) {
   var daysToCrack = providers.password.daysToCrack
-  if (CheckPassword(password) <= daysToCrack) {
-    return false
-  }
-  return true
+  return CheckPassword(password) > daysToCrack
 }
 
 /**

@@ -6,7 +6,7 @@
 
 var redisClient = require('../boot/redis').getClient()
 var settings = require('../boot/settings')
-var Modinha = require('modinha')
+var Modinha = require('camfou-modinha')
 var Document = require('camfou-modinha-redis')
 var User = require('./User')
 var AuthorizationError = require('../errors/AuthorizationError')

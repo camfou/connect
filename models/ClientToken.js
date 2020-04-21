@@ -3,7 +3,7 @@
  */
 
 var crypto = require('crypto')
-var JWT = require('anvil-connect-jwt')
+var JWT = require('camfou-connect-jwt')
 var nowSeconds = require('../lib/time-utils').nowSeconds
 
 /**

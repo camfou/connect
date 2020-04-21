@@ -22,7 +22,7 @@ chai.should()
 
 # Code under test
 settings = require path.join(cwd, 'boot/settings')
-Modinha = require 'modinha'
+Modinha = require 'camfou-modinha'
 AccessTokenJWT = require path.join(cwd, 'models/AccessTokenJWT')
 AccessToken = proxyquire(path.join(cwd, 'models/AccessToken'), {
   '../boot/redis': {

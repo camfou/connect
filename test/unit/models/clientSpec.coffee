@@ -15,7 +15,7 @@ chai.should()
 
 
 # Code under test
-Modinha = require 'modinha'
+Modinha = require 'camfou-modinha'
 User = proxyquire(path.join(cwd, 'models/User'), {
   '../boot/redis': {
     getClient: () => {}

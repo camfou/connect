@@ -99,7 +99,7 @@
     "supertest": "3.4.2"
   },
   "dependencies": {
-    "anvil-connect-jwt": "camfou/connect-jwt#0.2.0",
+    "camfou-connect-jwt": "^1.0.0",
     "anvil-connect-keys": "0.1.0",
     "async": "2.6.2",
     "base64url": "3.0.1",
@@ -121,7 +121,7 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "4.17.15",
     "mellt": "~1.0.0",
-    "modinha": "^0.1.0",
+    "camfou-modinha": "^0.3.0",
     "camfou-modinha-redis": "^1.2.0",
     "nodemailer": "^4.0.1",
     "passport-adauth": "^0.1.2",
