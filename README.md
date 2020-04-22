@@ -1,12 +1,13 @@
-# Anvil Connect
+# Anvil Connect (fork)
 
-[![Build Status](https://travis-ci.org/camfou/connect.svg?branch=master)](https://travis-ci.org/camfou/connect)
-[![Coverage Status](https://coveralls.io/repos/camfou/connect/badge.svg?branch=master&service=github)](https://coveralls.io/github/camfou/connect?branch=master)
-[![npm version](https://badge.fury.io/js/ts-express-decorators.svg)](https://badge.fury.io/js/ts-express-decorators)
-[![Dependencies](https://david-dm.org/camfou/connect.svg)](https://david-dm.org/camfou/connect#info=dependencies)
-[![img](https://david-dm.org/camfou/connect/dev-status.svg)](https://david-dm.org/camfou/connect/#info=devDependencies)
-[![img](https://david-dm.org/camfou/connect/peer-status.svg)](https://david-dm.org/camfou/connect/#info=peerDependenciess)
-[![Known Vulnerabilities](https://snyk.io/test/github/camfou/connect/badge.svg)](https://snyk.io/test/github/camfou/connect)
+
+![Actions Status](https://github.com/camfou/connect/workflows/Node%20CI/badge.svg)
+![Coverage Status](https://coveralls.io/repos/camfou/connect/badge.svg?branch=master&service=github)
+![npm version](https://badge.fury.io/js/ts-express-decorators.svg)
+![Dependencies](https://david-dm.org/camfou/connect#info=dependencies)
+![img](https://david-dm.org/camfou/connect/#info=devDependencies)
+![img](https://david-dm.org/camfou/connect/#info=peerDependencies)
+![Known Vulnerabilities](https://snyk.io/test/github/camfou/connect)
 
 ### We're building a modern authorization server to authenticate your users and protect your APIs.
 
@@ -18,7 +19,7 @@
 
 #### Flexible User Authentication
 - Use local passwords, OAuth 1.0, OAuth 2.0, OpenID, SAML 2.0, LDAP, Active Directory, and more
-- Works out of the box with Google, Facebook, Twitter, GitHub, and a [growing list of providers](https://github.com/christiansmith/anvil-connect/tree/master/providers)
+- Works out of the box with Google, Facebook, Twitter, GitHub...
 - Custom schemes using virtually any existing Passport.js strategy or your own code
 
 #### Make it yours
@@ -55,7 +56,7 @@ We often pair on more challening or new code, hop into Gitter or Slack and join 
 
 ### Need more engagement?
 
-Support and consulting also available, contact us via [the website](http://anvil.io) or by [email](mailto:contact@anvil.io)
+Support and consulting also available, contact us by [email](mailto:cfoubert@prophessi.com)
 
 
 ## Status
