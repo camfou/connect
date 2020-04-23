@@ -3,7 +3,7 @@
  */
 
 var settings = require('../boot/settings')
-var ClientToken = require('../models/ClientToken')
+const { JWT } = require('jose')
 var UnauthorizedError = require('../errors/UnauthorizedError')
 
 /**
@@ -22,10 +22,15 @@ function verifyClientToken (req, res, next) {
       statusCode: 403
     }))
 
-  // header found
+    // header found
   } else {
     var jwt = header.replace('Bearer ', '')
-    var token = ClientToken.decode(jwt, settings.keys.sig.pub)
+    var token
+    try {
+      token = JWT.verify(jwt, settings.keys.sig.pub) && JWT.decode(jwt, { complete: true })
+    } catch (err) {
+      token = err
+    }
 
     // failed to decode
     if (!token || token instanceof Error) {
@@ -36,7 +41,7 @@ function verifyClientToken (req, res, next) {
         statusCode: 403
       }))
 
-    // decoded successfully
+      // decoded successfully
     } else {
       // validate token
       req.token = token

@@ -8,12 +8,11 @@ var settings = require('../boot/settings')
 var Modinha = require('camfou-modinha')
 var Document = require('camfou-modinha-redis')
 var random = Modinha.defaults.random
-var AccessTokenJWT = require('../models/AccessTokenJWT')
 var InvalidTokenError = require('../errors/InvalidTokenError')
 var UnauthorizedError = require('../errors/UnauthorizedError')
 var InsufficientScopeError = require('../errors/InsufficientScopeError')
 var nowSeconds = require('../lib/time-utils').nowSeconds
-
+const { JWT, JWS } = require('jose')
 /**
  * Model definition
  */
@@ -261,7 +260,20 @@ AccessToken.verify = function (token, options, callback) {
     jwt: function (done) {
       // the token is a JWT
       if (token.indexOf('.') !== -1) {
-        var decoded = AccessTokenJWT.decode(token, options.key)
+        var decoded
+        try {
+          decoded = JWT.verify(token, options.key) && JWT.decode(token, { complete: true })
+        } catch (err) {
+          if (err.code === 'ERR_JWT_EXPIRED') {
+            return done(new UnauthorizedError({
+              realm: 'user',
+              error: 'invalid_token',
+              error_description: 'Expired access token',
+              statusCode: 403
+            }))
+          }
+          decoded = err
+        }
         if (!decoded || decoded instanceof Error) {
           done(new UnauthorizedError({
             realm: 'user',
@@ -359,9 +371,16 @@ AccessToken.verify = function (token, options, callback) {
  */
 
 AccessToken.prototype.toJWT = function (secret) {
-  var jwt = new AccessTokenJWT(this)
-  jwt.payload.exp = nowSeconds(this.ei)
-  return jwt.encode(secret)
+  const payload = {
+    jti: this.at,
+    iss: this.iss,
+    iat: nowSeconds(),
+    exp: nowSeconds(this.ei),
+    sub: this.uid,
+    aud: this.cid,
+    scope: this.scope
+  }
+  return JWS.sign(payload, secret, { alg: 'RS256' })
 }
 
 /**

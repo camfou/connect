@@ -7,8 +7,7 @@ expect = chai.expect
 chai.use sinonChai
 chai.should()
 
-
-ClientToken = require '../../../models/ClientToken'
+jose = require 'jose'
 verifyClientToken = require('../../../oidc/verifyClientToken')
 
 
@@ -51,7 +50,8 @@ describe 'Verify Client Token', ->
         header: {}
         payload: {}
 
-      sinon.stub(ClientToken, 'decode').returns token
+      sinon.stub(jose.JWT, 'verify').returns true
+      sinon.stub(jose.JWT, 'decode').returns token
 
       req =
         headers: { authorization: 'Bearer valid.signed.jwt' }
@@ -63,7 +63,8 @@ describe 'Verify Client Token', ->
       verifyClientToken req, res, next
 
     after ->
-      ClientToken.decode.restore()
+      jose.JWT.verify.restore()
+      jose.JWT.decode.restore()
 
     it 'should reference the retrieved token object', ->
       req.token.should.equal token

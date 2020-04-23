@@ -13,6 +13,7 @@ sinonChai = require 'sinon-chai'
 mockMulti = require '../lib/multi'
 expect = chai.expect
 proxyquire = require('proxyquire').noCallThru()
+jose = require 'jose'
 
 
 # Configure Chai and Sinon
@@ -23,7 +24,6 @@ chai.should()
 # Code under test
 settings = require path.join(cwd, 'boot/settings')
 Modinha = require 'camfou-modinha'
-AccessTokenJWT = require path.join(cwd, 'models/AccessTokenJWT')
 AccessToken = proxyquire(path.join(cwd, 'models/AccessToken'), {
   '../boot/redis': {
     getClient: () => {}
@@ -258,7 +258,7 @@ describe 'AccessToken', ->
             cid: 'uuid2'
             scope: 'openid profile'
           sinon.stub(AccessToken, 'insert').callsArgWith(1, null, instance)
-          sinon.stub(AccessToken.prototype, 'toJWT').throws(new Error)
+          sinon.stub(jose.JWS, 'sign').throws(new Error)
           req =
             user: {}
             client: {}
@@ -269,7 +269,7 @@ describe 'AccessToken', ->
 
         after ->
           AccessToken.insert.restore()
-          AccessToken.prototype.toJWT.restore()
+          jose.JWS.sign.restore()
 
         it 'should provide an error', ->
           expect(err).to.be.an('Error')
@@ -301,9 +301,7 @@ describe 'AccessToken', ->
 
       it 'should provide an "issue" projection of the token', ->
         res.access_token.length.should.be.above 100
-        options =
-          key: settings.keys.sig.pub
-        decoded = AccessTokenJWT.decode(res.access_token, options.key)
+        decoded = jose.JWT.decode(res.access_token, { complete: true })
         decoded.payload.should.have.property('iss', settings.issuer)
         decoded.payload.should.have.property('sub', 'uuid1')
         decoded.payload.should.have.property 'iat'
@@ -463,7 +461,7 @@ describe 'AccessToken', ->
           cid: 'cid'
           scope: 'openid'
         issued = token.toJWT(settings.keys.sig.prv)
-        decoded = AccessTokenJWT.decode(issued, settings.keys.sig.pub)
+        decoded = jose.JWT.decode(issued, { complete: true })
 
 
       it 'should issue a signed JWT', ->
@@ -527,13 +525,16 @@ describe 'AccessToken', ->
 
     describe 'with decodable JWT and mismatching issuer', ->
       before (done) ->
-        token = (new AccessTokenJWT({
-          at: 'r4nd0m',
-          iss: 'https://MISMATCHING'
-          uid: 'uuid1'
-          cid: 'uuid2'
+        payload = {
+          jti: 'r4nd0m',
+          iss: 'https://MISMATCHING',
+          iat: nowSeconds(),
+          exp: nowSeconds(3600),
+          sub: 'uuid1',
+          aud: 'uuid2',
           scope: 'openid'
-        })).encode(settings.keys.sig.prv)
+        }
+        token = jose.JWS.sign(payload, settings.keys.sig.prv, { alg: 'RS256' })
         options =
           iss: settings.issuer
           key: settings.keys.sig.pub
@@ -554,14 +555,16 @@ describe 'AccessToken', ->
 
     describe 'with decodable JWT that has expired', ->
       before (done) ->
-        token = (new AccessTokenJWT({
-          at: 'r4nd0m',
-          iss: settings.issuer
-          uid: 'uuid1'
-          cid: 'uuid2'
-          exp: nowSeconds(-1)
+        payload = {
+          jti: 'r4nd0m',
+          iss: settings.issuer,
+          iat: nowSeconds(),
+          exp: nowSeconds(-1),
+          sub: 'uuid1',
+          aud: 'uuid2',
           scope: 'openid'
-        })).encode(settings.keys.sig.prv)
+        }
+        token = jose.JWS.sign(payload, settings.keys.sig.prv, { alg: 'RS256' })
         options =
           iss: settings.issuer
           key: settings.keys.sig.pub
@@ -582,13 +585,16 @@ describe 'AccessToken', ->
 
     describe 'with decodable JWT that has insufficient scope', ->
       before (done) ->
-        token = (new AccessTokenJWT({
-          at: 'r4nd0m',
-          iss: settings.issuer
-          uid: 'uuid1'
-          cid: 'uuid2'
+        payload = {
+          jti: 'r4nd0m',
+          iss: settings.issuer,
+          iat: nowSeconds(),
+          exp: nowSeconds(3600),
+          sub: 'uuid1',
+          aud: 'uuid2',
           scope: 'openid'
-        })).encode(settings.keys.sig.prv)
+        }
+        token = jose.JWS.sign(payload, settings.keys.sig.prv, { alg: 'RS256' })
         options =
           iss: settings.issuer
           key: settings.keys.sig.pub

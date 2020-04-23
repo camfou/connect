@@ -4,7 +4,7 @@
 var authenticator = require('../lib/authenticator')
 var settings = require('../boot/settings')
 var Client = require('../models/Client')
-var IDToken = require('../models/IDToken')
+const { JWT } = require('jose')
 
 /**
  * Handles signout requests (GETs or POSTs to the /signout endpoint) and ends a
@@ -30,8 +30,11 @@ function signout (req, res, next) {
   var state = params.state
 
   if (idHint) {
-    idToken = IDToken.decode(idHint, settings.keys.sig.pub)
-    if (idToken instanceof Error) { return next(idToken) }
+    try {
+      idToken = JWT.verify(idHint, settings.keys.sig.pub) && JWT.decode(idHint, { complete: true })
+    } catch (err) {
+      return next(err)
+    }
     clientId = idToken.payload.aud
   }
   authenticator.logout(req)

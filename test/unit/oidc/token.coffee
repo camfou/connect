@@ -11,7 +11,7 @@ chai.should()
 
 settings = require '../../../boot/settings'
 ClientToken = require '../../../models/ClientToken'
-IDToken = require '../../../models/IDToken'
+{ JWS, JWT } = require 'jose'
 
 AuthorizationCode = proxyquire('../../../models/AuthorizationCode', {
   '../boot/redis': {
@@ -37,7 +37,7 @@ describe 'Token response', ->
     before (done) ->
       at = AccessToken.initialize()
       sinon.stub(AccessToken, 'exchange').callsArgWith(1, null, at)
-      sinon.spy(IDToken.prototype, 'initializePayload')
+      sinon.spy(JWS, 'sign')
 
       req =
         body:
@@ -63,7 +63,7 @@ describe 'Token response', ->
 
     after ->
       AccessToken.exchange.restore()
-      IDToken.prototype.initializePayload.restore()
+      JWS.sign.restore()
 
     it 'should respond with access_token', ->
       res.json.should.have.been.calledWith sinon.match({ access_token: at.at })
@@ -83,7 +83,7 @@ describe 'Token response', ->
       res.json.should.have.been.calledWith sinon.match({ state: 'st4t3' })
 
     it 'should not have nonce', ->
-      jwt = IDToken.decode(res.json.firstCall.args[0].id_token, settings.keys.sig.pub)
+      jwt = JWT.decode(res.json.firstCall.args[0].id_token, { complete: true })
       expect(jwt.payload.nonce).to.be.undefined
 
     it 'should respond with session_state', ->
@@ -92,9 +92,7 @@ describe 'Token response', ->
       })
 
     it 'should include `amr` claim in id_token', ->
-      IDToken.prototype.initializePayload.should.have.been.calledWith(
-        sinon.match amr: req.session.amr
-      )
+      JWS.sign.should.be.calledWith(sinon.match({ amr: req.session.amr }))
 
 
   describe 'authorization code grant with optional nonce', ->
@@ -130,7 +128,7 @@ describe 'Token response', ->
       AccessToken.exchange.restore()
 
     it 'should have nonce', ->
-      jwt = IDToken.decode(res.json.firstCall.args[0].id_token, settings.keys.sig.pub)
+      jwt = JWT.decode(res.json.firstCall.args[0].id_token, { complete: true })
       jwt.payload.nonce.should.equal 'noncf7'
 
 
@@ -140,7 +138,7 @@ describe 'Token response', ->
     before (done) ->
       at = AccessToken.initialize({ cid: 'uuid2', uid: 'uuid1' })
       sinon.stub(AccessToken, 'refresh').callsArgWith(2, null, at)
-      sinon.spy(IDToken.prototype, 'initializePayload')
+      sinon.spy(JWS, 'sign')
 
       req =
         body:
@@ -163,7 +161,7 @@ describe 'Token response', ->
       done()
 
     after ->
-      IDToken.prototype.initializePayload.restore()
+      JWS.sign.restore()
 
 
     it 'should respond with access_token', ->
@@ -189,9 +187,7 @@ describe 'Token response', ->
       })
 
     it 'should include `amr` claim in id_token', ->
-      IDToken.prototype.initializePayload.should.have.been.calledWith(
-        sinon.match amr: req.session.amr
-      )
+      JWS.sign.should.be.calledWith(sinon.match({ amr: req.session.amr }))
 
 
   describe 'client credentials grant', ->

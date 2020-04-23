@@ -3,7 +3,7 @@ sinon = require 'sinon'
 sinonChai = require 'sinon-chai'
 expect = chai.expect
 proxyquire = require('proxyquire').noCallThru()
-
+{ JWS } = require 'jose'
 chai.use sinonChai
 chai.should()
 
@@ -20,8 +20,9 @@ authenticator = proxyquire('../../../lib/authenticator', {
   },
   '../models/User': User
 })
-IDToken = require '../../../models/IDToken'
 InvalidTokenError = require '../../../errors/InvalidTokenError'
+{ nowSeconds }   = require '../../../lib/time-utils'
+
 
 Client = proxyquire('../../../models/Client', {
   '../boot/redis': {
@@ -40,13 +41,15 @@ describe 'Signout', ->
 
   describe 'with uri and hint,', ->
     describe 'valid token', ->
-      validIDToken = new IDToken({
+      payload = {
         iss: 'https://anvil.io',
         sub: 'user-uuid',
         aud: 'client-uuid',
+        iat: nowSeconds(),
+        exp: nowSeconds(3600)
+      }
 
-      }).encode(settings.keys.sig.prv)
-
+      validIDToken = JWS.sign(payload, settings.keys.sig.prv, { alg: 'RS256' })
 
       describe 'and client get error', ->
         before (done) ->

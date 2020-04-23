@@ -6,7 +6,7 @@ var crypto = require('crypto')
 var async = require('async')
 var qs = require('qs')
 var settings = require('../boot/settings')
-var IDToken = require('../models/IDToken')
+const { JWS } = require('jose')
 var AccessToken = require('../models/AccessToken')
 var AuthorizationCode = require('../models/AuthorizationCode')
 var nowSeconds = require('../lib/time-utils').nowSeconds
@@ -28,8 +28,8 @@ function authorize (req, res, next) {
   var responseTypes = params.response_type.trim().split(' ')
   var responseMode = params.response_mode && params.response_mode.trim()
   var responseModeSeparator = responseMode ||
-    (params.response_type === 'code' ||
-      params.response_type === 'none') ? '?' : '#'
+  (params.response_type === 'code' ||
+    params.response_type === 'none') ? '?' : '#'
 
   // ACCESS GRANTED
   if (params.authorize === 'true') {
@@ -43,7 +43,7 @@ function authorize (req, res, next) {
             callback(null, response)
           })
 
-        // initialize an empty response
+          // initialize an empty response
         } else {
           callback(null, {})
         }
@@ -65,7 +65,7 @@ function authorize (req, res, next) {
             callback(null, response)
           })
 
-        // pass through to next
+          // pass through to next
         } else {
           callback(null, response)
         }
@@ -81,8 +81,7 @@ function authorize (req, res, next) {
             hash = shasum.digest('hex')
             atHash = hash.slice(0, hash.length / 2)
           }
-
-          var idToken = new IDToken({
+          response.id_token = JWS.sign({
             iss: settings.issuer,
             sub: req.user._id,
             aud: req.client._id,
@@ -90,9 +89,7 @@ function authorize (req, res, next) {
             nonce: params.nonce,
             at_hash: atHash,
             amr: req.session.amr
-          })
-
-          response.id_token = idToken.encode(settings.keys.sig.prv)
+          }, settings.keys.sig.prv, { alg: 'RS256' })
         }
 
         callback(null, response)
@@ -134,7 +131,7 @@ function authorize (req, res, next) {
       }
     })
 
-  // ACCESS DENIED
+    // ACCESS DENIED
   } else {
     res.redirect(params.redirect_uri + '?error=access_denied')
   }

@@ -94,7 +94,6 @@
     "supertest": "^4.0.2"
   },
   "dependencies": {
-    "camfou-connect-jwt": "^1.0.0",
     "anvil-connect-keys": "0.1.0",
     "async": "2.6.2",
     "base64url": "3.0.1",
@@ -114,8 +113,9 @@
     "hogan.js": "^3.0.2",
     "html-to-text": "5.1.1",
     "ioredis": "4.16.2",
-    "ldapjs": "^1.0.2",
+    "jose": "^1.26.0",
     "jsonwebtoken": "^8.5.1",
+    "ldapjs": "^1.0.2",
     "lodash": "4.17.15",
     "mellt": "~1.0.0",
     "nodemailer": "^4.0.1",

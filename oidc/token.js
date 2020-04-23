@@ -5,7 +5,7 @@
 var settings = require('../boot/settings')
 var AccessToken = require('../models/AccessToken')
 var ClientToken = require('../models/ClientToken')
-var IDToken = require('../models/IDToken')
+const { JWS } = require('jose')
 var nowSeconds = require('../lib/time-utils').nowSeconds
 var sessionState = require('../oidc/sessionState')
 
@@ -25,7 +25,13 @@ function token (req, res, next) {
       return next(err)
     }
 
-    var idToken
+    var idToken = {
+      iss: settings.issuer,
+      amr: req.session.amr,
+      iat: nowSeconds(),
+      exp: nowSeconds(token.ei)
+    }
+
     var response = token.project('issue')
 
     if (req.client.access_token_type !== 'random') {
@@ -33,30 +39,20 @@ function token (req, res, next) {
     }
 
     if (ac) {
-      idToken = new IDToken({
-        iss: settings.issuer,
+      Object.assign(idToken, {
         sub: ac.user_id,
         aud: ac.client_id,
-        exp: nowSeconds(token.ei),
-        amr: req.session.amr
+        nonce: ac.nonce
       })
-
-      if (ac.nonce) {
-        idToken.payload.nonce = ac.nonce
-      }
     } else {
-      idToken = new IDToken({
-        iss: settings.issuer,
+      Object.assign(idToken, {
         sub: token.uid,
-        aud: token.cid,
-        exp: nowSeconds(token.ei),
-        amr: req.session.amr
+        aud: token.cid
       })
     }
 
-    var opbs = req.session.opbs
-    response.id_token = idToken.encode(privateKey)
-    response.session_state = sessionState(client, client.client_uri, opbs)
+    response.id_token = JWS.sign(idToken, privateKey, { alg: 'RS256' })
+    response.session_state = sessionState(client, client.client_uri, req.session.opbs)
 
     if (params.state) {
       response.state = params.state
@@ -74,14 +70,14 @@ function token (req, res, next) {
   if (params.grant_type === 'authorization_code') {
     AccessToken.exchange(req, tokenResponse)
 
-  // REFRESH GRANT
+    // REFRESH GRANT
   } else if (params.grant_type === 'refresh_token') {
     var refreshToken = params.refresh_token
     var clientId = req.client._id
 
     AccessToken.refresh(refreshToken, clientId, tokenResponse)
 
-  // CLIENT CREDENTIALS GRANT (OAuth 2.0)
+    // CLIENT CREDENTIALS GRANT (OAuth 2.0)
   } else if (params.grant_type === 'client_credentials') {
     ClientToken.issue({
       iss: settings.issuer,
