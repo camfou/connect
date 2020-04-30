@@ -129,7 +129,7 @@ function authorize (req, res, next) {
         })
       } else {
         res.redirect(
-          params.redirect_uri + responseModeSeparator + qs.stringify(response)
+          params.redirect_uri + responseModeSeparator + qs.stringify(response, { encode: false })
         )
       }
     })
