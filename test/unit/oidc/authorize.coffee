@@ -46,7 +46,7 @@ describe 'Authorize', ->
           authorize: 'true'
           response_type: 'code'
           redirect_uri: 'https://host/callback'
-          state: 'r4nd0m'
+          state: 'r4nd0m='
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -74,7 +74,7 @@ describe 'Authorize', ->
       res.redirect.should.have.been.calledWith sinon.match 'code=1234'
 
     it 'should provide state', ->
-      res.redirect.should.have.been.calledWith sinon.match 'state=r4nd0m'
+      res.redirect.should.have.been.calledWith sinon.match 'state=r4nd0m='
 
     it 'should not provide session_state', ->
       res.redirect.should.not.have.been.calledWith sinon.match('session_state=')
