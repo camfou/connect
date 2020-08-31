@@ -11,6 +11,7 @@ var AccessToken = require('../models/AccessToken')
 var AuthorizationCode = require('../models/AuthorizationCode')
 var nowSeconds = require('../lib/time-utils').nowSeconds
 var sessionState = require('../oidc/sessionState')
+var base64url = require('base64url')
 
 /**
  * Authorize
@@ -79,7 +80,7 @@ function authorize (req, res, next) {
             shasum = crypto.createHash('sha256')
             shasum.update(response.access_token)
             hash = shasum.digest('hex')
-            atHash = hash.slice(0, hash.length / 2)
+            atHash = base64url(Buffer.from(hash.substring(0, hash.length / 2), 'hex'))
           }
 
           var idToken = new IDToken({
@@ -112,8 +113,7 @@ function authorize (req, res, next) {
       // calculate session_state and add to response
       if (responseTypes.indexOf('id_token') !== -1 ||
         responseTypes.indexOf('token') !== -1) {
-        var session = sessionState(req.client, req.client.client_uri, opbs)
-        response.session_state = session
+        response.session_state = sessionState(req.client, req.client.client_uri, opbs)
       }
       if (responseMode === 'form_post') {
         res.set({
