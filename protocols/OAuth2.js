@@ -3,16 +3,15 @@
 /**
  * Module dependencies
  */
-
-var pkg = require('../package.json')
-var agent = 'Anvil Connect/' + pkg.version
-var qs = require('qs')
-var { URL } = require('url')
-var util = require('util')
-var Strategy = require('passport-strategy')
-var request = require('superagent')
-var User = require('../models/User')
-var AuthorizationError = require('../errors/ProviderAuthError')
+const pkg = require('../package.json')
+const agent = 'Anvil Connect/' + pkg.version
+const qs = require('qs')
+const { URL } = require('url')
+const util = require('util')
+const Strategy = require('passport-strategy')
+const request = require('superagent')
+const User = require('../models/User')
+const AuthorizationError = require('../errors/ProviderAuthError')
 
 /**
  * OAuth2Strategy
@@ -59,9 +58,9 @@ OAuth2Strategy.initialize = initialize
  */
 
 function authenticate (req, options) {
-  var strategy = this
-  var error = req.query && req.query.error
-  var code = req.query && req.query.code
+  const strategy = this
+  const error = req.query && req.query.error
+  const code = req.query && req.query.code
 
   options = options || {}
 
@@ -108,9 +107,9 @@ OAuth2Strategy.prototype.authenticate = authenticate
  */
 
 function base64credentials () {
-  var id = this.client.client_id
-  var secret = this.client.client_secret
-  var credentials = id + ':' + secret
+  const id = this.client.client_id
+  const secret = this.client.client_secret
+  const credentials = id + ':' + secret
 
   return Buffer.from(credentials).toString('base64')
 }
@@ -122,14 +121,15 @@ OAuth2Strategy.prototype.base64credentials = base64credentials
  */
 
 function authorizationRequest (req, options) {
-  var provider = this.provider
-  var endpoints = this.endpoints
-  var config = this.client
-  var url = new URL(endpoints.authorize.url)
-  var responseType = 'code'
-  var clientId = config.client_id
-  var redirectUri = provider.redirect_uri
-  var state = options.state
+  const provider = this.provider
+  const endpoints = this.endpoints
+  const config = this.client
+  const url = new URL(endpoints.authorize.url)
+  const responseType = 'code'
+  const clientId = config.client_id
+  const redirectUri = provider.redirect_uri
+  const state = options.state
+  const prompt = req.query.prompt
 
   // required authorization parameters
   url.searchParams.set('response_type', responseType)
@@ -138,15 +138,19 @@ function authorizationRequest (req, options) {
 
   // merge default and configured scopes
   if (provider.scope || config.scope) {
-    var s1 = provider.scope || []
-    var s2 = config.scope || []
-    var sp = provider.separator || ' '
+    const s1 = provider.scope || []
+    const s2 = config.scope || []
+    const sp = provider.separator || ' '
 
     url.searchParams.set('scope', s1.concat(s2).join(sp))
   }
 
   if (state) {
     url.searchParams.set('state', state)
+  }
+
+  if (prompt) {
+    url.searchParams.set('prompt', prompt)
   }
 
   // Redirect to the provider. This method is
@@ -162,15 +166,15 @@ OAuth2Strategy.prototype.authorizationRequest = authorizationRequest
  */
 
 function authorizationCodeGrant (code, done) {
-  var endpoint = this.endpoints.token
-  var provider = this.provider
-  var client = this.client
-  var url = endpoint.url
-  var method = endpoint.method && endpoint.method.toLowerCase()
-  var auth = endpoint.auth
-  var parser = endpoint.parser
-  var accept = endpoint.accept || 'application/json'
-  var params = {}
+  const endpoint = this.endpoints.token
+  const provider = this.provider
+  const client = this.client
+  const url = endpoint.url
+  const method = endpoint.method && endpoint.method.toLowerCase()
+  const auth = endpoint.auth
+  const parser = endpoint.parser
+  const accept = endpoint.accept || 'application/json'
+  const params = {}
 
   // required token parameters
   params.grant_type = 'authorization_code'
@@ -178,7 +182,7 @@ function authorizationCodeGrant (code, done) {
   params.redirect_uri = provider.redirect_uri
 
   // start building the request
-  var req = request[method || 'post'](url)
+  const req = request[method || 'post'](url)
 
   // Authenticate the client with HTTP Basic
   if (auth === 'client_secret_basic') {
@@ -199,7 +203,7 @@ function authorizationCodeGrant (code, done) {
   // Execute the request
   return req.end(function (err, res) {
     if (err) { return done(err) }
-    var response = (parser === 'x-www-form-urlencoded')
+    const response = (parser === 'x-www-form-urlencoded')
       ? qs.parse(res.text)
       : res.body
 
@@ -218,17 +222,17 @@ OAuth2Strategy.prototype.authorizationCodeGrant = authorizationCodeGrant
  */
 
 function userInfo (token, done) {
-  var strategy = this
-  var endpoint = this.endpoints.user
-  var mapping = this.mapping
-  var url = endpoint.url
-  var method = endpoint.method && endpoint.method.toLowerCase()
-  var auth = endpoint.auth
-  var params = endpoint.params
-  var accept = endpoint.accept || 'application/json'
+  const strategy = this
+  const endpoint = this.endpoints.user
+  const mapping = this.mapping
+  const url = endpoint.url
+  const method = endpoint.method && endpoint.method.toLowerCase()
+  const auth = endpoint.auth
+  const params = endpoint.params
+  const accept = endpoint.accept || 'application/json'
 
   // start building the request
-  var req = request[method || 'get'](url)
+  const req = request[method || 'get'](url)
 
   // Authenticate with custom header
   if (auth && auth.header) {
