@@ -25,7 +25,7 @@ OAuth2Strategy = proxyquire('../../../protocols/OAuth2', {
 
 
 describe 'OAuth2 Strategy', ->
-  { err, res, credentials } = {}
+  { res, credentials } = {}
 
   provider =
     id: 'id'
@@ -183,7 +183,7 @@ describe 'OAuth2 Strategy', ->
 
   describe 'authorizationRequest', ->
     describe 'with valid configuration', ->
-      req = query: { query: {} }
+      req =  query: { prompt : 'welcome'}
       options = state: 'st4t3'
 
       beforeEach ->
@@ -216,6 +216,11 @@ describe 'OAuth2 Strategy', ->
       it 'should include state', ->
         strategy.redirect.should.have.been.calledWith sinon.match(
           'state=' + options.state
+        )
+
+      it 'should include prompt', ->
+        strategy.redirect.should.have.been.calledWith sinon.match(
+          'prompt=' + req.query.prompt
         )
 
 
