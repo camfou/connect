@@ -1,28 +1,7 @@
 {
-  "name": "anvil-connect",
-  "description": "A modern authorization server built to authenticate your users and protect your APIs",
-  "version": "0.2.0",
-  "author": {
-    "name": "Christian Smith",
-    "email": "smith@anvil.io",
-    "url": "http://anvil.io"
-  },
-  "contributors": [
-    {
-      "name": "Tom Kersten",
-      "email": "tom@whitespur.com",
-      "url": "http://tomkersten.com"
-    },
-    {
-      "name": "Adi Chikara",
-      "url": "https://twitter.com/adi_ads"
-    },
-    {
-      "name": "Vartan Simonian",
-      "email": "vsimonianpress@gmail.com",
-      "url": "http://vsimonian.github.io/"
-    }
-  ],
+  "name": "camfou-connect",
+  "description": "A modern authorization server built to authenticate your users and protect your APIs (forked from anvil-connect)",
+  "version": "0.0.0-development",
   "repository": {
     "type": "git",
     "url": "https://github.com/camfou/connect.git"
@@ -65,7 +44,8 @@
     "test": "NODE_ENV=test mocha",
     "lint": "eslint -c .eslintrc .",
     "test-watch": "NODE_ENV=test mocha test/unit --watch",
-    "cover": "nyc --reporter=lcov npm run test"
+    "cover": "nyc --reporter=lcov npm run test",
+    "semantic-release": "semantic-release"
   },
   "main": "server.js",
   "license": "MIT",
@@ -89,6 +69,7 @@
     "nyc": "^15.0.1",
     "proxyquire": "^2.1.3",
     "redis-mock": "^0.49.0",
+    "semantic-release": "^17.3.7",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0",
     "supertest": "^4.0.2"
