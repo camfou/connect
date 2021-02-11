@@ -39,7 +39,7 @@ module.exports = function (server) {
     oidc.stashParams,
     oidc.determineProvider,
     function (req, res, next) {
-      if (req.user) {
+      if (req.user && req.user.lastProvider !== req.params.provider) {
         authenticator.logout(req)
         next()
       } else {
