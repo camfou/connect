@@ -39,6 +39,14 @@ module.exports = function (server) {
     oidc.stashParams,
     oidc.determineProvider,
     function (req, res, next) {
+      if (req.user && req.user.lastProvider !== req.params.provider) {
+        authenticator.logout(req)
+        next()
+      } else {
+        next()
+      }
+    },
+    function (req, res, next) {
       var provider = req.params.provider
       var config = settings.providers[provider]
 
