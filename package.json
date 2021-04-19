@@ -82,7 +82,7 @@
     "body-parser": "1.19.0",
     "camfou-connect-jwt": "^1.0.1",
     "camfou-modinha": "^0.4.0",
-    "camfou-modinha-redis": "^1.3.1",
+    "camfou-modinha-redis": "^1.3.3",
     "connect-flash": "^0.1.1",
     "connect-redis": "3.4.1",
     "consolidate": "0.16.0",
