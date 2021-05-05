@@ -69,6 +69,7 @@ module.exports = function (server) {
 
   var handler = [
     oidc.unstashParams,
+    oidc.whitelistParams,
     oidc.verifyClient,
     oidc.determineProvider,
 
