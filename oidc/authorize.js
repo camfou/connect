@@ -31,6 +31,7 @@ function authorize (req, res, next) {
   var responseModeSeparator = responseMode ||
     (params.response_type === 'code' ||
       params.response_type === 'none') ? '?' : '#'
+  const whitelistParams = req.whitelistParams
 
   // ACCESS GRANTED
   if (params.authorize === 'true') {
@@ -125,11 +126,12 @@ function authorize (req, res, next) {
           state: params.state,
           access_token: response.access_token,
           id_token: response.id_token,
-          code: response.code
+          code: response.code,
+          ...whitelistParams
         })
       } else {
         res.redirect(
-          params.redirect_uri + responseModeSeparator + qs.stringify(response, { encode: false })
+          params.redirect_uri + responseModeSeparator + qs.stringify({ ...response, ...whitelistParams }, { encode: false })
         )
       }
     })

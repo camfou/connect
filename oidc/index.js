@@ -49,7 +49,8 @@ var oidc = {
   verifyClientIdentifiers: require('./verifyClientIdentifiers'),
   verifyEmail: require('./verifyEmail'),
   verifyRedirectURI: require('./verifyRedirectURI'),
-  verifyAuthorizationCode: require('./verifyAuthorizationCode')
+  verifyAuthorizationCode: require('./verifyAuthorizationCode'),
+  whitelistParams: require('./whitelistParams')
 }
 
 /**

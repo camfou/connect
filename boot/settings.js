@@ -439,6 +439,13 @@ settings.op_tos_uri = undefined
 settings.refresh_token_bytes_range = 10
 
 /**
+ * whitelist_keys
+ *   OPTIONAL. List of url/form params that will be passed through url/form flows
+ */
+
+settings.whitelist_request_params = []
+
+/**
  * Load config file settings and override defaults
  */
 

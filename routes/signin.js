@@ -54,6 +54,7 @@ module.exports = function (server) {
 
   var handler = [
     oidc.selectConnectParams,
+    oidc.whitelistParams,
     oidc.verifyClient,
     oidc.validateAuthorizationParams,
     oidc.determineProvider,

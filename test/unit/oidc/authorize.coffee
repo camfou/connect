@@ -47,6 +47,12 @@ describe 'Authorize', ->
           response_type: 'code'
           redirect_uri: 'https://host/callback'
           state: 'r4nd0m='
+          ga: 'whitelistedValue'
+          other: 'whitelistedParam'
+      whitelistParams:
+          ga: 'whitelistedValue'
+          other: 'whitelistedParam'
+
       res =
         redirect: sinon.spy()
       next = sinon.spy()
@@ -79,6 +85,10 @@ describe 'Authorize', ->
     it 'should not provide session_state', ->
       res.redirect.should.not.have.been.calledWith sinon.match('session_state=')
 
+    it 'should pass the whitelistedParams', ->
+      res.redirect.should.not.have.been.calledWith sinon.match('ga=whitelistedValue')
+      res.redirect.should.not.have.been.calledWith sinon.match('other=whitelistedParam')
+
   describe 'with consent,  "code" response type and "form_post" response_mode', ->
     before (done) ->
       sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
@@ -97,6 +107,11 @@ describe 'Authorize', ->
           response_mode: 'form_post'
           redirect_uri: 'https://host/callback'
           state: 'r4nd0m'
+          ga: 'whitelistedValue'
+          other: 'whitelistedParam'
+        whitelistParams:
+          ga: 'whitelistedValue'
+          other: 'whitelistedParam'
       res =
         set: sinon.spy()
         render: sinon.spy()
@@ -127,6 +142,8 @@ describe 'Authorize', ->
           access_token: undefined
           id_token: undefined
           code: '1234'
+          ga: 'whitelistedValue'
+          other: 'whitelistedParam'
         }
       )
 

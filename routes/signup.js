@@ -71,6 +71,7 @@ module.exports = function (server) {
 
   var postSignupHandler = [
     oidc.selectConnectParams,
+    oidc.whitelistParams,
     oidc.verifyClient,
     oidc.validateAuthorizationParams,
     usePasswordProvider,

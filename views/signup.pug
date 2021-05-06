@@ -20,6 +20,9 @@ html(lang="en")
         input(type='hidden', name='scope', value=request.scope)
         input(type='hidden', name='state', value=request.state)
         input(type='hidden', name='nonce', value=request.nonce)
+        each whitelist_param in whitelist_params
+          if request[whitelist_param]
+            input(type='hidden', name=whitelist_param, value=request[whitelist_param])
         hr.textsep.signup
         input(type='text', name='givenName', placeholder='First Name')
         input(type='text', name='familyName', placeholder='Last Name')
