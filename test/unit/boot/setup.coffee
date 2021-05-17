@@ -1,6 +1,6 @@
 # Test dependencies
 cwd = process.cwd()
-fs = require 'fs'
+fs = require 'fs-extra'
 path = require 'path'
 chai = require 'chai'
 sinon = require 'sinon'
@@ -76,6 +76,7 @@ describe 'Setup', ->
         sinon.stub(fs, 'readFileSync').callsFake(->
           toString: ->
             '0123456789abcdef')
+        sinon.stub fs, 'ensureDirSync'
         sinon.stub fs, 'writeFileSync'
 
         setup.readSetupToken (error, setupToken) ->
@@ -85,6 +86,7 @@ describe 'Setup', ->
 
       after ->
         fs.readFileSync.restore()
+        fs.ensureDirSync.restore()
         fs.writeFileSync.restore()
 
       it 'should not provide an error', ->
@@ -103,6 +105,7 @@ describe 'Setup', ->
         sinon.stub(fs, 'readFileSync').callsFake(->
           throw new Error())
         sinon.stub fs, 'writeFileSync'
+        sinon.stub fs, 'ensureDirSync'
 
         setup.readSetupToken (error, setupToken) ->
           err = error
@@ -111,6 +114,7 @@ describe 'Setup', ->
 
       after ->
         fs.readFileSync.restore()
+        fs.ensureDirSync.restore()
         fs.writeFileSync.restore()
 
       it 'should not provide an error', ->
@@ -130,6 +134,7 @@ describe 'Setup', ->
           toString: ->
             '')
         sinon.stub fs, 'writeFileSync'
+        sinon.stub fs, 'ensureDirSync'
 
         setup.readSetupToken (error, setupToken) ->
           err = error
@@ -139,6 +144,7 @@ describe 'Setup', ->
       after ->
         fs.readFileSync.restore()
         fs.writeFileSync.restore()
+        fs.ensureDirSync.restore()
 
       it 'should not provide an error', ->
         expect(err).to.not.be.ok
@@ -157,6 +163,7 @@ describe 'Setup', ->
           toString: ->
             '        ')
         sinon.stub fs, 'writeFileSync'
+        sinon.stub fs, 'ensureDirSync'
 
         setup.readSetupToken (error, setupToken) ->
           err = error
@@ -166,6 +173,7 @@ describe 'Setup', ->
       after ->
         fs.readFileSync.restore()
         fs.writeFileSync.restore()
+        fs.ensureDirSync.restore()
 
       it 'should not provide an error', ->
         expect(err).to.not.be.ok

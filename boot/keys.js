@@ -1,49 +1,14 @@
-/* global process */
-
-/**
- * Module dependencies
- */
-
-const AnvilConnectKeys = require('anvil-connect-keys')
-
-/**
- * Create a keypair client
- */
-
-const keygen = new AnvilConnectKeys()
-
-const loadKeyPairs = () => {
-  keys = keygen.loadKeyPairs()
-  keys.jwks.keys = keys.jwks.keys.map((key, index) => {
-    return {
-      ...key,
-      kid: 'key-' + index
-    }
-  })
-
-  return keys
-}
-
-/**
- * Attempt to load the key pairs
- */
+const { KeyGen } = require('../lib/keygen')
 
 let keys
-try { keys = loadKeyPairs() } catch (e) {}
+try {
+  const keyGen = new KeyGen()
 
-/**
- * If the keypairs don't exist, try to create them
- */
-if (!keys) {
-  try {
-    keygen.generateKeyPairs()
-    keys = loadKeyPairs()
-  } catch (e) {
-    console.log(e)
-    process.exit(1)
-  }
+  keys = keyGen.getKeys()
+} catch (e) {
+  console.log(e)
+  process.exit(1)
 }
-
 /**
  * Export
  */
