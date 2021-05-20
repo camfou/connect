@@ -80,7 +80,7 @@ module.exports = function (server) {
    * So we can loop over it in the views template
    */
 
-  server.locals.whitelist_params = settings.whitelist_request_params
+  server.locals.whitelist_params = settings.whitelist_request_params || []
 
   /**
    * Settings
