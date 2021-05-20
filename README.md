@@ -67,4 +67,4 @@ Support and consulting also available, contact us by [email](mailto:cfoubert@pro
 
 ## MIT License
 
-Copyright (c) 2015 [Anvil Research, Inc.](http://anvil.io)
+Copyright (c) 2021 [Anvil Research, Inc.](http://anvil.io)

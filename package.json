@@ -75,7 +75,7 @@
     "supertest": "^4.0.2"
   },
   "dependencies": {
-    "@tsed/jwks": "6.49.0",
+    "@tsed/jwks": "6.49.2",
     "fs-extra": "10.0.0",
     "async": "2.6.2",
     "base64url": "3.0.1",
