@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var util = require('util')
+const util = require('util')
 
 /**
  * ProviderAuthError

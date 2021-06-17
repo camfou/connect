@@ -2,20 +2,20 @@
  * Module dependencies
  */
 
-var oidc = require('../oidc')
-var settings = require('../boot/settings')
-var mailer = require('../boot/mailer').getMailer()
-var authenticator = require('../lib/authenticator')
-var qs = require('qs')
-var InvalidRequestError = require('../errors/InvalidRequestError')
-var providers = require('../providers')
+const oidc = require('../oidc')
+const settings = require('../boot/settings')
+const mailer = require('../boot/mailer').getMailer()
+const authenticator = require('../lib/authenticator')
+const qs = require('qs')
+const InvalidRequestError = require('../errors/InvalidRequestError')
+const providers = require('../providers')
 
-var providerInfo = {}
-var providerNames = Object.keys(providers)
-for (var i = 0; i < providerNames.length; i++) {
+const providerInfo = {}
+const providerNames = Object.keys(providers)
+for (let i = 0; i < providerNames.length; i++) {
   providerInfo[providerNames[i]] = providers[providerNames[i]]
 }
-var visibleProviders = {}
+const visibleProviders = {}
 // Only render providers that are not marked as hidden
 Object.keys(settings.providers).forEach(function (providerID) {
   if (!settings.providers[providerID].hidden) {
@@ -52,7 +52,7 @@ module.exports = function (server) {
    * Password signin handler
    */
 
-  var handler = [
+  const handler = [
     oidc.selectConnectParams,
     oidc.whitelistParams,
     oidc.verifyClient,

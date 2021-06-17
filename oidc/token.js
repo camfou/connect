@@ -2,31 +2,31 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
-var AccessToken = require('../models/AccessToken')
-var ClientToken = require('../models/ClientToken')
-var IDToken = require('../models/IDToken')
-var nowSeconds = require('../lib/time-utils').nowSeconds
-var sessionState = require('../oidc/sessionState')
+const settings = require('../boot/settings')
+const AccessToken = require('../models/AccessToken')
+const ClientToken = require('../models/ClientToken')
+const IDToken = require('../models/IDToken')
+const nowSeconds = require('../lib/time-utils').nowSeconds
+const sessionState = require('../oidc/sessionState')
 
 /**
  * Exchange code for token
  */
 
-var privateKey = settings.keys.sig.prv
+const privateKey = settings.keys.sig.prv
 
 function token (req, res, next) {
-  var params = req.body
-  var client = req.client
-  var ac = req.code
+  const params = req.body
+  const client = req.client
+  const ac = req.code
 
   function tokenResponse (err, token) {
     if (err) {
       return next(err)
     }
 
-    var idToken
-    var response = token.project('issue')
+    let idToken
+    const response = token.project('issue')
 
     if (req.client.access_token_type !== 'random') {
       response.access_token = token.toJWT(privateKey)
@@ -54,7 +54,7 @@ function token (req, res, next) {
       })
     }
 
-    var opbs = req.session.opbs
+    const opbs = req.session.opbs
     response.id_token = idToken.encode(privateKey)
     response.session_state = sessionState(client, client.client_uri, opbs)
 
@@ -76,8 +76,8 @@ function token (req, res, next) {
 
   // REFRESH GRANT
   } else if (params.grant_type === 'refresh_token') {
-    var refreshToken = params.refresh_token
-    var clientId = req.client._id
+    const refreshToken = params.refresh_token
+    const clientId = req.client._id
 
     AccessToken.refresh(refreshToken, clientId, tokenResponse)
 
@@ -97,7 +97,7 @@ function token (req, res, next) {
         Pragma: 'no-cache'
       })
 
-      var response = {
+      const response = {
         access_token: token,
         token_type: 'Bearer'
       }

@@ -4,8 +4,8 @@
  * Server dependencies
  */
 
-var express = require('express')
-var server = express()
+const express = require('express')
+const server = express()
 
 /**
  * Configuration

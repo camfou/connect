@@ -2,20 +2,20 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
-var oidc = require('../oidc')
-var mailer = require('../boot/mailer').getMailer()
-var authenticator = require('../lib/authenticator')
-var qs = require('qs')
-var NotFoundError = require('../errors/NotFoundError')
-var providers = require('../providers')
+const settings = require('../boot/settings')
+const oidc = require('../oidc')
+const mailer = require('../boot/mailer').getMailer()
+const authenticator = require('../lib/authenticator')
+const qs = require('qs')
+const NotFoundError = require('../errors/NotFoundError')
+const providers = require('../providers')
 
-var providerInfo = {}
-var providerNames = Object.keys(providers)
-for (var i = 0; i < providerNames.length; i++) {
+const providerInfo = {}
+const providerNames = Object.keys(providers)
+for (let i = 0; i < providerNames.length; i++) {
   providerInfo[providerNames[i]] = providers[providerNames[i]]
 }
-var visibleProviders = {}
+const visibleProviders = {}
 // Only render providers that are not marked as hidden
 Object.keys(settings.providers).forEach(function (providerID) {
   if (!settings.providers[providerID].hidden) {
@@ -47,8 +47,8 @@ module.exports = function (server) {
       }
     },
     function (req, res, next) {
-      var provider = req.params.provider
-      var config = settings.providers[provider]
+      const provider = req.params.provider
+      const config = settings.providers[provider]
 
       // Authorize
       if (config) {
@@ -67,7 +67,7 @@ module.exports = function (server) {
    * Handle Third Party Authorization
    */
 
-  var handler = [
+  const handler = [
     oidc.unstashParams,
     oidc.whitelistParams,
     oidc.verifyClient,

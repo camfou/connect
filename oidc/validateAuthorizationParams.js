@@ -2,14 +2,14 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
-var AuthorizationError = require('../errors/AuthorizationError')
+const settings = require('../boot/settings')
+const AuthorizationError = require('../errors/AuthorizationError')
 
 /**
  * Valid response types
  */
 
-var validResponseTypes = [
+const validResponseTypes = [
   'code',
   'token',
   'id_token',
@@ -20,7 +20,7 @@ var validResponseTypes = [
  * Supported response modes
  */
 
-var validResponseModes = [
+const validResponseModes = [
   'query',
   'fragment',
   'form_post'
@@ -34,7 +34,7 @@ var validResponseModes = [
  */
 
 function validateAuthorizationParams (req, res, next) {
-  var params = req.connectParams
+  const params = req.connectParams
 
   // missing response type
   if (!params.response_type || !params.response_type.trim()) {
@@ -46,12 +46,12 @@ function validateAuthorizationParams (req, res, next) {
     }))
   }
 
-  var responseTypes = params.response_type.trim().split(' ')
+  const responseTypes = params.response_type.trim().split(' ')
 
   // Check that
   // - All response_types are valid
   // - If `none` response_type is given, that it is the only response_type
-  var isValidResponseType = responseTypes.indexOf('none') !== -1
+  const isValidResponseType = responseTypes.indexOf('none') !== -1
     ? responseTypes.length === 1
     : responseTypes.every(
       function (responseType) {
@@ -82,7 +82,7 @@ function validateAuthorizationParams (req, res, next) {
   // - 'id_token code' will NOT pass
 
   // Get the registered response_type sets off the client
-  var registeredResponseTypeSets =
+  const registeredResponseTypeSets =
 
     // If the client exists and has response_types defined
     (req.client && Array.isArray(req.client.response_types))
@@ -95,20 +95,20 @@ function validateAuthorizationParams (req, res, next) {
       : [['code']]
 
   // In the array of response_types in the settings...
-  var isSupportedResponseType = settings.response_types_supported
+  const isSupportedResponseType = settings.response_types_supported
 
     // check each set until we find one that satisfies the following:
     .some(function (responseTypeString) {
-      var responseTypeSet = responseTypeString.split(' ')
+      const responseTypeSet = responseTypeString.split(' ')
 
       // if there is at least one response_type set registered on the client...
       if (registeredResponseTypeSets.some(function (regResTypeSet) {
-        var indices = []
+        const indices = []
 
         // that has the same number of response_types in it...
         return regResTypeSet.length === responseTypeSet.length &&
           regResTypeSet.every(function (responseType) {
-            var index = responseTypeSet.indexOf(responseType)
+            const index = responseTypeSet.indexOf(responseType)
 
             // of which there are no duplicates...
             if (indices.indexOf(index) !== -1) {
@@ -124,13 +124,13 @@ function validateAuthorizationParams (req, res, next) {
       // then we have found a response_type set that is both permitted by the
       // server settings and registered for the current client
       })) {
-        var indices = []
+        const indices = []
 
         // then we check to see that the response_type set received in the auth
         // request also has the same number of response_types...
         return responseTypes.length === responseTypeSet.length &&
           responseTypes.every(function (responseType) {
-            var index = responseTypeSet.indexOf(responseType)
+            const index = responseTypeSet.indexOf(responseType)
 
             // that there are no duplicates...
             if (indices.indexOf(index) !== -1) {

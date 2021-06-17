@@ -4,14 +4,14 @@
  * Module dependencies
  */
 
-var cwd = process.cwd()
-var env = process.env.NODE_ENV || 'development'
-var crypto = require('crypto')
-var path = require('path')
-var keys = require(path.join(__dirname, 'keys'))
-var pkg = require(path.join(__dirname, '..', 'package.json'))
-var config = path.join(cwd, 'config', env + '.json')
-var settings = {}
+const cwd = process.cwd()
+const env = process.env.NODE_ENV || 'development'
+const crypto = require('crypto')
+const path = require('path')
+const keys = require(path.join(__dirname, 'keys'))
+const pkg = require(path.join(__dirname, '..', 'package.json'))
+let config = path.join(cwd, 'config', env + '.json')
+const settings = {}
 
 /**
  * Load config
@@ -497,7 +497,7 @@ if (!settings.providers.password) {
  * Config-file dependenct settings
  */
 
-var issuer = settings.issuer
+const issuer = settings.issuer
 
 /**
  * authorization_endpoint

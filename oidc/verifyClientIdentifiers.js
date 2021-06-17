@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var AuthorizationError = require('../errors/AuthorizationError')
+const AuthorizationError = require('../errors/AuthorizationError')
 
 /**
  * Verify Client Params

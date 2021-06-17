@@ -2,17 +2,17 @@
  * Module dependencies
  */
 
-var pkg = require('../package.json')
-var qs = require('qs')
-var { URL } = require('url')
-var util = require('util')
-var crypto = require('crypto')
-var request = require('superagent')
-var map = require('camfou-modinha').map
-var User = require('../models/User')
-var Strategy = require('passport-strategy')
-var agent = 'Anvil Connect/v' + pkg.version
-var nowSeconds = require('../lib/time-utils').nowSeconds
+const pkg = require('../package.json')
+const qs = require('qs')
+const { URL } = require('url')
+const util = require('util')
+const crypto = require('crypto')
+const request = require('superagent')
+const map = require('camfou-modinha').map
+const User = require('../models/User')
+const Strategy = require('passport-strategy')
+const agent = 'Anvil Connect/v' + pkg.version
+const nowSeconds = require('../lib/time-utils').nowSeconds
 
 /**
  * OAuthStrategy
@@ -59,8 +59,8 @@ OAuthStrategy.initialize = initialize
  */
 
 function authorizationHeaderParams (data) {
-  var keys = Object.keys(data).sort()
-  var encoded = ''
+  const keys = Object.keys(data).sort()
+  let encoded = ''
 
   keys.forEach(function (key, i) {
     encoded += key
@@ -117,7 +117,7 @@ OAuthStrategy.timestamp = timestamp
 // function nonce (size) {
 //  return crypto.randomBytes(size).toString('hex').slice(0, 10)
 // }
-var NCHARS = [
+const NCHARS = [
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
   'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B',
   'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -126,11 +126,11 @@ var NCHARS = [
 ]
 
 function nonce (size) {
-  var res = []
-  var len = NCHARS.length
-  var pos
+  const res = []
+  const len = NCHARS.length
+  let pos
 
-  for (var i = 0; i < size; i++) {
+  for (let i = 0; i < size; i++) {
     pos = Math.floor(Math.random() * len)
     res[i] = NCHARS[pos]
   }
@@ -147,12 +147,12 @@ OAuthStrategy.nonce = nonce
  */
 
 function signatureBaseStringURI (uri) {
-  var url = new URL(uri)
-  var protocol = url.protocol
-  var hostname = url.hostname
-  var pathname = url.pathname
-  var port = ''
-  var result = ''
+  const url = new URL(uri)
+  const protocol = url.protocol
+  const hostname = url.hostname
+  let pathname = url.pathname
+  let port = ''
+  let result = ''
 
   if (url.port) {
     if ((protocol === 'http:' && url.port !== '80') ||
@@ -181,8 +181,8 @@ OAuthStrategy.signatureBaseStringURI = signatureBaseStringURI
  */
 
 function normalizeParameters (data) {
-  var encoded = []
-  var normalized = ''
+  const encoded = []
+  let normalized = ''
 
   // Convert object into nested arrays
   // and encode the keys and values.
@@ -197,11 +197,11 @@ function normalizeParameters (data) {
   encoded.sort(function (a, b) {
     return (a[0] === b[0])
       ? (a[1] < b[1])
-        ? -1
-        : 1
+          ? -1
+          : 1
       : (a[0] < b[0])
-        ? -1
-        : 1
+          ? -1
+          : 1
   })
 
   // Encode parameters similar to
@@ -239,9 +239,9 @@ OAuthStrategy.signatureBaseString = signatureBaseString
  */
 
 function sign (method, input, consumerSecret, tokenSecret) {
-  var encoding = 'base64'
-  var result = ''
-  var key = encodeOAuthData(consumerSecret) + '&' +
+  const encoding = 'base64'
+  let result = ''
+  const key = encodeOAuthData(consumerSecret) + '&' +
     encodeOAuthData(tokenSecret)
 
   switch (method) {
@@ -272,24 +272,24 @@ OAuthStrategy.sign = sign
  */
 
 function temporaryCredentials (done) {
-  var strategy = this
-  var provider = strategy.provider
-  var endpoint = strategy.endpoints.credentials
-  var client = strategy.client
-  var method = endpoint.method && endpoint.method.toLowerCase()
-  var url = endpoint.url
-  var header = endpoint.header || 'Authorization'
-  var scheme = endpoint.scheme || 'OAuth'
-  var accept = endpoint.accept || 'application/x-www-form-urlencoded'
-  var key = client.oauth_consumer_key
-  var secret = client.oauth_consumer_secret
-  var signer = provider.oauth_signature_method || 'PLAINTEXT'
-  var realm = provider.realm
-  var callback = provider.oauth_callback
-  var params = {}
+  const strategy = this
+  const provider = strategy.provider
+  const endpoint = strategy.endpoints.credentials
+  const client = strategy.client
+  const method = endpoint.method && endpoint.method.toLowerCase()
+  const url = endpoint.url
+  const header = endpoint.header || 'Authorization'
+  const scheme = endpoint.scheme || 'OAuth'
+  const accept = endpoint.accept || 'application/x-www-form-urlencoded'
+  const key = client.oauth_consumer_key
+  const secret = client.oauth_consumer_secret
+  const signer = provider.oauth_signature_method || 'PLAINTEXT'
+  const realm = provider.realm
+  const callback = provider.oauth_callback
+  const params = {}
 
   // Initialize request
-  var req = request[method || 'post'](url)
+  const req = request[method || 'post'](url)
 
   // Build request parameters
   params.oauth_consumer_key = key
@@ -300,7 +300,7 @@ function temporaryCredentials (done) {
   params.oauth_version = '1.0'
 
   // Generate signature (is next line needed for PLAINTEXT?)
-  var input = signatureBaseString(method, url, normalizeParameters(params))
+  const input = signatureBaseString(method, url, normalizeParameters(params))
   params.oauth_signature = sign(signer, input, secret)
 
   if (realm) { params.realm = realm }
@@ -315,7 +315,7 @@ function temporaryCredentials (done) {
   // Execute request
   return req.end(function (err, res) {
     if (err) { return done(err) }
-    var response = qs.parse(res.text)
+    const response = qs.parse(res.text)
 
     if (res.statusCode !== 200) {
       return done(new Error(res.text))
@@ -333,10 +333,10 @@ OAuthStrategy.prototype.temporaryCredentials = temporaryCredentials
  */
 
 function resourceOwnerAuthorization (token) {
-  var strategy = this
-  var endpoint = strategy.endpoints.authorization
-  var url = endpoint.url
-  var param = endpoint.param || 'oauth_token'
+  const strategy = this
+  const endpoint = strategy.endpoints.authorization
+  const url = endpoint.url
+  const param = endpoint.param || 'oauth_token'
 
   strategy.redirect(url + '?' + param + '=' + token)
 }
@@ -349,23 +349,23 @@ OAuthStrategy.prototype.resourceOwnerAuthorization = resourceOwnerAuthorization
  */
 
 function tokenCredentials (authorization, secret, done) {
-  var strategy = this
-  var provider = strategy.provider
-  var endpoint = strategy.endpoints.token
-  var client = strategy.client
-  var method = endpoint.method && endpoint.method.toLowerCase()
-  var url = endpoint.url
-  var header = endpoint.header || 'Authorization'
-  var scheme = endpoint.scheme || 'OAuth'
-  var accept = endpoint.accept || 'application/x-www-form-urlencoded'
-  var key = client.oauth_consumer_key
-  var signer = provider.oauth_signature_method || 'PLAINTEXT'
-  var verifier = authorization.oauth_verifier || null
-  var token = authorization.oauth_token
-  var params = {}
+  const strategy = this
+  const provider = strategy.provider
+  const endpoint = strategy.endpoints.token
+  const client = strategy.client
+  const method = endpoint.method && endpoint.method.toLowerCase()
+  const url = endpoint.url
+  const header = endpoint.header || 'Authorization'
+  const scheme = endpoint.scheme || 'OAuth'
+  const accept = endpoint.accept || 'application/x-www-form-urlencoded'
+  const key = client.oauth_consumer_key
+  const signer = provider.oauth_signature_method || 'PLAINTEXT'
+  const verifier = authorization.oauth_verifier || null
+  const token = authorization.oauth_token
+  const params = {}
 
   // Initialize request
-  var req = request[method || 'post'](url)
+  const req = request[method || 'post'](url)
 
   // Build request parameters
   params.oauth_consumer_key = key
@@ -376,7 +376,7 @@ function tokenCredentials (authorization, secret, done) {
   params.oauth_verifier = verifier
   params.oauth_version = '1.0'
 
-  var input = signatureBaseString(method, url, normalizeParameters(params))
+  const input = signatureBaseString(method, url, normalizeParameters(params))
   params.oauth_signature = sign(signer, input, secret)
 
   // Set Authorization header
@@ -389,7 +389,7 @@ function tokenCredentials (authorization, secret, done) {
   // Execute request
   return req.end(function (err, res) {
     if (err) { return done(err) }
-    var response = qs.parse(res.text)
+    const response = qs.parse(res.text)
 
     if (res.statusCode !== 200) {
       return done(new Error('Couldn\'t obtain token credentials'))
@@ -406,26 +406,26 @@ OAuthStrategy.prototype.tokenCredentials = tokenCredentials
  */
 
 function userInfo (credentials, done) {
-  var strategy = this
-  var provider = strategy.provider
-  var endpoint = strategy.endpoints.user
-  var mapping = strategy.mapping
-  var client = strategy.client
-  var method = endpoint.method && endpoint.method.toLowerCase()
-  var url = endpoint.url
-  var header = endpoint.header || 'Authorization'
-  var scheme = endpoint.scheme || 'OAuth'
-  var key = client.oauth_consumer_key
-  var token = credentials.oauth_token
-  var secret = client.oauth_consumer_secret
-  var signer = provider.oauth_signature_method || 'PLAINTEXT'
-  var ctype = 'application/x-www-form-urlencoded'
-  var params = {}
+  const strategy = this
+  const provider = strategy.provider
+  const endpoint = strategy.endpoints.user
+  const mapping = strategy.mapping
+  const client = strategy.client
+  const method = endpoint.method && endpoint.method.toLowerCase()
+  const url = endpoint.url
+  const header = endpoint.header || 'Authorization'
+  const scheme = endpoint.scheme || 'OAuth'
+  const key = client.oauth_consumer_key
+  const token = credentials.oauth_token
+  const secret = client.oauth_consumer_secret
+  const signer = provider.oauth_signature_method || 'PLAINTEXT'
+  const ctype = 'application/x-www-form-urlencoded'
+  const params = {}
 
-  var query = { user_id: credentials.user_id } // twitter specific
+  const query = { user_id: credentials.user_id } // twitter specific
 
   // Initialize request
-  var req = request[method || 'get'](url)
+  const req = request[method || 'get'](url)
 
   req.query(query)
 
@@ -438,7 +438,7 @@ function userInfo (credentials, done) {
   params.oauth_version = '1.0'
 
   // Authenticate
-  var input = signatureBaseString(
+  const input = signatureBaseString(
     method,
     url,
     normalizeParameters(params) + '&' +
@@ -465,7 +465,7 @@ function userInfo (credentials, done) {
       )
     }
 
-    var profile = { provider: strategy.name }
+    const profile = { provider: strategy.name }
     map(mapping, res.body, profile)
 
     done(null, profile)
@@ -479,7 +479,7 @@ OAuthStrategy.prototype.userInfo = userInfo
  */
 
 function authenticate (req, options) {
-  var strategy = this
+  const strategy = this
 
   // Handle the authorization response
   if (req.query && req.query.oauth_token) {
@@ -489,8 +489,8 @@ function authenticate (req, options) {
       )
     }
 
-    var authorization = req.query
-    var secret = req.session.oauth.oauth_token_secret
+    const authorization = req.query
+    const secret = req.session.oauth.oauth_token_secret
 
     // request token credentials
     strategy.tokenCredentials(authorization, secret, function (err, credentials) {

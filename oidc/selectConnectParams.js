@@ -6,7 +6,7 @@
  * Lookup the key for request params
  */
 
-var lookupField = {
+const lookupField = {
   GET: 'query',
   POST: 'body'
 }

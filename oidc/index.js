@@ -4,14 +4,14 @@
  * Module dependencies
  */
 
-var cwd = process.cwd()
-var path = require('path')
+const cwd = process.cwd()
+const path = require('path')
 
 /**
  * OIDC Middlewares
  */
 
-var oidc = {
+const oidc = {
   authenticateClient: require('./authenticateClient'),
   authenticateUser: require('./authenticateUser'),
   authorize: require('./authorize'),

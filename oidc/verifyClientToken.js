@@ -2,16 +2,16 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
-var ClientToken = require('../models/ClientToken')
-var UnauthorizedError = require('../errors/UnauthorizedError')
+const settings = require('../boot/settings')
+const ClientToken = require('../models/ClientToken')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 /**
  * Client Bearer Token Authentication Middleware
  */
 
 function verifyClientToken (req, res, next) {
-  var header = req.headers.authorization
+  const header = req.headers.authorization
 
   // missing header
   if (!header) {
@@ -24,8 +24,8 @@ function verifyClientToken (req, res, next) {
 
   // header found
   } else {
-    var jwt = header.replace('Bearer ', '')
-    var token = ClientToken.decode(jwt, settings.keys.sig.pub)
+    const jwt = header.replace('Bearer ', '')
+    const token = ClientToken.decode(jwt, settings.keys.sig.pub)
 
     // failed to decode
     if (!token || token instanceof Error) {

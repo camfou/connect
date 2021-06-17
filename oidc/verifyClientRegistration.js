@@ -2,8 +2,8 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
-var UnauthorizedError = require('../errors/UnauthorizedError')
+const settings = require('../boot/settings')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 /**
  * Verify Client Registration
@@ -21,12 +21,12 @@ var UnauthorizedError = require('../errors/UnauthorizedError')
 
 function verifyClientRegistration (req, res, next) {
   // check if we have a token and a token is required
-  var registration = req.body
-  var claims = req.claims
-  var clientRegType = settings.client_registration
-  var required = (registration.trusted || clientRegType !== 'dynamic')
-  var trustedRegScope = settings.trusted_registration_scope
-  var regScope = settings.registration_scope
+  const registration = req.body
+  const claims = req.claims
+  const clientRegType = settings.client_registration
+  const required = (registration.trusted || clientRegType !== 'dynamic')
+  const trustedRegScope = settings.trusted_registration_scope
+  const regScope = settings.registration_scope
 
   // can't continue because we don't have a token
   if (!(claims && claims.sub) && required) {
@@ -70,7 +70,7 @@ function verifyClientRegistration (req, res, next) {
 }
 
 function hasScope (claims, scope) {
-  var cscope = claims && claims.scope
+  let cscope = claims && claims.scope
 
   // false if there's no scope
   if (!cscope) { return false }

@@ -2,21 +2,21 @@
  * Module dependencies
  */
 
-var client = require('../boot/redis').getClient()
-var settings = require('../boot/settings')
-var providers = require('../providers')
-var bcrypt = require('bcryptjs')
-var CheckPassword = require('mellt').CheckPassword
-var Modinha = require('camfou-modinha')
-var Document = require('camfou-modinha-redis')
-var PasswordRequiredError = require('../errors/PasswordRequiredError')
-var InsecurePasswordError = require('../errors/InsecurePasswordError')
+const client = require('../boot/redis').getClient()
+const settings = require('../boot/settings')
+const providers = require('../providers')
+const bcrypt = require('bcryptjs')
+const CheckPassword = require('mellt').CheckPassword
+const Modinha = require('camfou-modinha')
+const Document = require('camfou-modinha-redis')
+const PasswordRequiredError = require('../errors/PasswordRequiredError')
+const InsecurePasswordError = require('../errors/InsecurePasswordError')
 
 /**
  * User model
  */
 
-var User = Modinha.define('users', {
+const User = Modinha.define('users', {
   // OpenID Connect Standard Claims
   //
   // NOTE: The "sub" claim is stored as `_id`.
@@ -72,7 +72,7 @@ var User = Modinha.define('users', {
     type: 'object',
     default: {},
     set: function (data) {
-      var providers = this.providers = this.providers || {}
+      const providers = this.providers = this.providers || {}
       Object.keys(data.providers || {}).forEach(function (key) {
         providers[key] = data.providers[key]
       })
@@ -91,11 +91,11 @@ var User = Modinha.define('users', {
  */
 
 function hashPassword (data) {
-  var password = data.password
-  var hash = data.hash
+  const password = data.password
+  let hash = data.hash
 
   if (password) {
-    var salt = bcrypt.genSaltSync(10)
+    const salt = bcrypt.genSaltSync(10)
     hash = bcrypt.hashSync(password, salt)
   }
 
@@ -148,8 +148,8 @@ User.intersects('roles')
  */
 
 User.prototype.authorizedScope = function (callback) {
-  var client = User.__client
-  var self = this
+  const client = User.__client
+  const self = this
 
   // get a list of unrestricted scope names
   client.zrange('scopes:restricted:false', 0, -1, function (err, unrestricted) {
@@ -163,7 +163,7 @@ User.prototype.authorizedScope = function (callback) {
         return callback(null, unrestricted)
       }
 
-      var multi = client.multi()
+      const multi = client.multi()
 
       roles.forEach(function (role) {
         multi.zrange('roles:' + role + ':scopes', 0, -1)
@@ -193,7 +193,7 @@ User.prototype.verifyPassword = function (password, callback) {
  */
 
 User.verifyPasswordStrength = function (password) {
-  var daysToCrack = providers.password.daysToCrack
+  const daysToCrack = providers.password.daysToCrack
   return CheckPassword(password) > daysToCrack
 }
 
@@ -229,7 +229,7 @@ User.changePassword = function (id, password, callback) {
  */
 
 User.insert = function (data, options, callback) {
-  var collection = User.collection
+  const collection = User.collection
 
   if (!callback) {
     callback = options
@@ -249,8 +249,8 @@ User.insert = function (data, options, callback) {
   }
 
   // create an instance
-  var user = User.initialize(data, { private: true })
-  var validation = user.validate()
+  const user = User.initialize(data, { private: true })
+  const validation = user.validate()
 
   // pick up mapped values
   if (options.mapping) {
@@ -267,7 +267,7 @@ User.insert = function (data, options, callback) {
     if (err) { return callback(err) }
 
     // batch operations
-    var multi = User.__client.multi()
+    const multi = User.__client.multi()
 
     // store the user
     multi.hset(collection, user._id, User.serialize(user))
@@ -324,8 +324,8 @@ User.authenticate = function (email, password, callback) {
 User.lookup = function (req, info, callback) {
   if (req.user) { return callback(null, req.user) }
 
-  var provider = req.params.provider || req.body.provider
-  var index = User.collection + ':provider:' + provider
+  const provider = req.params.provider || req.body.provider
+  const index = User.collection + ':provider:' + provider
 
   User.__client.hget(index, info.id, function (err, id) {
     if (err) { return callback(err) }
@@ -367,7 +367,7 @@ User.defineIndex({
  */
 
 User.connect = function (req, auth, info, callback) {
-  var provider = providers[req.params.provider || req.body.provider]
+  const provider = providers[req.params.provider || req.body.provider]
   // what if there's no provider param?
 
   // Try to find an existing user.
@@ -375,7 +375,7 @@ User.connect = function (req, auth, info, callback) {
     if (err) { return callback(err) }
 
     // Initialize the user data.
-    var data = {
+    const data = {
       providers: {},
       lastProvider: provider.id
     }

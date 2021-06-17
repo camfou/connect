@@ -4,21 +4,21 @@
  * Module dependencies
  */
 
-var redisClient = require('../boot/redis').getClient()
-var settings = require('../boot/settings')
-var Modinha = require('camfou-modinha')
-var Document = require('camfou-modinha-redis')
-var User = require('./User')
-var AuthorizationError = require('../errors/AuthorizationError')
-var base64url = require('base64url')
-var { URL } = require('url')
-var jsonwebtoken = require('jsonwebtoken')
+const redisClient = require('../boot/redis').getClient()
+const settings = require('../boot/settings')
+const Modinha = require('camfou-modinha')
+const Document = require('camfou-modinha-redis')
+const User = require('./User')
+const AuthorizationError = require('../errors/AuthorizationError')
+const base64url = require('base64url')
+const { URL } = require('url')
+const jsonwebtoken = require('jsonwebtoken')
 
 /**
  * Client model
  */
 
-var Client = Modinha.define('clients', {
+const Client = Modinha.define('clients', {
   /**
    * Client Metadata
    *
@@ -56,8 +56,8 @@ var Client = Modinha.define('clients', {
     },
     trim: true,
     conform: function (value, instance) {
-      var valid = true
-      var inDevelopment = process.env.NODE_ENV === 'development' ||
+      let valid = true
+      const inDevelopment = process.env.NODE_ENV === 'development' ||
         !process.env.NODE_ENV
 
       // Proceed with validation if there are redirect URIs defined
@@ -69,7 +69,7 @@ var Client = Modinha.define('clients', {
           // Check each redirect URI
           value.forEach(function (uri) {
             try {
-              var parsedURI = new URL(uri)
+              const parsedURI = new URL(uri)
 
               // Native clients must register with http://localhost[:PORT]
               // Here, we check if they are not
@@ -103,7 +103,7 @@ var Client = Modinha.define('clients', {
           // Check each redirect URI
           value.forEach(function (uri) {
             try {
-              var parsedURI = new URL(uri)
+              const parsedURI = new URL(uri)
 
               // Web clients must register with https and NOT with localhost
               // Here, we check if they don't obey this rule
@@ -143,11 +143,11 @@ var Client = Modinha.define('clients', {
         'for desired response_types'
     },
     conform: function (value, instance) {
-      var valid = true
+      let valid = true
 
       // authorization_code grant type is default if grant_types are not defined
-      var hasAuthorizationCodeGrant = true
-      var hasImplicitGrant = false
+      let hasAuthorizationCodeGrant = true
+      let hasImplicitGrant = false
 
       if (Array.isArray(instance.grant_types)) {
         hasAuthorizationCodeGrant =
@@ -161,7 +161,7 @@ var Client = Modinha.define('clients', {
       if (Array.isArray(value)) {
         // Check each response type
         value.forEach(function (responseTypeString) {
-          var responseTypeSet = responseTypeString.split(' ')
+          const responseTypeSet = responseTypeString.split(' ')
           responseTypeSet.forEach(function (responseType) {
             if (
               // invalid response_type value
@@ -776,7 +776,7 @@ Client.intersects('roles')
  */
 
 Client.prototype.authorizedScope = function (callback) {
-  var redisClient = Client.__client
+  const redisClient = Client.__client
 
   redisClient.zrange('clients:' + this._id + ':roles', 0, -1, function (err, roles) {
     if (err) { return callback(err) }
@@ -785,7 +785,7 @@ Client.prototype.authorizedScope = function (callback) {
       return callback(null, [])
     }
 
-    var multi = redisClient.multi()
+    const multi = redisClient.multi()
 
     roles.forEach(function (role) {
       multi.zrange('roles:' + role + ':scopes', 0, -1)
@@ -847,7 +847,7 @@ Client.mappings.registration = {
  */
 
 Client.prototype.configuration = function (settings, token) {
-  var configuration = this.project('registration')
+  const configuration = this.project('registration')
   configuration.registration_client_uri = settings.issuer + '/register/' + this._id
 
   if (token) {
@@ -862,7 +862,7 @@ Client.prototype.configuration = function (settings, token) {
  */
 
 Client.authenticate = function (req, callback) {
-  var method
+  let method
 
   // Use HTTP Basic Authentication Method
   if (req.headers && req.headers.authorization) {
@@ -885,7 +885,7 @@ Client.authenticate = function (req, callback) {
 
   // Use Client JWT Authentication Method
   if (req.body && req.body.client_assertion_type) {
-    var type = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+    const type = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
 
     // Fail if multiple authentication methods are attempted
     if (method) {
@@ -934,19 +934,19 @@ Client.authenticate = function (req, callback) {
  *
  */
 
-var authenticators = {
+const authenticators = {
   /**
    * HTTP Basic Authentication w/client_id and client_secret
    */
 
   client_secret_basic: function (req, callback) {
-    var authorization = req.headers.authorization.split(' ')
-    var scheme = authorization[0]
-    var credentials = Buffer.from(authorization[1], 'base64')
+    const authorization = req.headers.authorization.split(' ')
+    const scheme = authorization[0]
+    const credentials = Buffer.from(authorization[1], 'base64')
       .toString('ascii')
       .split(':')
-    var clientId = credentials[0]
-    var clientSecret = credentials[1]
+    const clientId = credentials[0]
+    const clientSecret = credentials[1]
 
     // malformed credentials
     if (credentials.length !== 2) {
@@ -1005,9 +1005,9 @@ var authenticators = {
    */
 
   client_secret_post: function (req, callback) {
-    var params = req.body
-    var clientId = params.client_id
-    var clientSecret = params.client_secret
+    const params = req.body
+    const clientId = params.client_id
+    const clientSecret = params.client_secret
 
     // missing credentials
     if (!clientId || !clientSecret) {
@@ -1045,9 +1045,9 @@ var authenticators = {
 
   client_secret_jwt: function (req, callback) {
     // peek at the JWT body to get the sub
-    var jwt = req.body.client_assertion
-    var payloadB64u = jwt.split('.')[1]
-    var payload = JSON.parse(base64url.decode(payloadB64u))
+    const jwt = req.body.client_assertion
+    const payloadB64u = jwt.split('.')[1]
+    const payload = JSON.parse(base64url.decode(payloadB64u))
 
     if (!payload || !payload.sub) {
       return callback(new AuthorizationError({
@@ -1075,7 +1075,7 @@ var authenticators = {
           statusCode: 400
         }))
       }
-      var token
+      let token
       try {
         token = jsonwebtoken.verify(jwt, client.client_secret)
       } catch (e) {

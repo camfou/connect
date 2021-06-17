@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var Scope = require('../models/Scope')
+const Scope = require('../models/Scope')
 
 /**
  * Get Authorized Scopes
@@ -11,7 +11,7 @@ var Scope = require('../models/Scope')
 
 function getAuthorizedScopes (req, res, next) {
   // Get the scopes authorized for the verified and decoded token
-  var scopeNames = req.claims.scope && req.claims.scope.split(' ')
+  const scopeNames = req.claims.scope && req.claims.scope.split(' ')
 
   Scope.get(scopeNames, function (err, scopes) {
     if (err) { return next(err) }

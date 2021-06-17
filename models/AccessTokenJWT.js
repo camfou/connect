@@ -2,14 +2,14 @@
  * Module dependencies
  */
 
-var JWT = require('camfou-connect-jwt')
-var nowSeconds = require('../lib/time-utils').nowSeconds
+const JWT = require('camfou-connect-jwt')
+const nowSeconds = require('../lib/time-utils').nowSeconds
 
 /**
  * JWT AccessToken
  */
 
-var AccessTokenJWT = JWT.define({
+const AccessTokenJWT = JWT.define({
   // default header
   header: {
     alg: 'RS256'

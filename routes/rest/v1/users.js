@@ -2,10 +2,10 @@
  * Module dependencies
  */
 
-var User = require('../../../models/User')
-var NotFoundError = require('../../../errors/NotFoundError')
-var settings = require('../../../boot/settings')
-var oidc = require('../../../oidc')
+const User = require('../../../models/User')
+const NotFoundError = require('../../../errors/NotFoundError')
+const settings = require('../../../boot/settings')
+const oidc = require('../../../oidc')
 
 /**
  * Export
@@ -16,7 +16,7 @@ module.exports = function (server) {
    * Token-based Auth Middleware
    */
 
-  var authorize = [
+  const authorize = [
     oidc.parseAuthorizationHeader,
     oidc.getBearerToken,
     oidc.verifyAccessToken({

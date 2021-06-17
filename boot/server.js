@@ -1,8 +1,8 @@
 /* global process, __dirname */
 
 // Ensure running a compatible version of Node before getting too far...
-var semver = require('semver')
-var packageJson = require('../package.json')
+const semver = require('semver')
+const packageJson = require('../package.json')
 if (packageJson.engines &&
   packageJson.engines.node &&
   !semver.satisfies(process.versions.node, packageJson.engines.node)) {
@@ -15,25 +15,25 @@ if (packageJson.engines &&
  * Configuration dependencies
  */
 
-var cwd = process.cwd()
-var path = require('path')
-var settings = require('./settings')
-var setup = require('./setup')
-var client = require('./redis').getClient()
-var logger = require('./logger')(settings.logger)
+const cwd = process.cwd()
+const path = require('path')
+const settings = require('./settings')
+const setup = require('./setup')
+const client = require('./redis').getClient()
+const logger = require('./logger')(settings.logger)
 require('./mailer').getMailer()
 require('./migrate')()
 require('./extend')()
-var authenticator = require('../lib/authenticator')
-var express = require('express')
-var cons = require('consolidate')
-var cookieParser = require('cookie-parser')
-var bodyParser = require('body-parser')
-var session = require('express-session')
-var RedisStore = require('connect-redis')(session)
-var connectFlash = require('connect-flash')
-var cors = require('cors')
-var sessionStore = new RedisStore({ client: client })
+const authenticator = require('../lib/authenticator')
+const express = require('express')
+const cons = require('consolidate')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const session = require('express-session')
+const RedisStore = require('connect-redis')(session)
+const connectFlash = require('connect-flash')
+const cors = require('cors')
+const sessionStore = new RedisStore({ client: client })
 
 /**
  * Read setup token if the server is in out-of-box mode
@@ -64,7 +64,7 @@ module.exports = function (server) {
    * Views configuration
    */
 
-  var engine = settings.view_engine || 'pug'
+  const engine = settings.view_engine || 'pug'
   server.engine(engine, cons[engine])
   server.set('view engine', engine)
 
@@ -160,7 +160,7 @@ module.exports = function (server) {
    * OpenID Provider Metadata Properties
    */
 
-  var parameters = [
+  const parameters = [
     'issuer',
     'authorization_endpoint',
     'token_endpoint',
@@ -205,7 +205,7 @@ module.exports = function (server) {
    */
 
   server.OpenIDConfiguration = parameters.reduce(function (config, param) {
-    var value = settings[param]
+    const value = settings[param]
     if (value) { config[param] = value }
     return config
   }, {})

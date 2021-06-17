@@ -4,11 +4,11 @@
  * Module dependencies
  */
 
-var async = require('async')
-var semver = require('semver')
-var providers = require('../providers')
-var User = require('../models/User')
-var rclient = require('../boot/redis').getClient()
+const async = require('async')
+const semver = require('semver')
+const providers = require('../providers')
+const User = require('../models/User')
+const rclient = require('../boot/redis').getClient()
 
 /**
  * Migration
@@ -19,11 +19,11 @@ var rclient = require('../boot/redis').getClient()
 module.exports = function (version) {
   return function migration_0_1_55 (next) {
     if (semver.satisfies(version, '<0.1.55')) {
-      var providerIDs = Object.keys(providers)
+      const providerIDs = Object.keys(providers)
 
       async.map(providerIDs, function (provider, callback) {
-        var index = User.collection + ':' + provider
-        var newIndex = User.collection + ':provider:' + provider
+        const index = User.collection + ':' + provider
+        const newIndex = User.collection + ':provider:' + provider
 
         rclient.hgetall(index, function (err, result) {
           if (err) { return callback(err) }

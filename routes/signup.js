@@ -2,13 +2,13 @@
  * Module dependencies
  */
 
-var oidc = require('../oidc')
-var settings = require('../boot/settings')
-var passwordProvider = require('../providers').password
-var authenticator = require('../lib/authenticator')
-var qs = require('qs')
-var User = require('../models/User')
-var PasswordsDisabledError = require('../errors/PasswordsDisabledError')
+const oidc = require('../oidc')
+const settings = require('../boot/settings')
+const passwordProvider = require('../providers').password
+const authenticator = require('../lib/authenticator')
+const qs = require('qs')
+const User = require('../models/User')
+const PasswordsDisabledError = require('../errors/PasswordsDisabledError')
 
 /**
  * Signup Endpoint
@@ -19,7 +19,7 @@ module.exports = function (server) {
    * Signup page
    */
 
-  var getSignupHandler = [
+  const getSignupHandler = [
     oidc.selectConnectParams,
     oidc.verifyClient,
     oidc.validateAuthorizationParams,
@@ -52,8 +52,7 @@ module.exports = function (server) {
         authenticator.dispatch('password', req, res, next, function (err, user, info) {
           delete req.connectParams.password
           if (err) { return next(err) }
-          if (!user) {
-          } else {
+          if (user) {
             authenticator.login(req, user)
             req.sendVerificationEmail = req.provider.emailVerification.enable
             req.flash('isNewUser', true)
@@ -69,7 +68,7 @@ module.exports = function (server) {
     next()
   }
 
-  var postSignupHandler = [
+  const postSignupHandler = [
     oidc.selectConnectParams,
     oidc.whitelistParams,
     oidc.verifyClient,

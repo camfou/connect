@@ -2,8 +2,8 @@
  * Module dependencies
  */
 
-var async = require('async')
-var Client = require('./Client')
+const async = require('async')
+const Client = require('./Client')
 
 /**
  * User Applications
@@ -41,7 +41,7 @@ function userApplications (user, callback) {
 
     // List of client ids the user has visited
     visited: function (done) {
-      var index = 'users:' + user._id + ':clients'
+      const index = 'users:' + user._id + ':clients'
       Client.__client.zrevrange(index, 0, -1, function (err, ids) {
         if (err) { return done(err) }
         done(null, ids)
@@ -53,7 +53,7 @@ function userApplications (user, callback) {
 
     // Filter out clients if the user has none of the scopes
     // defined by the client.
-    var clients = results.trusted.filter(function (client) {
+    const clients = results.trusted.filter(function (client) {
       if (!client.scopes || client.scopes.length === 0) {
         return true
       } else {

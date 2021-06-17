@@ -2,12 +2,12 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
-var setup = require('../boot/setup')
-var Client = require('../models/Client')
-var User = require('../models/User')
-var NotFoundError = require('../errors/NotFoundError')
-var InvalidRequestError = require('../errors/InvalidRequestError')
+const settings = require('../boot/settings')
+const setup = require('../boot/setup')
+const Client = require('../models/Client')
+const User = require('../models/User')
+const NotFoundError = require('../errors/NotFoundError')
+const InvalidRequestError = require('../errors/InvalidRequestError')
 
 /**
  * Setup Endpoint
@@ -29,7 +29,7 @@ module.exports = function (server) {
     },
     function (req, res, next) {
       // 1. Get token from file
-      var token = settings.setupToken
+      const token = settings.setupToken
       // 2. Check that token matches token in POST body
       if (req.body.token !== token) {
         return next(new NotFoundError())

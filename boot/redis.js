@@ -2,14 +2,14 @@
  * Module dependencies
  */
 
-var settings = require('./settings')
-var Redis = require('ioredis')
+const settings = require('./settings')
+const Redis = require('ioredis')
 
 /**
  * Get client
  */
 
-var client
+let client
 
 exports.getClient = function () {
   if (client) {

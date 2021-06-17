@@ -2,9 +2,9 @@
  * Module dependencies
  */
 
-var fs = require('fs')
-var SAMLStrategy = require('passport-saml').Strategy
-var User = require('../models/User')
+const fs = require('fs')
+const SAMLStrategy = require('passport-saml').Strategy
+const User = require('../models/User')
 
 /**
  * Verifier

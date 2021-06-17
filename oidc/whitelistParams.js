@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
+const settings = require('../boot/settings')
 
 /**
  * Select Authorization Parameters

@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var oidc = require('../oidc')
+const oidc = require('../oidc')
 
 /**
  * Token Endpoint

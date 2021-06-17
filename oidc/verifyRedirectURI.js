@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var Client = require('../models/Client')
+const Client = require('../models/Client')
 
 /**
  * Verify Redirect URI
@@ -18,7 +18,7 @@ var Client = require('../models/Client')
  */
 
 function verifyRedirectURI (req, res, next) {
-  var params = req.connectParams
+  const params = req.connectParams
 
   Client.get(params.client_id, {
     private: true

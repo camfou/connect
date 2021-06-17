@@ -4,27 +4,27 @@
  * Module dependencies
  */
 
-var nodemailer = require('nodemailer')
-var settings = require('./settings')
-var cons = require('consolidate')
-var htmlToText = require('html-to-text')
-var path = require('path')
-var templatesDir = path.resolve(process.cwd(), 'email')
-var origTemplatesDir = path.resolve(__dirname, '..', 'email')
-var engine, engineName, defaultFrom
+const nodemailer = require('nodemailer')
+const settings = require('./settings')
+const cons = require('consolidate')
+const htmlToText = require('html-to-text')
+const path = require('path')
+const templatesDir = path.resolve(process.cwd(), 'email')
+const origTemplatesDir = path.resolve(__dirname, '..', 'email')
+let engine, engineName, defaultFrom
 
 /**
  * Render e-mail templates to HTML and text
  */
 
 function render (template, locals, callback) {
-  var engineExt =
+  const engineExt =
   engineName.charAt(0) === '.' ? engineName : ('.' + engineName)
-  var tmplPath = path.join(templatesDir, template + engineExt)
-  var origTmplPath = path.join(origTemplatesDir, template + engineExt)
+  const tmplPath = path.join(templatesDir, template + engineExt)
+  const origTmplPath = path.join(origTemplatesDir, template + engineExt)
 
   function renderToText (html) {
-    var text = htmlToText.fromString(html, {
+    const text = htmlToText.fromString(html, {
       wordwrap: 72 // A little less than 80 characters per line is the de-facto
     // standard for e-mails to allow for some room for quoting
     // and e-mail client UI elements (e.g. scrollbar)
@@ -49,7 +49,7 @@ function render (template, locals, callback) {
  */
 
 function sendMail (template, locals, options, callback) {
-  var self = this
+  const self = this
   this.render(template, locals, function (err, html, text) {
     if (err) { return callback(err) }
 
@@ -68,14 +68,14 @@ function sendMail (template, locals, options, callback) {
  * Get mailer
  */
 
-var mailer
+let mailer
 
 exports.getMailer = function () {
   if (mailer) {
     return mailer
   } else {
-    var fromVerifier = /^(?:\w|\s)+<[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}>$/igm
-    var transport = settings.mailer &&
+    const fromVerifier = /^(?:\w|\s)+<[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}>$/igm
+    const transport = settings.mailer &&
       nodemailer.createTransport(settings.mailer)
 
     engineName = (settings.mailer && settings.mailer.view_engine) ||

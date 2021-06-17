@@ -2,23 +2,23 @@
  * Module dependencies
  */
 
-var async = require('async')
-var client = require('../boot/redis').getClient()
-var settings = require('../boot/settings')
-var Modinha = require('camfou-modinha')
-var Document = require('camfou-modinha-redis')
-var random = Modinha.defaults.random
-var AccessTokenJWT = require('../models/AccessTokenJWT')
-var InvalidTokenError = require('../errors/InvalidTokenError')
-var UnauthorizedError = require('../errors/UnauthorizedError')
-var InsufficientScopeError = require('../errors/InsufficientScopeError')
-var nowSeconds = require('../lib/time-utils').nowSeconds
+const async = require('async')
+const client = require('../boot/redis').getClient()
+const settings = require('../boot/settings')
+const Modinha = require('camfou-modinha')
+const Document = require('camfou-modinha-redis')
+const random = Modinha.defaults.random
+const AccessTokenJWT = require('../models/AccessTokenJWT')
+const InvalidTokenError = require('../errors/InvalidTokenError')
+const UnauthorizedError = require('../errors/UnauthorizedError')
+const InsufficientScopeError = require('../errors/InsufficientScopeError')
+const nowSeconds = require('../lib/time-utils').nowSeconds
 
 /**
  * Model definition
  */
 
-var AccessToken = Modinha.define('accesstokens', {
+const AccessToken = Modinha.define('accesstokens', {
   // access token
   at: {
     type: 'string',
@@ -114,8 +114,8 @@ AccessToken.defineIndex({
  */
 
 AccessToken.exists = function (userId, clientId, callback) {
-  var key = 'user:client:token'
-  var field = userId + ':' + clientId
+  const key = 'user:client:token'
+  const field = userId + ':' + clientId
 
   this.__client.hget(key, field, function (err, id) {
     if (err) return callback(err)
@@ -150,7 +150,7 @@ AccessToken.mappings.exchange = {
 // initialization so we can use the
 // mapping directly with insert.
 AccessToken.exchange = function (request, callback) {
-  var token = AccessToken.initialize(request.code, { mapping: 'exchange' })
+  const token = AccessToken.initialize(request.code, { mapping: 'exchange' })
   token.iss = settings.issuer
   token.rt = random(settings.refresh_token_bytes_range)()
   this.insert(token, function (err, token) {
@@ -168,7 +168,7 @@ AccessToken.issue = function (request, callback) {
     return callback(new Error('invalid_request'))
   }
 
-  var params = request.connectParams
+  const params = request.connectParams
   this.insert({
     iss: settings.issuer,
     uid: request.user._id,
@@ -177,7 +177,7 @@ AccessToken.issue = function (request, callback) {
     scope: request.scope
   }, function (err, token) {
     if (err) { return callback(err) }
-    var response = token.project('issue')
+    const response = token.project('issue')
 
     // Unless the client is set to issue a random token,
     // transform it to a signed JWT.
@@ -235,8 +235,8 @@ AccessToken.refresh = function (refreshToken, clientId, callback) {
  */
 
 AccessToken.revoke = function (userId, clientId, callback) {
-  var key = 'user:client:token'
-  var field = userId + ':' + clientId
+  const key = 'user:client:token'
+  const field = userId + ':' + clientId
 
   this.__client.hget(key, field, function (err, id) {
     if (err) { return callback(err) }
@@ -259,7 +259,7 @@ AccessToken.verify = function (token, options, callback) {
     jwt: function (done) {
       // the token is a JWT
       if (token.indexOf('.') !== -1) {
-        var decoded = AccessTokenJWT.decode(token, options.key)
+        const decoded = AccessTokenJWT.decode(token, options.key)
         if (!decoded || decoded instanceof Error) {
           done(new UnauthorizedError({
             realm: 'user',
@@ -315,9 +315,9 @@ AccessToken.verify = function (token, options, callback) {
   }, function (err, result) {
     if (err) { return callback(err) }
 
-    var claims = result.random || result.jwt.payload
-    var issuer = options.iss
-    var scope = options.scope
+    const claims = result.random || result.jwt.payload
+    const issuer = options.iss
+    const scope = options.scope
 
     // mismatching issuer
     if (claims.iss !== issuer) {
@@ -357,7 +357,7 @@ AccessToken.verify = function (token, options, callback) {
  */
 
 AccessToken.prototype.toJWT = function (secret) {
-  var jwt = new AccessTokenJWT(this)
+  const jwt = new AccessTokenJWT(this)
   jwt.payload.exp = nowSeconds(this.ei)
   return jwt.encode(secret)
 }

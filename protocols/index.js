@@ -4,16 +4,16 @@
  * Module dependencies
  */
 
-var cwd = process.cwd()
-var path = require('path')
+const cwd = process.cwd()
+const path = require('path')
 
 /**
  * Initialize
  */
 
 function initialize (name, provider, config) {
-  var strategy
-  var protocol = provider.protocol
+  let strategy
+  const protocol = provider.protocol
 
   // try to load an officially supported provider
   try {

@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var UnauthorizedError = require('../errors/UnauthorizedError')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 /**
  * Get Bearer Token

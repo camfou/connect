@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var checkSession = require('./checkSession')
+const checkSession = require('./checkSession')
 
 /**
  * Session Events endpoint (SSE)

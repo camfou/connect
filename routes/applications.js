@@ -2,9 +2,9 @@
  * Module dependencies
  */
 
-var oidc = require('../oidc')
-var settings = require('../boot/settings')
-var userApplications = require('../models/UserApplications')
+const oidc = require('../oidc')
+const settings = require('../boot/settings')
+const userApplications = require('../models/UserApplications')
 
 /**
  * Exports

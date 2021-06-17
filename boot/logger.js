@@ -2,14 +2,14 @@
  * Module dependencies
  */
 
-var cwd = process.cwd()
-var env = process.env.NODE_ENV || 'development'
-var path = require('path')
-var bunyan = require('express-bunyan-logger')
-var ensureWritableDirectory = require('../lib/fs-utils').ensureWritableDirectory
-var oidc = require('../oidc')
+const cwd = process.cwd()
+const env = process.env.NODE_ENV || 'development'
+const path = require('path')
+const bunyan = require('express-bunyan-logger')
+const ensureWritableDirectory = require('../lib/fs-utils').ensureWritableDirectory
+const oidc = require('../oidc')
 
-var FN_ARGS_SPLIT = /^[^(]*\(\s*([^)]*)\)/m
+const FN_ARGS_SPLIT = /^[^(]*\(\s*([^)]*)\)/m
 
 /**
  * Returns a given function's parameter list in string form.
@@ -36,8 +36,8 @@ function getParams (fn) {
 
 function addLoggingAnvil (addLogging) {
   function addLoggingModule (module) {
-    for (var idx in module) {
-      var fn = module[idx]
+    for (const idx in module) {
+      const fn = module[idx]
       if (getParams(fn) === addLogging.params) {
         // wrap function with logging
         module[fn.name] = addLogging(fn)
@@ -55,7 +55,7 @@ function addLoggingAnvil (addLogging) {
  */
 
 function addDebugLogging () {
-  var addLogging = function (fn) {
+  const addLogging = function (fn) {
     return function (req, res, next) {
       req.log.debug(fn.name)
       fn(req, res, next)
@@ -66,7 +66,7 @@ function addDebugLogging () {
 }
 
 function addErrorLogging () {
-  var addLogging = function (fn) {
+  const addLogging = function (fn) {
     return function (err, req, res, next) {
       req.log.error(err, fn.name)
       fn(err, req, res, next)
@@ -81,11 +81,10 @@ function addErrorLogging () {
  */
 
 module.exports = function (options) {
-  var logger
-  var config = { name: 'request', streams: [], level: 'info', obfuscate: ['body.password'] }
+  let config = { name: 'request', streams: [], level: 'info', obfuscate: ['body.password'] }
 
   if (!env.match(/test/i)) {
-    var logsPath = path.join(cwd, 'logs')
+    const logsPath = path.join(cwd, 'logs')
     ensureWritableDirectory(logsPath)
 
     if (options && options.stdout) { config.streams.push({ stream: process.stdout }) }
@@ -121,7 +120,7 @@ module.exports = function (options) {
     }
   }
 
-  logger = bunyan(config)
+  const logger = bunyan(config)
 
   module.exports = logger
   return logger
