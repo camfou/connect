@@ -2,16 +2,16 @@
  * Module dependencies
  */
 
-var crypto = require('crypto')
-var async = require('async')
-var qs = require('qs')
-var settings = require('../boot/settings')
-var IDToken = require('../models/IDToken')
-var AccessToken = require('../models/AccessToken')
-var AuthorizationCode = require('../models/AuthorizationCode')
-var nowSeconds = require('../lib/time-utils').nowSeconds
-var sessionState = require('../oidc/sessionState')
-var base64url = require('base64url')
+const crypto = require('crypto')
+const async = require('async')
+const qs = require('qs')
+const settings = require('../boot/settings')
+const IDToken = require('../models/IDToken')
+const AccessToken = require('../models/AccessToken')
+const AuthorizationCode = require('../models/AuthorizationCode')
+const nowSeconds = require('../lib/time-utils').nowSeconds
+const sessionState = require('../oidc/sessionState')
+const base64url = require('base64url')
 
 /**
  * Authorize
@@ -25,12 +25,14 @@ var base64url = require('base64url')
  */
 
 function authorize (req, res, next) {
-  var params = req.connectParams
-  var responseTypes = params.response_type.trim().split(' ')
-  var responseMode = params.response_mode && params.response_mode.trim()
-  var responseModeSeparator = responseMode ||
+  const params = req.connectParams
+  const responseTypes = params.response_type.trim().split(' ')
+  const responseMode = params.response_mode && params.response_mode.trim()
+  const responseModeSeparator = responseMode ||
     (params.response_type === 'code' ||
-      params.response_type === 'none') ? '?' : '#'
+      params.response_type === 'none')
+    ? '?'
+    : '#'
   const whitelistParams = req.whitelistParams
 
   // ACCESS GRANTED
@@ -75,7 +77,7 @@ function authorize (req, res, next) {
 
       function includeIDToken (response, callback) {
         if (responseTypes.indexOf('id_token') !== -1) {
-          var shasum, hash, atHash
+          let shasum, hash, atHash
 
           if (response.access_token) {
             shasum = crypto.createHash('sha256')
@@ -84,7 +86,7 @@ function authorize (req, res, next) {
             atHash = base64url(Buffer.from(hash.substring(0, hash.length / 2), 'hex'))
           }
 
-          var idToken = new IDToken({
+          const idToken = new IDToken({
             iss: settings.issuer,
             sub: req.user._id,
             aud: req.client._id,
@@ -108,7 +110,7 @@ function authorize (req, res, next) {
       }
 
       // Set the OP browser state.
-      var opbs = req.session.opbs
+      const opbs = req.session.opbs
 
       // if responseTypes includes id_token or token
       // calculate session_state and add to response
@@ -131,7 +133,9 @@ function authorize (req, res, next) {
         })
       } else {
         res.redirect(
-          params.redirect_uri + responseModeSeparator + qs.stringify({ ...response, ...whitelistParams }, { encode: false })
+          params.redirect_uri +
+          (params.redirect_uri.includes(responseModeSeparator) ? '&' : responseModeSeparator) +
+          qs.stringify({ ...response, ...whitelistParams }, { encode: false })
         )
       }
     })
