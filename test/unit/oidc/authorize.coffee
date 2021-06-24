@@ -27,7 +27,7 @@ authorize = proxyquire('../../../oidc/authorize', {
 
 
 describe 'Authorize', ->
-  { req, res, next, err } = {}
+  { req, res, next } = {}
 
 
   describe 'with consent and "code" response type', ->
@@ -50,8 +50,8 @@ describe 'Authorize', ->
           ga: 'whitelistedValue'
           other: 'whitelistedParam'
       whitelistParams:
-          ga: 'whitelistedValue'
-          other: 'whitelistedParam'
+        ga: 'whitelistedValue'
+        other: 'whitelistedParam'
 
       res =
         redirect: sinon.spy()
@@ -69,18 +69,55 @@ describe 'Authorize', ->
       })
 
     it 'should redirect to the redirect_uri', ->
-      res.redirect.should.have.been.calledWith sinon.match(
-        req.connectParams.redirect_uri
-      )
+      res.redirect.should.have.been.calledWith 'https://host/callback?code=1234&state=r4nd0m='
 
-    it 'should provide a query string', ->
-      res.redirect.should.have.been.calledWith sinon.match('?')
+    it 'should not provide session_state', ->
+      res.redirect.should.not.have.been.calledWith sinon.match('session_state=')
 
-    it 'should provide authorization code', ->
-      res.redirect.should.have.been.calledWith sinon.match 'code=1234'
+    it 'should pass the whitelistedParams', ->
+      res.redirect.should.not.have.been.calledWith sinon.match('ga=whitelistedValue')
+      res.redirect.should.not.have.been.calledWith sinon.match('other=whitelistedParam')
 
-    it 'should provide state', ->
-      res.redirect.should.have.been.calledWith sinon.match 'state=r4nd0m='
+  describe 'with consent and "code" response type and redirect_uri with params', ->
+    before (done) ->
+      sinon.stub(AuthorizationCode, 'insert').callsArgWith(1, null, {
+        code: '1234'
+      })
+
+      req =
+        session: {}
+        client:
+          _id: 'uuid1'
+        user:
+          _id: 'uuid2'
+        connectParams:
+          authorize: 'true'
+          response_type: 'code'
+          redirect_uri: 'https://host/callback?idp=1'
+          state: 'r4nd0m='
+          ga: 'whitelistedValue'
+          other: 'whitelistedParam'
+      whitelistParams:
+        ga: 'whitelistedValue'
+        other: 'whitelistedParam'
+
+      res =
+        redirect: sinon.spy()
+      next = sinon.spy()
+
+      authorize req, res, next
+      done()
+
+    after ->
+      AuthorizationCode.insert.restore()
+
+    it 'should set default max_age if none is provided', ->
+      AuthorizationCode.insert.should.have.been.calledWith sinon.match({
+        max_age: undefined
+      })
+
+    it 'should redirect to the redirect_uri', ->
+      res.redirect.should.have.been.calledWith 'https://host/callback?idp=1&code=1234&state=r4nd0m='
 
     it 'should not provide session_state', ->
       res.redirect.should.not.have.been.calledWith sinon.match('session_state=')
