@@ -4,9 +4,9 @@
  * Module dependencies
  */
 
-var async = require('async')
-var semver = require('semver')
-var Client = require('../models/Client')
+const async = require('async')
+const semver = require('semver')
+const Client = require('../models/Client')
 
 /**
  * Migration

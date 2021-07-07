@@ -2,15 +2,15 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
-var { URL } = require('url')
-var InvalidRequestError = require('../errors/InvalidRequestError')
+const settings = require('../boot/settings')
+const { URL } = require('url')
+const InvalidRequestError = require('../errors/InvalidRequestError')
 
 /**
  * Enforce referrer middleware
  */
 
-var errorMsg = 'Invalid referrer'
+const errorMsg = 'Invalid referrer'
 
 module.exports = function (pathname) {
   // Allow multiple pathnames, or one if you so prefer
@@ -18,10 +18,10 @@ module.exports = function (pathname) {
     pathname = [pathname]
   }
 
-  var host = new URL(settings.issuer).host
+  const host = new URL(settings.issuer).host
 
   return function enforceReferrer (req, res, next) {
-    var referrer = req.get('referrer')
+    let referrer = req.get('referrer')
 
     // Only allow requests with a referrer defined
     if (!referrer) {
@@ -35,13 +35,13 @@ module.exports = function (pathname) {
       return next(new InvalidRequestError(errorMsg))
     }
 
-    var match = false
+    let match = false
 
     // Check the referrer pathname against every whitelisted
     // path. As long as one matches, `match` will be true and
     // we'll let the request through. If none match, `match`
     // will be false and we'll issue an error.
-    for (var i = 0; i < pathname.length; i++) {
+    for (let i = 0; i < pathname.length; i++) {
       if (pathname[i] === referrer.pathname) {
         match = true
         break

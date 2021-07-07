@@ -2,8 +2,8 @@
  * Module dependencies
  */
 
-var oidc = require('../oidc')
-var settings = require('../boot/settings')
+const oidc = require('../oidc')
+const settings = require('../boot/settings')
 
 /**
  * Exports

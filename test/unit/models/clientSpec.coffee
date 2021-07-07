@@ -637,7 +637,7 @@ describe 'Client', ->
         contacts: [faker.internet.email()]
         token_endpoint_auth_method: 'client_secret_basic'
         redirect_uris: [faker.internet.domainName()]
-      token = faker.random.number({ min: 1, max: 10 })
+      token = faker.datatype.number({ min: 1, max: 10 })
       configuration = client.configuration settings, token
 
     it 'should return a "registration" mapping of a client', ->

@@ -2,13 +2,13 @@
  * Module dependencies
  */
 
-var { URL } = require('url')
-var revalidator = require('revalidator')
-var settings = require('../boot/settings')
-var mailer = require('../boot/mailer').getMailer()
-var User = require('../models/User')
-var OneTimeToken = require('../models/OneTimeToken')
-var PasswordsDisabledError = require('../errors/PasswordsDisabledError')
+const { URL } = require('url')
+const revalidator = require('revalidator')
+const settings = require('../boot/settings')
+const mailer = require('../boot/mailer').getMailer()
+const User = require('../models/User')
+const OneTimeToken = require('../models/OneTimeToken')
+const PasswordsDisabledError = require('../errors/PasswordsDisabledError')
 
 /**
  * Account Recovery
@@ -103,7 +103,7 @@ module.exports = function (server) {
         }, function (err, token) {
           if (err) { return next(err) }
 
-          var resetPasswordURL = new URL(settings.issuer)
+          const resetPasswordURL = new URL(settings.issuer)
           resetPasswordURL.pathname = 'resetPassword'
           resetPasswordURL.searchParams.set('token', token._id)
 
@@ -114,6 +114,7 @@ module.exports = function (server) {
             to: user.email,
             subject: 'Reset your password'
           }, function (err, responseStatus) {
+            // eslint-disable-next-line no-empty
             if (err) { }
             // TODO: REQUIRES REFACTOR TO MAIL QUEUE
             res.render('recovery/emailSent')
@@ -137,7 +138,7 @@ module.exports = function (server) {
     verifyMailerConfigured,
     verifyPasswordResetToken,
     function (req, res, next) {
-      var uid = req.passwordResetToken.sub
+      const uid = req.passwordResetToken.sub
 
       if (req.body.password !== req.body.confirmPassword) {
         return res.render('recovery/resetPassword', {
@@ -160,7 +161,7 @@ module.exports = function (server) {
         OneTimeToken.revoke(req.passwordResetToken._id, function (err) {
           if (err) { return next(err) }
 
-          var recoveryURL = new URL(settings.issuer)
+          const recoveryURL = new URL(settings.issuer)
           recoveryURL.pathname = 'recovery'
 
           mailer.sendMail('passwordChanged', {
@@ -170,6 +171,7 @@ module.exports = function (server) {
             to: user.email,
             subject: 'Your password has been changed'
           }, function (err, responseStatus) {
+            // eslint-disable-next-line no-empty
             if (err) { }
             // TODO: REQUIRES REFACTOR TO MAIL QUEUE
             res.render('recovery/passwordReset')

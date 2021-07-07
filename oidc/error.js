@@ -2,24 +2,26 @@
  * Module dependencies
  */
 
-var qs = require('qs')
+const qs = require('qs')
 
 /**
  * Error Response
  */
 
 function error (err, req, res, next) {
-  var message
-  var errorName = err.error || err.message || err.name
-  var errorDescription = err.error_description || err.description || err.message
+  let message
+  const errorName = err.error || err.message || err.name
+  const errorDescription = err.error_description || err.description || err.message
   // 302 Redirect
   if (err.statusCode === 302 && err.redirect_uri) {
-    var params = req.connectParams || req.query
-    var responseMode = (params.response_mode && params.response_mode.trim()) ||
+    const params = req.connectParams || req.query
+    const responseMode = (params.response_mode && params.response_mode.trim()) ||
       (params.response_type === 'code' ||
-        params.response_type === 'none') ? '?' : '#'
-    var error = { error: errorName, error_description: errorDescription }
-    var uri = err.redirect_uri + responseMode + qs.stringify(error)
+        params.response_type === 'none')
+      ? '?'
+      : '#'
+    const error = { error: errorName, error_description: errorDescription }
+    const uri = err.redirect_uri + responseMode + qs.stringify(error)
 
     res.redirect(uri)
 
@@ -74,7 +76,7 @@ function error (err, req, res, next) {
 
   // 500 Internal Server Error
   } else {
-    var statusCode = err.statusCode || 500
+    const statusCode = err.statusCode || 500
     message = (err.statusCode && err.message) || 'Internal Server Error'
 
     if (req.app.get('env') === 'development') {

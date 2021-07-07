@@ -2,15 +2,15 @@
  * Module dependencies
  */
 
-var async = require('async')
-var Role = require('../models/Role')
-var Scope = require('../models/Scope')
+const async = require('async')
+const Role = require('../models/Role')
+const Scope = require('../models/Scope')
 
 /**
  * Data
  */
 
-var defaults = {
+const defaults = {
   roles: [
     { name: 'authority' },
     { name: 'developer' }

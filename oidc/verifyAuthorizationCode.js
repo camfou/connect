@@ -2,16 +2,16 @@
  * Module dependencies
  */
 
-var AuthorizationCode = require('../models/AuthorizationCode')
-var AuthorizationError = require('../errors/AuthorizationError')
-var nowSeconds = require('../lib/time-utils').nowSeconds
+const AuthorizationCode = require('../models/AuthorizationCode')
+const AuthorizationError = require('../errors/AuthorizationError')
+const nowSeconds = require('../lib/time-utils').nowSeconds
 
 /**
  * Verify authorization code
  */
 
 function verifyAuthorizationCode (req, res, next) {
-  var params = req.connectParams
+  const params = req.connectParams
 
   if (params.grant_type === 'authorization_code') {
     AuthorizationCode.getByCode(params.code, function (err, ac) {

@@ -2,16 +2,16 @@
  * Module dependencies
  */
 
-var Scope = require('../models/Scope')
+const Scope = require('../models/Scope')
 
 /**
  * Determine user scope
  */
 
 function determineUserScope (req, res, next) {
-  var params = req.connectParams
-  var scope = params.scope
-  var subject = req.user
+  const params = req.connectParams
+  const scope = params.scope
+  const subject = req.user
 
   Scope.determine(scope, subject, function (err, scope, scopes) {
     if (err) { return next(err) }

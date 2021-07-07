@@ -2,15 +2,15 @@
  * Module dependencies
  */
 
-var client = require('../boot/redis').getClient()
-var Modinha = require('camfou-modinha')
-var Document = require('camfou-modinha-redis')
+const client = require('../boot/redis').getClient()
+const Modinha = require('camfou-modinha')
+const Document = require('camfou-modinha-redis')
 
 /**
  * Model definition
  */
 
-var Role = Modinha.define('roles', {
+const Role = Modinha.define('roles', {
   name: { type: 'string', required: true, uniqueId: true }
 })
 

@@ -2,8 +2,8 @@
  * Module dependencies
  */
 
-var pkg = require('../package.json')
-var settings = require('../boot/settings')
+const pkg = require('../package.json')
+const settings = require('../boot/settings')
 
 /**
  * Status endpoint

@@ -2,14 +2,14 @@
  * Module dependencies
  */
 
-var oidc = require('../oidc')
+const oidc = require('../oidc')
 
 /**
  * Authorize Endpoint
  */
 
 module.exports = function (server) {
-  var handler = [
+  const handler = [
     oidc.selectConnectParams,
     oidc.whitelistParams,
     oidc.verifyClient,

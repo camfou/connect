@@ -2,9 +2,9 @@
  * Module dependencies
  */
 
-var LocalStrategy = require('passport-local').Strategy
-var User = require('../models/User')
-var Role = require('../models/Role')
+const LocalStrategy = require('passport-local').Strategy
+const User = require('../models/User')
+const Role = require('../models/Role')
 
 /**
  * Verifier
@@ -28,7 +28,7 @@ function verifier (configuration) {
         Role.listByUsers(user, function (err, roles) {
           if (err) { return done(err) }
 
-          var hasRoles = roles && roles.some(function (role) {
+          const hasRoles = roles && roles.some(function (role) {
             return configuration.allowRoles.indexOf(role.name) !== -1
           })
 

@@ -1,10 +1,10 @@
 /**
  * Module dependencies
  */
-var { URL } = require('url')
-var mailer = require('../boot/mailer')
-var settings = require('../boot/settings')
-var OneTimeToken = require('../models/OneTimeToken')
+const { URL } = require('url')
+const mailer = require('../boot/mailer')
+const settings = require('../boot/settings')
+const OneTimeToken = require('../models/OneTimeToken')
 
 /**
  * Send verification email middleware
@@ -17,9 +17,9 @@ function sendVerificationEmail (req, res, next) {
 
     // send the email
   } else {
-    var user = req.user
+    const user = req.user
 
-    var ttl = (settings.emailVerification &&
+    const ttl = (settings.emailVerification &&
       settings.emailVerification.tokenTTL) ||
       (3600 * 24 * 7)
 
@@ -31,19 +31,19 @@ function sendVerificationEmail (req, res, next) {
       if (err) { return next(err) }
 
       // build email link
-      var verifyURL = new URL(settings.issuer)
+      const verifyURL = new URL(settings.issuer)
       verifyURL.pathname = 'email/verify'
       verifyURL.searchParams.set('token', token._id)
       ;['redirect_uri', 'client_id', 'response_type', 'scope', 'nonce']
         .forEach(function (key) {
-          var value = req.connectParams[key]
+          const value = req.connectParams[key]
           if (value) {
             verifyURL.searchParams.set(key, value)
           }
         })
 
       // email template data
-      var locals = {
+      const locals = {
         email: user.email,
         name: {
           first: user.givenName,
@@ -57,6 +57,7 @@ function sendVerificationEmail (req, res, next) {
         to: user.email,
         subject: 'Verify your e-mail address'
       }, function (err, responseStatus) {
+        // eslint-disable-next-line no-empty
         if (err) { }
         // TODO: REQUIRES REFACTOR TO MAIL QUEUE
         next()

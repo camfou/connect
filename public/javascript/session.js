@@ -1,16 +1,16 @@
 ;(function () {
-  var source, origin
+  let source, origin
 
   /**
    * Initialize browser state
    */
 
-  var re = /\banvil\.connect\.op\.state=([^\s;]*)/
-  var stateCookie = document.cookie.match(re)
-  var opbs = stateCookie && stateCookie.pop()
-  var localStorage = window.localStorage
-  var EventSource = window.EventSource
-  var CryptoJS = window.CryptoJS
+  const re = /\banvil\.connect\.op\.state=([^\s;]*)/
+  const stateCookie = document.cookie.match(re)
+  const opbs = stateCookie && stateCookie.pop()
+  const localStorage = window.localStorage
+  const EventSource = window.EventSource
+  const CryptoJS = window.CryptoJS
 
   localStorage['anvil.connect.op.state'] = opbs
 
@@ -27,9 +27,9 @@
    */
 
   function setOPBrowserState (event) {
-    var key = 'anvil.connect.op.state'
-    var current = localStorage[key]
-    var update = event.data
+    const key = 'anvil.connect.op.state'
+    const current = localStorage[key]
+    const update = event.data
 
     if (current !== update) {
       document.cookie = 'anvil.connect.op.state=' + update
@@ -41,7 +41,7 @@
    * Server Sent Events
    */
 
-  var updates = new EventSource('/session/events')
+  const updates = new EventSource('/session/events')
   updates.addEventListener('update', setOPBrowserState, false)
 
   /**
@@ -72,14 +72,11 @@
    */
 
   function respondToRPMessage (event) {
-    var parser, messenger, clientId, rpss,
-      salt, opbs, input, opss, comparison
-
     // Parse message origin
     origin = event.origin
-    parser = document.createElement('a')
+    const parser = document.createElement('a')
     parser.href = document.referrer
-    messenger = parser.protocol + '//' + parser.host
+    const messenger = parser.protocol + '//' + parser.host
 
     // Ignore the message if origin doesn't match
     if (origin !== messenger) {
@@ -91,9 +88,9 @@
     source = event.source
 
     // Parse the message
-    clientId = event.data.split(' ')[0]
-    rpss = event.data.split(' ')[1]
-    salt = rpss.split('.')[1]
+    const clientId = event.data.split(' ')[0]
+    const rpss = event.data.split(' ')[1]
+    const salt = rpss.split('.')[1]
 
     // Validate message syntax
     if (!clientId || !rpss || !salt) {
@@ -101,14 +98,14 @@
     }
 
     // Get the OP browser state
-    opbs = getOPBrowserState()
+    const opbs = getOPBrowserState()
 
     // Recalculate session state for comparison
-    input = [clientId, origin, opbs, salt].join(' ')
-    opss = [CryptoJS.SHA256(input), salt].join('.')
+    const input = [clientId, origin, opbs, salt].join(' ')
+    const opss = [CryptoJS.SHA256(input), salt].join('.')
 
     // Compare the RP session state with the OP session state
-    comparison = compareSessionState(rpss, opss)
+    const comparison = compareSessionState(rpss, opss)
 
     // Compare session state and reply to RP
     event.source.postMessage(comparison, origin)

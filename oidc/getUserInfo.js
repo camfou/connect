@@ -2,8 +2,8 @@
  * Module dependencies
  */
 
-var User = require('../models/User')
-var NotFoundError = require('../errors/NotFoundError')
+const User = require('../models/User')
+const NotFoundError = require('../errors/NotFoundError')
 
 /**
  * Export
@@ -17,8 +17,8 @@ function getUserInfo (req, res, next) {
 
     // project the retrieved user with the
     // userinfo mapping
-    var projection = user.project('userinfo')
-    var userInfo = { sub: projection.sub }
+    const projection = user.project('userinfo')
+    const userInfo = { sub: projection.sub }
 
     // send only attributes the user has scope
     // to read

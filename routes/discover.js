@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var Scope = require('../models/Scope')
+const Scope = require('../models/Scope')
 
 /**
  * Well-Known Endpoint

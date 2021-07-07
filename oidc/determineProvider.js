@@ -2,15 +2,15 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
-var providers = require('../providers')
+const settings = require('../boot/settings')
+const providers = require('../providers')
 
 /**
  * Determine provider middleware
  */
 
 function determineProvider (req, res, next) {
-  var providerID = req.params.provider || req.body.provider
+  const providerID = req.params.provider || req.body.provider
   if (providerID && settings.providers[providerID]) {
     req.provider = providers[providerID]
   }

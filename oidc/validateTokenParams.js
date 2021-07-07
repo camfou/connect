@@ -2,13 +2,13 @@
  * Module dependencies
  */
 
-var AuthorizationError = require('../errors/AuthorizationError')
+const AuthorizationError = require('../errors/AuthorizationError')
 
 /**
  * Supported grant types
  */
 
-var grantTypes = [
+const grantTypes = [
   'authorization_code', 'refresh_token', 'client_credentials'
 ]
 
@@ -17,7 +17,7 @@ var grantTypes = [
  */
 
 function validateTokenParams (req, res, next) {
-  var params = req.body
+  const params = req.body
 
   // missing grant type
   if (!params.grant_type) {

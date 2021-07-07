@@ -2,8 +2,8 @@
  * Module dependencies
  */
 
-var User = require('../models/User')
-var UnauthorizedError = require('../errors/UnauthorizedError')
+const User = require('../models/User')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 /**
  * Authenticate User

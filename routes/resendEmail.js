@@ -2,9 +2,9 @@
  * Module dependencies
  */
 
-var mailer = require('../boot/mailer').getMailer()
-var oidc = require('../oidc')
-var User = require('../models/User')
+const mailer = require('../boot/mailer').getMailer()
+const oidc = require('../oidc')
+const User = require('../models/User')
 
 /**
  * Resend e-mail verification message endpoint
@@ -15,10 +15,11 @@ module.exports = function (server) {
     oidc.selectConnectParams,
     oidc.verifyRedirectURI,
     function (req, res, next) {
-      var params = {
+      const params = {
         message: req.query.email
           ? 'If we have this e-mail address on file, then we have sent it a ' +
-          'verification request.' : '',
+          'verification request.'
+          : '',
         error: !req.query.email ? 'No e-mail address specified.' : '',
         email: req.query.email,
         from: mailer.from,
@@ -29,7 +30,7 @@ module.exports = function (server) {
         resendURL: req.url
       }
 
-      var emailParams = {
+      const emailParams = {
         redirect_uri: req.connectParams.redirect_uri,
         client_id: req.connectParams.client_id,
         response_type: req.connectParams.response_type,

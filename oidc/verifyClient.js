@@ -2,8 +2,8 @@
  * Module dependencies
  */
 
-var Client = require('../models/Client')
-var AuthorizationError = require('../errors/AuthorizationError')
+const Client = require('../models/Client')
+const AuthorizationError = require('../errors/AuthorizationError')
 
 /**
  * Verify Client
@@ -15,7 +15,7 @@ var AuthorizationError = require('../errors/AuthorizationError')
  */
 
 function verifyClient (req, res, next) {
-  var params = req.connectParams
+  const params = req.connectParams
 
   // missing redirect uri
   if (!params.redirect_uri) {

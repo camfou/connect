@@ -2,10 +2,10 @@
  * Module dependencies
  */
 
-var settings = require('../boot/settings')
-var User = require('../models/User')
-var OneTimeToken = require('../models/OneTimeToken')
-var { URL } = require('url')
+const settings = require('../boot/settings')
+const User = require('../models/User')
+const OneTimeToken = require('../models/OneTimeToken')
+const { URL } = require('url')
 
 /**
  * Verify Email
@@ -55,7 +55,7 @@ function verifyEmail (req, res, next) {
 
       // check that the redirect uri is valid and safe to use
       if (req.client && req.connectParams.redirect_uri) {
-        var continueURL = new URL(settings.issuer)
+        const continueURL = new URL(settings.issuer)
 
         continueURL.pathname = 'signin'
         continueURL.searchParams.set('redirect_uri', req.connectParams.redirect_uri)

@@ -1,10 +1,10 @@
 /**
  * Module dependencies
  */
-var authenticator = require('../lib/authenticator')
-var settings = require('../boot/settings')
-var Client = require('../models/Client')
-var IDToken = require('../models/IDToken')
+const authenticator = require('../lib/authenticator')
+const settings = require('../boot/settings')
+const Client = require('../models/Client')
+const IDToken = require('../models/IDToken')
 
 /**
  * Handles signout requests (GETs or POSTs to the /signout endpoint) and ends a
@@ -23,11 +23,11 @@ var IDToken = require('../models/IDToken')
  * @param [req.body.state] {String} Opaque OIDC state parameter
  */
 function signout (req, res, next) {
-  var idToken, clientId
-  var params = req.query || req.body
-  var postLogoutUri = params.post_logout_redirect_uri
-  var idHint = params.id_token_hint
-  var state = params.state
+  let idToken, clientId
+  const params = req.query || req.body
+  let postLogoutUri = params.post_logout_redirect_uri
+  const idHint = params.id_token_hint
+  const state = params.state
 
   if (idHint) {
     idToken = IDToken.decode(idHint, settings.keys.sig.pub)
@@ -39,9 +39,9 @@ function signout (req, res, next) {
     // Verify the post-signout uri (must have been registered for this client)
     return Client.get(clientId, function (err, client) {
       if (err) { return next(err) }
-      var isValidUri = false
+      let isValidUri = false
       if (client) {
-        var registeredUris = client.post_logout_redirect_uris
+        const registeredUris = client.post_logout_redirect_uris
         isValidUri = registeredUris &&
           (registeredUris.indexOf(postLogoutUri) !== -1)
       }

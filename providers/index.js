@@ -4,13 +4,13 @@
  * Module dependencies
  */
 
-var fs = require('fs')
-var _ = require('lodash')
-var cwd = process.cwd()
-var path = require('path')
-var settings = require('../boot/settings')
-var defaultDirectory = __dirname
-var customDirectory = path.join(cwd, 'providers')
+const fs = require('fs')
+const _ = require('lodash')
+const cwd = process.cwd()
+const path = require('path')
+const settings = require('../boot/settings')
+const defaultDirectory = __dirname
+const customDirectory = path.join(cwd, 'providers')
 
 function loadProvider (dir, name, template) {
   return require(
@@ -22,7 +22,7 @@ function loadProvider (dir, name, template) {
 
 // Hold on to whatever templates are found in order to avoid unecessary filesystem
 // accesses
-var templateCache = {}
+const templateCache = {}
 
 /**
  * Load providers
@@ -30,19 +30,19 @@ var templateCache = {}
 function loadProviders (dir, files) {
   files.forEach(function (file) {
     if (path.extname(file) === '.js' && file !== 'index.js') {
-      var providerName = path.basename(file, '.js')
+      const providerName = path.basename(file, '.js')
 
       try {
         // Grab the provider from the given directory
-        var provider = loadProvider(dir, providerName)(settings)
+        let provider = loadProvider(dir, providerName)(settings)
 
         // Check if the provider extends any templates
         if (Array.isArray(provider.templates) && provider.templates.length) {
-          var templates = []
-          var templateName
+          const templates = []
+          let templateName
           // Iterate through the provider's templates, load them, and store them
           // in memory in case we run into them again later
-          for (var i = 0; i < provider.templates.length; i++) {
+          for (let i = 0; i < provider.templates.length; i++) {
             templateName = provider.templates[i]
             if (!templateCache[templateName]) {
               try {
@@ -69,8 +69,8 @@ function loadProviders (dir, files) {
           // build up the base provider, then extend the base provider with the
           // top-most provider. Effectively, the result is a provider with the
           // proper order of inheritance for the templates it extends.
-          var base = templates[templates.length - 1]
-          for (i = templates.length - 2; i >= 0; i--) {
+          const base = templates[templates.length - 1]
+          for (let i = templates.length - 2; i >= 0; i--) {
             _.extend(base, templates[i])
           }
           _.extend(base, provider)
@@ -87,19 +87,19 @@ function loadProviders (dir, files) {
 
         if (settings.providers[providerName]) {
           // override the daysToCrack setting for the password provider
-          var odays = settings.providers[providerName].daysToCrack
+          const odays = settings.providers[providerName].daysToCrack
           if (typeof odays !== 'undefined') {
             provider.daysToCrack = odays
           }
 
           // override the default amr for the provider
-          var oamr = settings.providers[providerName].amr
+          const oamr = settings.providers[providerName].amr
           if (typeof oamr !== 'undefined') {
             provider.amr = oamr
           }
 
           // provider-specific refresh_userinfo setting
-          var orefuserInfo = settings.providers[providerName].refresh_userinfo
+          const orefuserInfo = settings.providers[providerName].refresh_userinfo
           if (typeof orefuserInfo !== 'undefined') {
             provider.refresh_userinfo = orefuserInfo
           }

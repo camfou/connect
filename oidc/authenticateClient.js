@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var Client = require('../models/Client')
+const Client = require('../models/Client')
 
 /**
  * Authenticate Client

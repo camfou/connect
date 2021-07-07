@@ -2,18 +2,18 @@
  * Module dependencies
  */
 
-var qs = require('qs')
-var AccessToken = require('../models/AccessToken')
+const qs = require('qs')
+const AccessToken = require('../models/AccessToken')
 
 /**
  * Prompt to authorize
  */
 
 function promptToAuthorize (req, res, next) {
-  var params = req.connectParams
-  var client = req.client
-  var user = req.user
-  var scopes = req.scopes
+  const params = req.connectParams
+  const client = req.client
+  const user = req.user
+  const scopes = req.scopes
 
   // The client is not trusted and the user has yet to decide on consent
   if (client.trusted !== true && typeof params.authorize === 'undefined') {

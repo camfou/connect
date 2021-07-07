@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-var UnauthorizedError = require('../errors/UnauthorizedError')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 /**
  * Parse Authorization Header
@@ -11,9 +11,9 @@ var UnauthorizedError = require('../errors/UnauthorizedError')
 function parseAuthorizationHeader (req, res, next) {
   // parse the header if it's present in the request
   if (req.headers && req.headers.authorization) {
-    var components = req.headers.authorization.split(' ')
-    var scheme = components[0]
-    var credentials = components[1]
+    const components = req.headers.authorization.split(' ')
+    const scheme = components[0]
+    const credentials = components[1]
 
     // ensure the correct number of components
     if (components.length !== 2) {

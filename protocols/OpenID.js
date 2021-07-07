@@ -2,9 +2,9 @@
  * Module dependencies
  */
 
-var Strategy = require('passport-openid').Strategy
-var util = require('util')
-var User = require('../../models/User')
+const Strategy = require('passport-openid').Strategy
+const util = require('util')
+const User = require('../../models/User')
 
 /**
  * OpenIDStrategy
@@ -34,7 +34,7 @@ util.inherits(OpenIDStrategy, Strategy)
 function verifier (req, identifier, userInfo, done) {
   // Raw OpenID Provider response should be stored
   // for consistency with other protocols.
-  var auth = {
+  const auth = {
     id: req.query['openid.identity'],
     req_query: req.query
   }

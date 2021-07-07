@@ -2,16 +2,16 @@
  * Module dependencies
  */
 
-var client = require('../boot/redis').getClient()
-var Modinha = require('camfou-modinha')
-var Document = require('camfou-modinha-redis')
-var nowSeconds = require('../lib/time-utils').nowSeconds
+const client = require('../boot/redis').getClient()
+const Modinha = require('camfou-modinha')
+const Document = require('camfou-modinha-redis')
+const nowSeconds = require('../lib/time-utils').nowSeconds
 
 /**
  * Model definition
  */
 
-var AuthorizationCode = Modinha.define('authorizationcodes', {
+const AuthorizationCode = Modinha.define('authorizationcodes', {
   code: {
     type: 'string',
     required: true,

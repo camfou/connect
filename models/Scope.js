@@ -2,15 +2,15 @@
  * Module dependencies
  */
 
-var client = require('../boot/redis').getClient()
-var Modinha = require('camfou-modinha')
-var Document = require('camfou-modinha-redis')
+const client = require('../boot/redis').getClient()
+const Modinha = require('camfou-modinha')
+const Document = require('camfou-modinha-redis')
 
 /**
  * Model definition
  */
 
-var Scope = Modinha.define('scopes', {
+const Scope = Modinha.define('scopes', {
   name: {
     type: 'string',
     required: true,
@@ -59,7 +59,7 @@ Scope.determine = function (scopes, subject, callback) {
   Scope.get(scopes.split(' '), function (err, scopes) {
     if (err) { return callback(err) }
 
-    var knownScope = scopes.reduce(function (list, scope) {
+    const knownScope = scopes.reduce(function (list, scope) {
       if (scope instanceof Scope) {
         list.push(scope)
       }
@@ -75,7 +75,7 @@ Scope.determine = function (scopes, subject, callback) {
       })
 
       // extract scope names
-      var scope = scopes.map(function (scope) {
+      const scope = scopes.map(function (scope) {
         return scope.name
       }).join(' ')
 

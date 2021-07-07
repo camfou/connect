@@ -11,10 +11,10 @@
  * Module dependencies
  */
 
-var Role = require('../models/Role')
-var mailer = require('../boot/mailer').getMailer()
-var settings = require('../boot/settings')
-var { URL } = require('url')
+const Role = require('../models/Role')
+const mailer = require('../boot/mailer').getMailer()
+const settings = require('../boot/settings')
+const { URL } = require('url')
 
 /**
  * Require verified email middleware
@@ -33,7 +33,7 @@ module.exports = function (options) {
     Role.listByUsers(req.user, function (err, roles) {
       if (err) { return next(err) }
 
-      var isAuthority = roles && roles.some(function (role) {
+      const isAuthority = roles && roles.some(function (role) {
         return role && role.name && role.name === 'authority'
       })
 
@@ -44,7 +44,7 @@ module.exports = function (options) {
       } else if (!options.force && !req.provider.emailVerification.require) {
         next()
       } else {
-        var resendURL = new URL(settings.issuer)
+        const resendURL = new URL(settings.issuer)
 
         resendURL.pathname = 'email/resend'
         resendURL.searchParams.set('email', req.user.email)
@@ -55,17 +55,19 @@ module.exports = function (options) {
           resendURL.searchParams.set('scope', req.connectParams.scope)
         }
 
-        var existingUserMsg = 'E-mail verification is required to proceed'
-        var newUserMsg = 'Congratulations on creating your user account! ' +
+        const existingUserMsg = 'E-mail verification is required to proceed'
+        const newUserMsg = 'Congratulations on creating your user account! ' +
           'All that\'s left now is to verify your e-mail.'
 
-        var isNewUser = req.flash('isNewUser').indexOf(true) !== -1
+        const isNewUser = req.flash('isNewUser').indexOf(true) !== -1
 
-        var locals = {
+        const locals = {
           error: options.locals.error === undefined
-            ? (!isNewUser ? existingUserMsg : undefined) : options.locals.error,
+            ? (!isNewUser ? existingUserMsg : undefined)
+            : options.locals.error,
           message: options.locals.message === undefined
-            ? (isNewUser ? newUserMsg : undefined) : options.locals.message,
+            ? (isNewUser ? newUserMsg : undefined)
+            : options.locals.message,
           from: options.locals.from || mailer.from,
           resendURL: options.locals.resendURL || resendURL.toString()
         }

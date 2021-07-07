@@ -2,9 +2,9 @@
  * Module dependencies
  */
 
-var AccessToken = require('../models/AccessToken')
-var Client = require('../models/Client')
-var authenticate = require('../oidc').authenticateUser
+const AccessToken = require('../models/AccessToken')
+const Client = require('../models/Client')
+const authenticate = require('../oidc').authenticateUser
 
 /**
  * Exports
@@ -28,8 +28,8 @@ module.exports = function (server) {
    */
 
   server.delete('/authorizations/:clientId', authenticate, function (req, res, next) {
-    var uid = req.user && req.user._id
-    var cid = req.params.clientId
+    const uid = req.user && req.user._id
+    const cid = req.params.clientId
 
     AccessToken.revoke(uid, cid, function (err, confirm) {
       if (err) { return next(err) }

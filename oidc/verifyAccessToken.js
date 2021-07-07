@@ -2,8 +2,8 @@
  * Module dependencies
  */
 
-var AccessToken = require('../models/AccessToken')
-var UnauthorizedError = require('../errors/UnauthorizedError')
+const AccessToken = require('../models/AccessToken')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 /**
  * Verify User Token
@@ -21,7 +21,7 @@ var UnauthorizedError = require('../errors/UnauthorizedError')
 
 function verifyAccessToken (options) {
   return function (req, res, next) {
-    var token = req.bearer
+    const token = req.bearer
 
     // missing token
     if (!token && options.required !== false) {

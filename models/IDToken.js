@@ -2,15 +2,15 @@
  * Module dependencies
  */
 
-var JWT = require('camfou-connect-jwt')
-var nowSeconds = require('../lib/time-utils').nowSeconds
+const JWT = require('camfou-connect-jwt')
+const nowSeconds = require('../lib/time-utils').nowSeconds
 
 /**
  * Expires
  */
 
 function expires (duration) {
-  var fromNow = {
+  const fromNow = {
     day: (60 * 60 * 24),
     week: (60 * 60 * 24 * 7),
     month: (60 * 60 * 24 * 30)
@@ -25,7 +25,7 @@ function expires (duration) {
  * ID Token
  */
 
-var IDToken = JWT.define({
+const IDToken = JWT.define({
   // default header
   header: {
     alg: 'RS256'

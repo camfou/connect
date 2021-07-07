@@ -2,12 +2,12 @@
  * Module dependencies
  */
 
-var oidc = require('../oidc')
-var settings = require('../boot/settings')
-var Client = require('../models/Client')
-var ClientToken = require('../models/ClientToken')
-var ValidationError = require('../errors/ValidationError')
-var NotFoundError = require('../errors/NotFoundError')
+const oidc = require('../oidc')
+const settings = require('../boot/settings')
+const Client = require('../models/Client')
+const ClientToken = require('../models/ClientToken')
+const ValidationError = require('../errors/ValidationError')
+const NotFoundError = require('../errors/NotFoundError')
 
 /**
  * Dynamic Client Registration Endpoints
@@ -101,7 +101,7 @@ module.exports = function (server) {
 
       // Wrong Content-type
       } else {
-        var err = new Error()
+        const err = new Error()
         err.error = 'invalid_request'
         err.error_description = 'Content-type must be application/json'
         err.statusCode = 400

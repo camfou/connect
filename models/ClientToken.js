@@ -2,15 +2,15 @@
  * Module dependencies
  */
 
-var crypto = require('crypto')
-var JWT = require('camfou-connect-jwt')
-var nowSeconds = require('../lib/time-utils').nowSeconds
+const crypto = require('crypto')
+const JWT = require('camfou-connect-jwt')
+const nowSeconds = require('../lib/time-utils').nowSeconds
 
 /**
  * Client Access Token
  */
 
-var ClientToken = JWT.define({
+const ClientToken = JWT.define({
   // default header
   header: {
     alg: 'RS256'
@@ -56,8 +56,8 @@ function random () {
 
 ClientToken.issue = function (claims, privateKey, callback) {
   try {
-    var token = new ClientToken(claims)
-    var jwt = token.encode(privateKey)
+    const token = new ClientToken(claims)
+    const jwt = token.encode(privateKey)
     return callback(null, jwt)
   } catch (err) {
     callback(err)

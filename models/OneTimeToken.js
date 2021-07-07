@@ -1,5 +1,5 @@
-var crypto = require('crypto')
-var client = require('../boot/redis').getClient()
+const crypto = require('crypto')
+const client = require('../boot/redis').getClient()
 
 /**
  * OneTimeToken
@@ -45,16 +45,15 @@ OneTimeToken.peek = function (id, callback) {
     if (!result) { return callback(null, null) }
 
     try {
-      var token = new OneTimeToken(JSON.parse(result))
+      const token = new OneTimeToken(JSON.parse(result))
+      if (Math.round(Date.now() / 1000) > token.exp) {
+        return callback(null, null)
+      }
+
+      callback(null, token)
     } catch (err) {
       return callback(err)
     }
-
-    if (Math.round(Date.now() / 1000) > token.exp) {
-      return callback(null, null)
-    }
-
-    callback(null, token)
   })
 }
 
@@ -95,7 +94,7 @@ OneTimeToken.consume = function (id, callback) {
  */
 
 OneTimeToken.issue = function (options, callback) {
-  var token
+  let token
   if (options instanceof OneTimeToken) {
     token = options
   } else {
@@ -103,7 +102,7 @@ OneTimeToken.issue = function (options, callback) {
   }
 
   // transaction
-  var multi = client.multi()
+  const multi = client.multi()
   multi.set('onetimetoken:' + token._id, JSON.stringify(token))
 
   // only expire if "exp" is set on the token

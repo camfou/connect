@@ -2,17 +2,17 @@
  * Module dependencies
  */
 
-var cwd = process.cwd()
-var path = require('path')
-var glob = require('glob')
+const cwd = process.cwd()
+const path = require('path')
+const glob = require('glob')
 
 /**
  * Extend
  */
 
 function extend () {
-  var directory = path.join(cwd, 'extensions', '*.js')
-  var extensions = glob.sync(directory)
+  const directory = path.join(cwd, 'extensions', '*.js')
+  const extensions = glob.sync(directory)
 
   extensions.forEach(function (filename) {
     try {

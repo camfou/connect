@@ -4,9 +4,9 @@
  * Dependencies
  */
 
-var async = require('async')
-var settings = require('./settings')
-var rclient = require('./redis').getClient()
+const async = require('async')
+const settings = require('./settings')
+const rclient = require('./redis').getClient()
 
 /**
  * Tag Version
@@ -23,7 +23,7 @@ function updateVersion (done) {
  */
 
 function migrate () {
-  var multi = rclient.multi()
+  const multi = rclient.multi()
 
   // TODO: Remove check against "version" key when time is right
   // This key has been deprecated in favour of "anvil:connect:version"
@@ -37,8 +37,8 @@ function migrate () {
       process.exit(1)
     }
 
-    var version = results[1][1] || results[0][1]
-    var dbsize = results[2][1]
+    const version = results[1][1] || results[0][1]
+    const dbsize = results[2][1]
 
     // check for a non-empty database that isn't versioned for
     // Anvil Connect
@@ -54,7 +54,7 @@ function migrate () {
     }
 
     // initialize migrations
-    var migrations = [
+    const migrations = [
       // always run the baseline migration
       // to ensure required values are present
       require('../migrations/baseline')()
