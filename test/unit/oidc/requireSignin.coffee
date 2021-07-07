@@ -46,6 +46,15 @@ describe 'Require Signin', ->
       res.redirect.should.have.been.calledWith sinon.match '/signin?'
 
 
+  describe 'with unauthenticated user and "signup" prompt', ->
+    beforeEach ->
+      params = prompt: 'signup', response_type: 'id_token token'
+      requireSignin req(params, false), res
+
+    it 'should redirect to signin', ->
+      res.redirect.should.have.been.calledWith sinon.match '/signup?'
+
+
   describe 'with authenticated user and "login" prompt', ->
     beforeEach ->
       params = prompt: 'login', response_type: 'id_token token'

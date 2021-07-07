@@ -2,19 +2,21 @@
  * Module dependencies
  */
 
-var qs = require('qs')
-var sessionState = require('./sessionState')
+const qs = require('qs')
+const sessionState = require('./sessionState')
 
 /**
  * Require signin
  */
 
 function requireSignin (req, res, next) {
-  var params = req.connectParams
-  var prompt = params.prompt
-  var responseMode = (params.response_mode && params.response_mode.trim()) ||
+  const params = req.connectParams
+  const prompt = params.prompt
+  const responseMode = (params.response_mode && params.response_mode.trim()) ||
     (params.response_type.trim() === 'code' ||
-      params.response_type.trim() === 'none') ? '?' : '#'
+      params.response_type.trim() === 'none')
+    ? '?'
+    : '#'
 
   // redirect with error if unauthenticated
   // and prompt is "none"
@@ -25,6 +27,9 @@ function requireSignin (req, res, next) {
       session_state: sessionState(req.client, req.client.client_uri, req.session.opbs)
     }))
 
+  // prompt to signup
+  } else if (!req.user && prompt === 'signup') {
+    res.redirect('/signup?' + qs.stringify(req.connectParams))
   // prompt to sign in
   } else if (!req.user || prompt === 'login') {
     res.redirect('/signin?' + qs.stringify(req.connectParams))
